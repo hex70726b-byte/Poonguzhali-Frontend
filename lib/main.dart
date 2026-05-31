@@ -1977,14 +1977,14 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 },
               ),
               attachmentItem(
-                Icons.link_rounded,
-                "Links",
+                Icons.description_rounded,
+                "Documents",
                 AppColors.skyBlue,
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const LinksPage()),
+                    MaterialPageRoute(builder: (context) => const DocumentsPage()),
                   );
                 },
               ),

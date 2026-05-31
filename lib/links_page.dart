@@ -2,15 +2,16 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
 import 'app_config.dart';
 
-class LinkItem {
+class DocumentLinkItem {
   final String id;
   final String name;
   final String url;
   final DateTime createdAt;
 
-  LinkItem({
+  DocumentLinkItem({
     required this.id,
     required this.name,
     required this.url,
@@ -24,7 +25,7 @@ class LinkItem {
         'createdAt': createdAt.toIso8601String(),
       };
 
-  factory LinkItem.fromJson(Map<String, dynamic> json) => LinkItem(
+  factory DocumentLinkItem.fromJson(Map<String, dynamic> json) => DocumentLinkItem(
         id: json['id']?.toString() ?? '',
         name: json['name'] ?? '',
         url: json['url'] ?? '',
@@ -34,13 +35,13 @@ class LinkItem {
       );
 }
 
-class LinkFolder {
+class DocumentFolder {
   final String id;
   final String name;
-  final List<LinkItem> links;
+  final List<DocumentLinkItem> links;
   final int colorValue;
 
-  LinkFolder({
+  DocumentFolder({
     required this.id,
     required this.name,
     required this.links,
@@ -54,26 +55,26 @@ class LinkFolder {
         'colorValue': colorValue,
       };
 
-  factory LinkFolder.fromJson(Map<String, dynamic> json) {
+  factory DocumentFolder.fromJson(Map<String, dynamic> json) {
     final list = json['links'] as List? ?? [];
-    return LinkFolder(
+    return DocumentFolder(
       id: json['id']?.toString() ?? '',
       name: json['name'] ?? '',
-      links: list.map((e) => LinkItem.fromJson(e)).toList(),
+      links: list.map((e) => DocumentLinkItem.fromJson(e)).toList(),
       colorValue: json['colorValue'] ?? AppColors.skyBlue.value,
     );
   }
 }
 
-class LinksPage extends StatefulWidget {
-  const LinksPage({super.key});
+class DocumentsPage extends StatefulWidget {
+  const DocumentsPage({super.key});
 
   @override
-  State<LinksPage> createState() => _LinksPageState();
+  State<DocumentsPage> createState() => _DocumentsPageState();
 }
 
-class _LinksPageState extends State<LinksPage> {
-  List<LinkFolder> _folders = [];
+class _DocumentsPageState extends State<DocumentsPage> {
+  List<DocumentFolder> _folders = [];
   bool _isLoading = true;
   String _searchQuery = '';
 
@@ -93,38 +94,65 @@ class _LinksPageState extends State<LinksPage> {
     _loadFolders();
   }
 
-  // Load folders from local SharedPreferences cache
+  // Load folders from Backend with local offline fallback cache
   Future<void> _loadFolders() async {
     setState(() => _isLoading = true);
+
+    // 1. Try to fetch from Backend MongoDB API
+    try {
+      final response = await http
+          .get(Uri.parse('${AppConfig.baseUrl}/api/documents'))
+          .timeout(const Duration(seconds: 6));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> decoded = jsonDecode(response.body);
+        final fetched = decoded.map((item) => DocumentFolder.fromJson(item)).toList();
+        
+        setState(() {
+          _folders = fetched;
+          _isLoading = false;
+        });
+
+        // Update local SharedPreferences Cache
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('saved_link_folders', jsonEncode(decoded));
+        return;
+      }
+    } catch (e) {
+      debugPrint("Backend documents load failed, falling back to local cache: $e");
+    }
+
+    // 2. Offline Fallback to Local Cache
     try {
       final prefs = await SharedPreferences.getInstance();
       final String? data = prefs.getString('saved_link_folders');
       if (data != null) {
         final List<dynamic> decoded = jsonDecode(data);
         setState(() {
-          _folders = decoded.map((item) => LinkFolder.fromJson(item)).toList();
+          _folders = decoded.map((item) => DocumentFolder.fromJson(item)).toList();
           _isLoading = false;
         });
+        _showSnackBar("⚡ Offline Mode: Loaded from local vault cache", Colors.blueGrey);
       } else {
         // Prepopulate with a default "Scheme" folder containing actual TN/National scheme links
-        final defaultFolder = LinkFolder(
+        final defaultFolder = DocumentFolder(
           id: 'default_scheme_folder',
           name: 'Scheme',
           colorValue: AppColors.skyBlue.value,
           links: [
-            LinkItem(
+            DocumentLinkItem(
               id: 'scheme_1',
               name: 'Tamil Nadu Government Schemes Portal',
               url: 'https://www.tn.gov.in/schemes',
               createdAt: DateTime.now(),
             ),
-            LinkItem(
+            DocumentLinkItem(
               id: 'scheme_2',
               name: 'National Government Services Portal',
               url: 'https://services.india.gov.in/',
               createdAt: DateTime.now(),
             ),
-            LinkItem(
+            DocumentLinkItem(
               id: 'scheme_3',
               name: 'Pudhumai Penn Scheme TN',
               url: 'https://penkalvi.tn.gov.in/',
@@ -140,25 +168,53 @@ class _LinksPageState extends State<LinksPage> {
             'saved_link_folders', jsonEncode([defaultFolder.toJson()]));
       }
     } catch (e) {
-      print("Error loading link folders: $e");
+      print("Error loading folders fallback: $e");
       setState(() => _isLoading = false);
     }
   }
 
-  // Save folders back to SharedPreferences cache
+  // Save folders to local cache and sync instantly with backend
   Future<void> _saveFolders() async {
+    // 1. Instant local persistence
     try {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(
           'saved_link_folders', jsonEncode(_folders.map((e) => e.toJson()).toList()));
     } catch (e) {
-      print("Error saving link folders: $e");
+      print("Error saving local cache: $e");
     }
+
+    // 2. Cloud synchronization with Backend MongoDB
+    try {
+      final response = await http.post(
+        Uri.parse('${AppConfig.baseUrl}/api/documents/sync'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(_folders.map((e) => e.toJson()).toList()),
+      ).timeout(const Duration(seconds: 6));
+
+      if (response.statusCode == 200) {
+        _showSnackBar("📄 Documents synced to cloud vault!", AppColors.skyBlue);
+      } else {
+        _showSnackBar("📄 Saved locally (Cloud sync pending)", Colors.blueGrey);
+      }
+    } catch (_) {
+      _showSnackBar("📄 Saved locally (Cloud sync pending)", Colors.blueGrey);
+    }
+  }
+
+  void _showSnackBar(String text, Color bgColor) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(text, style: const TextStyle(fontWeight: FontWeight.bold)),
+        backgroundColor: bgColor,
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
   // Launch URL safely in browser
   Future<void> _launchURL(String urlString, BuildContext context) async {
-    // Add protocol prefix if missing
     var cleanUrl = urlString.trim();
     if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
       cleanUrl = 'https://$cleanUrl';
@@ -184,7 +240,7 @@ class _LinksPageState extends State<LinksPage> {
   }
 
   // Show Bottom Sheet to Add/Edit Folder
-  void _openFolderSheet({LinkFolder? existing}) {
+  void _openFolderSheet({DocumentFolder? existing}) {
     final isEdit = existing != null;
     final nameCtrl = TextEditingController(text: isEdit ? existing.name : '');
     int selectedColorValue = isEdit ? existing.colorValue : _folderColors.first.value;
@@ -314,7 +370,7 @@ class _LinksPageState extends State<LinksPage> {
                           final index = _folders.indexWhere((f) => f.id == existing.id);
                           if (index != -1) {
                             setState(() {
-                              _folders[index] = LinkFolder(
+                              _folders[index] = DocumentFolder(
                                 id: existing.id,
                                 name: name,
                                 links: existing.links,
@@ -324,7 +380,7 @@ class _LinksPageState extends State<LinksPage> {
                           }
                         } else {
                           setState(() {
-                            _folders.add(LinkFolder(
+                            _folders.add(DocumentFolder(
                               id: DateTime.now().millisecondsSinceEpoch.toString(),
                               name: name,
                               links: [],
@@ -350,7 +406,7 @@ class _LinksPageState extends State<LinksPage> {
   }
 
   // Delete a Folder with Confirmation
-  void _deleteFolder(LinkFolder folder) {
+  void _deleteFolder(DocumentFolder folder) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -372,12 +428,6 @@ class _LinksPageState extends State<LinksPage> {
                 _folders.removeWhere((f) => f.id == folder.id);
               });
               _saveFolders();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text("🗑️ Deleted '${folder.name}' folder"),
-                  backgroundColor: AppColors.skyBlue,
-                ),
-              );
             },
             child: const Text("Delete", style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.bold)),
           ),
@@ -388,11 +438,9 @@ class _LinksPageState extends State<LinksPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Filter folders by search query
     final filteredFolders = _folders.where((f) {
       if (_searchQuery.isEmpty) return true;
       final q = _searchQuery.toLowerCase();
-      // Matches folder name or link names/urls inside it
       return f.name.toLowerCase().contains(q) ||
           f.links.any((l) =>
               l.name.toLowerCase().contains(q) || l.url.toLowerCase().contains(q));
@@ -408,7 +456,7 @@ class _LinksPageState extends State<LinksPage> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: const Text(
-          '🔗 Links Vault',
+          '📄 Documents Vault',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
         ),
       ),
@@ -440,7 +488,7 @@ class _LinksPageState extends State<LinksPage> {
                       color: AppColors.skyBlue.withValues(alpha: 0.2),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.link_rounded, color: AppColors.skyBlue, size: 28),
+                    child: const Icon(Icons.assignment_rounded, color: AppColors.skyBlue, size: 28),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -448,7 +496,7 @@ class _LinksPageState extends State<LinksPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Secure Web Vault',
+                          'Secure Documents Vault',
                           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                         const SizedBox(height: 4),
@@ -475,7 +523,7 @@ class _LinksPageState extends State<LinksPage> {
               },
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: 'Search folders or links...',
+                hintText: 'Search folders or documents...',
                 hintStyle: const TextStyle(color: Colors.white30),
                 prefixIcon: const Icon(Icons.search_rounded, color: AppColors.skyBlue),
                 contentPadding: const EdgeInsets.symmetric(vertical: 0),
@@ -504,10 +552,10 @@ class _LinksPageState extends State<LinksPage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.link_off_rounded, color: Colors.white38, size: 48),
+                            Icon(Icons.folder_off_rounded, color: Colors.white38, size: 48),
                             const SizedBox(height: 12),
                             const Text(
-                              'No folders or links found!',
+                              'No folders or documents found!',
                               style: TextStyle(color: Colors.white38, fontSize: 14),
                             ),
                           ],
@@ -590,8 +638,8 @@ class _LinksPageState extends State<LinksPage> {
                                             ),
                                             const SizedBox(height: 4),
                                             Text(
-                                              "${folder.links.length} Links Saved",
-                                              style: TextStyle(
+                                              "${folder.links.length} Docs Saved",
+                                              style: const TextStyle(
                                                 color: Colors.white54,
                                                 fontSize: 12,
                                               ),
@@ -660,8 +708,8 @@ class _LinksPageState extends State<LinksPage> {
 }
 
 class FolderDetailsPage extends StatefulWidget {
-  final LinkFolder folder;
-  final ValueChanged<LinkFolder> onFolderUpdated;
+  final DocumentFolder folder;
+  final ValueChanged<DocumentFolder> onFolderUpdated;
   final Future<void> Function(String url, BuildContext context) launchURL;
 
   const FolderDetailsPage({
@@ -676,7 +724,7 @@ class FolderDetailsPage extends StatefulWidget {
 }
 
 class _FolderDetailsPageState extends State<FolderDetailsPage> {
-  late LinkFolder _folder;
+  late DocumentFolder _folder;
   String _query = '';
 
   @override
@@ -686,7 +734,7 @@ class _FolderDetailsPageState extends State<FolderDetailsPage> {
   }
 
   // Show Bottom Sheet to Add/Edit Link inside Folder
-  void _openLinkSheet({LinkItem? existing}) {
+  void _openLinkSheet({DocumentLinkItem? existing}) {
     final isEdit = existing != null;
     final nameCtrl = TextEditingController(text: isEdit ? existing.name : '');
     final urlCtrl = TextEditingController(text: isEdit ? existing.url : '');
@@ -712,7 +760,7 @@ class _FolderDetailsPageState extends State<FolderDetailsPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      isEdit ? '✏️ Edit Link' : '🔗 Add New Link',
+                      isEdit ? '✏️ Edit Document' : '📄 Add New Document',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -730,7 +778,7 @@ class _FolderDetailsPageState extends State<FolderDetailsPage> {
                   controller: nameCtrl,
                   style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    labelText: 'Link Name (e.g. TN Govt Scheme)',
+                    labelText: 'Document Name (e.g. TN Govt Scheme Portal)',
                     labelStyle: const TextStyle(color: Colors.white54, fontSize: 13),
                     prefixIcon: const Icon(Icons.label_outline_rounded, color: AppColors.skyBlue),
                     enabledBorder: OutlineInputBorder(
@@ -749,7 +797,7 @@ class _FolderDetailsPageState extends State<FolderDetailsPage> {
                   style: const TextStyle(color: Colors.white),
                   keyboardType: TextInputType.url,
                   decoration: InputDecoration(
-                    labelText: 'URL (e.g. google.com or https://...)',
+                    labelText: 'URL (e.g. tn.gov.in or https://...)',
                     labelStyle: const TextStyle(color: Colors.white54, fontSize: 13),
                     prefixIcon: const Icon(Icons.link_rounded, color: AppColors.skyBlue),
                     enabledBorder: OutlineInputBorder(
@@ -784,18 +832,17 @@ class _FolderDetailsPageState extends State<FolderDetailsPage> {
                       return;
                     }
 
-                    // Auto format url if no protocol is given
                     if (!url.startsWith('http://') && !url.startsWith('https://')) {
                       url = 'https://$url';
                     }
 
                     Navigator.pop(ctx);
 
-                    final updatedLinks = List<LinkItem>.from(_folder.links);
+                    final updatedLinks = List<DocumentLinkItem>.from(_folder.links);
                     if (isEdit) {
                       final idx = updatedLinks.indexWhere((l) => l.id == existing.id);
                       if (idx != -1) {
-                        updatedLinks[idx] = LinkItem(
+                        updatedLinks[idx] = DocumentLinkItem(
                           id: existing.id,
                           name: name,
                           url: url,
@@ -803,7 +850,7 @@ class _FolderDetailsPageState extends State<FolderDetailsPage> {
                         );
                       }
                     } else {
-                      updatedLinks.add(LinkItem(
+                      updatedLinks.add(DocumentLinkItem(
                         id: DateTime.now().millisecondsSinceEpoch.toString(),
                         name: name,
                         url: url,
@@ -811,7 +858,7 @@ class _FolderDetailsPageState extends State<FolderDetailsPage> {
                       ));
                     }
 
-                    final updatedFolder = LinkFolder(
+                    final updatedFolder = DocumentFolder(
                       id: _folder.id,
                       name: _folder.name,
                       colorValue: _folder.colorValue,
@@ -824,7 +871,7 @@ class _FolderDetailsPageState extends State<FolderDetailsPage> {
                     widget.onFolderUpdated(updatedFolder);
                   },
                   child: Text(
-                    isEdit ? 'Update Link' : 'Add Link',
+                    isEdit ? 'Update Document' : 'Add Document',
                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                 ),
@@ -837,9 +884,9 @@ class _FolderDetailsPageState extends State<FolderDetailsPage> {
   }
 
   // Delete a specific link
-  void _deleteLink(LinkItem link) {
-    final updatedLinks = List<LinkItem>.from(_folder.links)..removeWhere((l) => l.id == link.id);
-    final updatedFolder = LinkFolder(
+  void _deleteLink(DocumentLinkItem link) {
+    final updatedLinks = List<DocumentLinkItem>.from(_folder.links)..removeWhere((l) => l.id == link.id);
+    final updatedFolder = DocumentFolder(
       id: _folder.id,
       name: _folder.name,
       colorValue: _folder.colorValue,
@@ -850,13 +897,6 @@ class _FolderDetailsPageState extends State<FolderDetailsPage> {
       _folder = updatedFolder;
     });
     widget.onFolderUpdated(updatedFolder);
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("🗑️ Deleted '${link.name}' link"),
-        backgroundColor: AppColors.skyBlue,
-      ),
-    );
   }
 
   @override
@@ -896,7 +936,7 @@ class _FolderDetailsPageState extends State<FolderDetailsPage> {
               },
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: 'Search links inside ${_folder.name}...',
+                hintText: 'Search documents inside ${_folder.name}...',
                 hintStyle: const TextStyle(color: Colors.white30),
                 prefixIcon: Icon(Icons.search_rounded, color: themeColor),
                 contentPadding: const EdgeInsets.symmetric(vertical: 0),
@@ -920,10 +960,10 @@ class _FolderDetailsPageState extends State<FolderDetailsPage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.link_rounded, color: Colors.white24, size: 48),
+                        Icon(Icons.assignment_rounded, color: Colors.white24, size: 48),
                         const SizedBox(height: 12),
-                        Text(
-                          'No links inside this folder!',
+                        const Text(
+                          'No documents inside this folder!',
                           style: TextStyle(color: Colors.white38, fontSize: 14),
                         ),
                       ],
@@ -948,7 +988,7 @@ class _FolderDetailsPageState extends State<FolderDetailsPage> {
                           leading: CircleAvatar(
                             radius: 20,
                             backgroundColor: themeColor.withValues(alpha: 0.15),
-                            child: Icon(Icons.link_rounded, color: themeColor, size: 22),
+                            child: Icon(Icons.description_rounded, color: themeColor, size: 22),
                           ),
                           title: Text(
                             link.name,
@@ -1016,7 +1056,7 @@ class _FolderDetailsPageState extends State<FolderDetailsPage> {
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         onPressed: () => _openLinkSheet(),
-        child: const Icon(Icons.add_link_rounded, size: 28),
+        child: const Icon(Icons.add_task_rounded, size: 28),
       ),
     );
   }
