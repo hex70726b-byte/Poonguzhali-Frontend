@@ -57,12 +57,12 @@
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.BROWSABLE" />
-            <scheme android:name="https" />
+            <data android:scheme="https" />
         </intent>
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.BROWSABLE" />
-            <scheme android:name="http" />
+            <data android:scheme="http" />
         </intent>
     </queries>
 </manifest>
