@@ -2,13 +2,16 @@ package com.example.my_app
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.os.Vibrator
 import android.os.VibrationEffect
+import android.provider.Settings
 import android.speech.tts.TextToSpeech
 import java.util.Locale
 import androidx.annotation.NonNull
@@ -19,6 +22,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import java.util.ArrayList
 import java.util.HashMap
+
 
 class MainActivity : FlutterActivity() {
     private val CHANNEL = "sms_reader_channel"
@@ -56,23 +60,44 @@ class MainActivity : FlutterActivity() {
                     result.success(isGranted)
                 }
                 "requestStoragePermission" -> {
-                    val hasRead = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-                    val hasWrite = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-                    if (hasRead && hasWrite) {
-                        result.success("granted")
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        if (Environment.isExternalStorageManager()) {
+                            result.success("granted")
+                        } else {
+                            permissionResult = result
+                            try {
+                                val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+                                val uri = Uri.fromParts("package", packageName, null)
+                                intent.data = uri
+                                startActivityForResult(intent, 5678)
+                            } catch (e: Exception) {
+                                val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
+                                startActivityForResult(intent, 5678)
+                            }
+                        }
                     } else {
-                        permissionResult = result
-                        ActivityCompat.requestPermissions(
-                            this,
-                            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                            5678
-                        )
+                        val hasRead = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                        val hasWrite = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                        if (hasRead && hasWrite) {
+                            result.success("granted")
+                        } else {
+                            permissionResult = result
+                            ActivityCompat.requestPermissions(
+                                this,
+                                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                                5678
+                            )
+                        }
                     }
                 }
                 "checkStoragePermission" -> {
-                    val hasRead = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-                    val hasWrite = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-                    result.success(hasRead && hasWrite)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                        result.success(Environment.isExternalStorageManager())
+                    } else {
+                        val hasRead = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                        val hasWrite = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                        result.success(hasRead && hasWrite)
+                    }
                 }
                 "speak" -> {
                     val text = call.argument<String>("text") ?: ""
@@ -136,6 +161,20 @@ class MainActivity : FlutterActivity() {
                 permissionResult?.success("granted")
             } else {
                 permissionResult?.success("denied")
+            }
+            permissionResult = null
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 5678) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (Environment.isExternalStorageManager()) {
+                    permissionResult?.success("granted")
+                } else {
+                    permissionResult?.success("denied")
+                }
             }
             permissionResult = null
         }

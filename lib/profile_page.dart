@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/foundation.dart';
 import 'app_config.dart';
 import 'main.dart';
 
@@ -54,6 +55,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _loadBackupSettings() async {
+    if (kIsWeb) return;
     try {
       final file = File("/storage/emulated/0/DailyBackup/backup_settings.json");
       if (await file.exists()) {
@@ -70,6 +72,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _saveBackupSettings() async {
+    if (kIsWeb) return;
     try {
       final dir = Directory("/storage/emulated/0/DailyBackup");
       if (!await dir.exists()) {
@@ -396,6 +399,15 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _triggerManualBackup() async {
+    if (kIsWeb) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("⚠️ Backup is only supported on Android devices."),
+          backgroundColor: Colors.orangeAccent,
+        ),
+      );
+      return;
+    }
     try {
       final bool isGranted = await _channel.invokeMethod<bool>('checkStoragePermission') ?? false;
       if (!isGranted) {
@@ -519,6 +531,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _runBackupProcedure(bool manual) async {
+    if (kIsWeb) return;
     if (manual) {
       showDialog(
         context: context,
@@ -570,7 +583,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
         List<FileSystemEntity> entities = [];
         try {
-          entities = dir.listSync(recursive: true, followLinks: false);
+          // List non-recursively to avoid crashes on restricted/hidden OS folders on Android 11+
+          entities = dir.listSync(recursive: false, followLinks: false);
         } catch (e) {
           print("Error listing source folder $source: $e");
           continue;
@@ -608,8 +622,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     entity.renameSync(destPath);
                   } catch (e) {
                     // Fallback to copy and delete if rename fails (e.g. cross-partition boundary)
-                    entity.copySync(destPath);
-                    entity.deleteSync();
+                    try {
+                      entity.copySync(destPath);
+                      entity.deleteSync();
+                    } catch (err) {
+                      print("Copy/delete failed for ${entity.path}: $err");
+                      continue;
+                    }
                   }
 
                   movedCount++;
