@@ -213,7 +213,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
     );
   }
 
-  // Launch URL safely in browser
+  // Launch URL safely in browser with a multi-stage fallback strategy
   Future<void> _launchURL(String urlString, BuildContext context) async {
     var cleanUrl = urlString.trim();
     if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
@@ -221,27 +221,34 @@ class _DocumentsPageState extends State<DocumentsPage> {
     }
 
     final Uri uri = Uri.parse(cleanUrl);
-    try {
-      // Direct call is highly recommended on Android 11+ as it bypasses package visibility queries check
-      final success = await launchUrl(uri, mode: LaunchMode.externalApplication);
-      if (!success) {
-        // Try fallback to platform default
-        await launchUrl(uri, mode: LaunchMode.platformDefault);
-      }
-    } catch (e) {
-      // Secondary fallback
+    
+    // Sequential modes to try. platformDefault is the safest as Android resolves standard browser routing.
+    final List<LaunchMode> modesToTry = [
+      LaunchMode.platformDefault,
+      LaunchMode.externalApplication,
+      LaunchMode.inAppBrowserView,
+      LaunchMode.inAppWebView,
+    ];
+
+    for (final mode in modesToTry) {
       try {
-        await launchUrl(uri, mode: LaunchMode.platformDefault);
-      } catch (err) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text("⚠️ Could not open link: $cleanUrl"),
-              backgroundColor: Colors.redAccent,
-            ),
-          );
+        final success = await launchUrl(uri, mode: mode);
+        if (success) {
+          debugPrint("Successfully opened link using mode: $mode");
+          return; // Exit as soon as one mode succeeds!
         }
+      } catch (e) {
+        debugPrint("Failed to launch link using mode $mode: $e");
       }
+    }
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("⚠️ Could not open link: $cleanUrl"),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
     }
   }
 
