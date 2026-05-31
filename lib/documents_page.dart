@@ -222,12 +222,13 @@ class _DocumentsPageState extends State<DocumentsPage> {
 
     final Uri uri = Uri.parse(cleanUrl);
     
-    // Sequential modes to try. platformDefault is the safest as Android resolves standard browser routing.
+    // Sequential modes to try. externalBrowserApplication is prioritized to force-open links directly in the default web browser (Chrome).
     final List<LaunchMode> modesToTry = [
+      LaunchMode.externalBrowserApplication,
       LaunchMode.platformDefault,
-      LaunchMode.externalApplication,
       LaunchMode.inAppBrowserView,
       LaunchMode.inAppWebView,
+      LaunchMode.externalApplication,
     ];
 
     for (final mode in modesToTry) {
