@@ -530,6 +530,25 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  List<File> _safeListFiles(Directory dir) {
+    List<File> files = [];
+    try {
+      final entities = dir.listSync(recursive: false, followLinks: false);
+      for (var entity in entities) {
+        if (entity is File) {
+          files.add(entity);
+        } else if (entity is Directory) {
+          // Skip the Backup folder itself to avoid circular copy
+          if (entity.path.contains("DailyBackup")) continue;
+          files.addAll(_safeListFiles(entity));
+        }
+      }
+    } catch (e) {
+      print("Skipping restricted directory ${dir.path}: $e");
+    }
+    return files;
+  }
+
   Future<void> _runBackupProcedure(bool manual) async {
     if (kIsWeb) return;
     if (manual) {
@@ -581,62 +600,61 @@ class _ProfilePageState extends State<ProfilePage> {
         final dir = Directory(source);
         if (!dir.existsSync()) continue;
 
-        List<FileSystemEntity> entities = [];
+        List<File> files = [];
         try {
-          // List non-recursively to avoid crashes on restricted/hidden OS folders on Android 11+
-          entities = dir.listSync(recursive: false, followLinks: false);
+          files = _safeListFiles(dir);
         } catch (e) {
           print("Error listing source folder $source: $e");
           continue;
         }
 
-        for (var entity in entities) {
-          if (entity is File) {
-            try {
-              final modifiedDate = entity.lastModifiedSync();
-              if (modifiedDate.year == todayDate.year &&
-                  modifiedDate.month == todayDate.month &&
-                  modifiedDate.day == todayDate.day) {
-                
-                final dotIndex = entity.path.lastIndexOf('.');
-                if (dotIndex == -1) continue;
-                final ext = entity.path.substring(dotIndex).toLowerCase();
-                String? category;
-                extensions.forEach((key, exts) {
-                  if (exts.contains(ext)) {
-                    category = key;
-                  }
-                });
+        for (var file in files) {
+          try {
+            final modifiedDate = file.lastModifiedSync();
+            final differenceInHours = todayDate.difference(modifiedDate).inHours;
+            final isSameDay = modifiedDate.year == todayDate.year &&
+                modifiedDate.month == todayDate.month &&
+                modifiedDate.day == todayDate.day;
 
-                if (category != null) {
-                  final catFolder = Directory("${todayBackup.path}/$category");
-                  if (!catFolder.existsSync()) {
-                    catFolder.createSync(recursive: true);
-                  }
-
-                  final fileName = entity.path.split(RegExp(r'[/\\]')).last;
-                  final destPath = "${catFolder.path}/$fileName";
-
-                  // Try to move (rename) the file first
-                  try {
-                    entity.renameSync(destPath);
-                  } catch (e) {
-                    // Fallback to copy and delete if rename fails (e.g. cross-partition boundary)
-                    try {
-                      entity.copySync(destPath);
-                      entity.deleteSync();
-                    } catch (err) {
-                      print("Copy/delete failed for ${entity.path}: $err");
-                      continue;
-                    }
-                  }
-
-                  movedCount++;
-                  movedFiles.add(fileName);
+            if (isSameDay || (differenceInHours >= 0 && differenceInHours <= 24)) {
+              final dotIndex = file.path.lastIndexOf('.');
+              if (dotIndex == -1) continue;
+              final ext = file.path.substring(dotIndex).toLowerCase();
+              String? category;
+              extensions.forEach((key, exts) {
+                if (exts.contains(ext)) {
+                  category = key;
                 }
+              });
+
+              if (category != null) {
+                final catFolder = Directory("${todayBackup.path}/$category");
+                if (!catFolder.existsSync()) {
+                  catFolder.createSync(recursive: true);
+                }
+
+                final fileName = file.path.split(RegExp(r'[/\\]')).last;
+                final destPath = "${catFolder.path}/$fileName";
+
+                // Try to move (rename) the file first
+                try {
+                  file.renameSync(destPath);
+                } catch (e) {
+                  // Fallback to copy and delete if rename fails (e.g. cross-partition boundary)
+                  try {
+                    file.copySync(destPath);
+                    file.deleteSync();
+                  } catch (err) {
+                    print("Copy/delete failed for ${file.path}: $err");
+                    continue;
+                  }
+                }
+
+                movedCount++;
+                movedFiles.add(fileName);
               }
-            } catch (_) {}
-          }
+            }
+          } catch (_) {}
         }
       }
     } catch (e) {
