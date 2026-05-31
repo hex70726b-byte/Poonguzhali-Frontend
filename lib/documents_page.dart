@@ -222,19 +222,25 @@ class _DocumentsPageState extends State<DocumentsPage> {
 
     final Uri uri = Uri.parse(cleanUrl);
     try {
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      } else {
-        throw 'Could not launch';
+      // Direct call is highly recommended on Android 11+ as it bypasses package visibility queries check
+      final success = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!success) {
+        // Try fallback to platform default
+        await launchUrl(uri, mode: LaunchMode.platformDefault);
       }
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("⚠️ Could not open link: $cleanUrl"),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
+      // Secondary fallback
+      try {
+        await launchUrl(uri, mode: LaunchMode.platformDefault);
+      } catch (err) {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("⚠️ Could not open link: $cleanUrl"),
+              backgroundColor: Colors.redAccent,
+            ),
+          );
+        }
       }
     }
   }

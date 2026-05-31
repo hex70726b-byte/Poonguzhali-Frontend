@@ -22,7 +22,7 @@ import 'app_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'app_lock_screen.dart';
 import 'passwords_page.dart';
-import 'links_page.dart';
+import 'documents_page.dart';
 
 void main() {
   runApp(const MyApp());
