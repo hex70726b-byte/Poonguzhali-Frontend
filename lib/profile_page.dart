@@ -238,6 +238,21 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             trailing: const Icon(Icons.chevron_right, color: Colors.white30),
           ),
+
+          // 5. Chatbot Settings tile
+          ListTile(
+            onTap: _showChatSettingsPage,
+            leading: const Icon(Icons.psychology_alt_rounded, color: AppColors.skyBlue),
+            title: const Text(
+              "Chatbot Persona",
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            subtitle: const Text(
+              "Customize Poonguzhali's behavior & intelligence",
+              style: TextStyle(color: Colors.white54, fontSize: 13),
+            ),
+            trailing: const Icon(Icons.chevron_right, color: Colors.white30),
+          ),
         ],
       ),
     );
@@ -273,6 +288,15 @@ class _ProfilePageState extends State<ProfilePage> {
       context,
       MaterialPageRoute(
         builder: (context) => StarredMessagesPage(messages: widget.messages),
+      ),
+    );
+  }
+
+  void _showChatSettingsPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const ChatSettingsPage(),
       ),
     );
   }
@@ -1439,6 +1463,343 @@ class _StarredMessagesPageState extends State<StarredMessagesPage> {
                 );
               },
             ),
+    );
+  }
+}
+
+class ChatSettingsPage extends StatefulWidget {
+  const ChatSettingsPage({super.key});
+
+  @override
+  State<ChatSettingsPage> createState() => _ChatSettingsPageState();
+}
+
+class _ChatSettingsPageState extends State<ChatSettingsPage> {
+  String _selectedPersona = "gbf";
+  final TextEditingController _customPromptController = TextEditingController();
+  bool _isLoading = true;
+  bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchSettings();
+  }
+
+  @override
+  void dispose() {
+    _customPromptController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchSettings() async {
+    try {
+      final response = await http.get(Uri.parse('${AppConfig.baseUrl}/api/ai/settings'));
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          _selectedPersona = data['selectedPersona'] ?? "gbf";
+          _customPromptController.text = data['customPrompt'] ?? "";
+          _isLoading = false;
+        });
+      } else {
+        setState(() => _isLoading = false);
+        _showErrorSnackBar("Failed to load settings from server.");
+      }
+    } catch (e) {
+      setState(() => _isLoading = false);
+      _showErrorSnackBar("Connection error: $e");
+    }
+  }
+
+  Future<void> _saveSettings() async {
+    setState(() => _isSaving = true);
+    try {
+      final response = await http.post(
+        Uri.parse('${AppConfig.baseUrl}/api/ai/settings'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'selectedPersona': _selectedPersona,
+          'customPrompt': _customPromptController.text.trim(),
+        }),
+      );
+      setState(() => _isSaving = false);
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("🎉 Chatbot persona updated successfully!"),
+            backgroundColor: AppColors.skyBlue,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        Navigator.pop(context);
+      } else {
+        _showErrorSnackBar("Failed to update settings.");
+      }
+    } catch (e) {
+      setState(() => _isSaving = false);
+      _showErrorSnackBar("Connection error: $e");
+    }
+  }
+
+  void _showErrorSnackBar(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("⚠️ $msg"),
+        backgroundColor: Colors.redAccent,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.scaffoldBackground,
+      appBar: AppBar(
+        backgroundColor: AppColors.surfaceCard,
+        elevation: 0,
+        title: const Text(
+          "Poonguzhali Persona 🧠",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator(color: AppColors.skyBlue))
+          : Stack(
+              children: [
+                SingleChildScrollView(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Text(
+                        "Select Chatbot Profile",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      const Text(
+                        "Change Poonguzhali's behavior, relationship status, and speech style instantly.",
+                        style: TextStyle(color: Colors.white54, fontSize: 13),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // GBF Option
+                      _buildPersonaCard(
+                        id: "gbf",
+                        title: "Playful Girl Best Friend (GBF) 👩‍❤️‍👨",
+                        subtitle: "Super smart, mature bestie. Speaks witty Tanglish, cracks bold dark comedy & suggestive jokes, concise 5-line responses.",
+                        color: Colors.tealAccent,
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Romantic GF Option
+                      _buildPersonaCard(
+                        id: "romantic_gf",
+                        title: "Romantic Girlfriend ❤️",
+                        subtitle: "Deeply affectionate, highly romantic, extremely sweet, smart doubt-solver. Always showers you with love.",
+                        color: Colors.pinkAccent,
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Possessive GF Option
+                      _buildPersonaCard(
+                        id: "possessive_gf",
+                        title: "Possessive Girlfriend 😤",
+                        subtitle: "Very sweet but super possessive and protective. Gets jealous if other girls' names are mentioned!",
+                        color: Colors.amberAccent,
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Strict Mentor Option
+                      _buildPersonaCard(
+                        id: "mentor",
+                        title: "Strict Mentor 💪",
+                        subtitle: "Mature and encouraging. Explains coding, math, and science deeply to motivate you to focus and study.",
+                        color: Colors.lightBlueAccent,
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Custom Option
+                      _buildPersonaCard(
+                        id: "custom",
+                        title: "Custom Instructions ⚙️",
+                        subtitle: "Define your own prompt! Write exactly how you want Poonguzhali to talk and behave.",
+                        color: Colors.purpleAccent,
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Slide down custom prompt text field if "custom" is selected
+                      AnimatedCrossFade(
+                        firstChild: const SizedBox.shrink(),
+                        secondChild: Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: AppColors.surfaceCard,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: Colors.purpleAccent.withOpacity(0.3), width: 1),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              const Text(
+                                "Custom Instructions",
+                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+                              ),
+                              const SizedBox(height: 8),
+                              TextField(
+                                controller: _customPromptController,
+                                maxLines: 5,
+                                style: const TextStyle(color: Colors.white, fontSize: 14),
+                                decoration: InputDecoration(
+                                  hintText: "E.g., You are a cool software engineer classmate. Talk to me in a sarcastic Tanglish style, help me practice coding, and mock me playfully when I write bugs.",
+                                  hintStyle: const TextStyle(color: Colors.white30, fontSize: 13),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: Colors.white24),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: const BorderSide(color: Colors.purpleAccent, width: 1.5),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  fillColor: Colors.black26,
+                                  filled: true,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        crossFadeState: _selectedPersona == "custom"
+                            ? CrossFadeState.showSecond
+                            : CrossFadeState.showFirst,
+                        duration: const Duration(milliseconds: 300),
+                      ),
+
+                      const SizedBox(height: 100),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  bottom: 16,
+                  left: 16,
+                  right: 16,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.4),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: ElevatedButton(
+                      onPressed: _isSaving ? null : _saveSettings,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.skyBlue,
+                        foregroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                      ),
+                      child: _isSaving
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2),
+                            )
+                          : const Text(
+                              "Save Active Persona",
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+    );
+  }
+
+  Widget _buildPersonaCard({
+    required String id,
+    required String title,
+    required String subtitle,
+    required Color color,
+  }) {
+    final bool isSelected = _selectedPersona == id;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedPersona = id;
+        });
+      },
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: isSelected ? color.withOpacity(0.08) : AppColors.surfaceCard,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? color : Colors.white12,
+            width: isSelected ? 1.5 : 0.5,
+          ),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Theme(
+              data: Theme.of(context).copyWith(
+                unselectedWidgetColor: Colors.white30,
+              ),
+              child: Radio<String>(
+                value: id,
+                groupValue: _selectedPersona,
+                activeColor: color,
+                onChanged: (val) {
+                  setState(() {
+                    _selectedPersona = val!;
+                  });
+                },
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: isSelected ? color : Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      color: Colors.white54,
+                      fontSize: 12,
+                      height: 1.4,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
