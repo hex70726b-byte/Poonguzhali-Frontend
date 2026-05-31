@@ -22,6 +22,7 @@ import 'app_config.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'app_lock_screen.dart';
 import 'passwords_page.dart';
+import 'links_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -1818,7 +1819,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       builder: (context) {
         return Container(
           padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
-          height: 310,
+          height: 380,
           decoration: BoxDecoration(
             color: const Color(0xFF232323),
             borderRadius: BorderRadius.circular(25),
@@ -1972,6 +1973,18 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const PasswordsPage()),
+                  );
+                },
+              ),
+              attachmentItem(
+                Icons.link_rounded,
+                "Links",
+                AppColors.skyBlue,
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LinksPage()),
                   );
                 },
               ),
