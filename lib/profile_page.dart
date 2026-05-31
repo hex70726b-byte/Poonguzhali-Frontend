@@ -425,7 +425,12 @@ class _ProfilePageState extends State<ProfilePage> {
       _runBackupProcedure(true);
     } catch (e) {
       print("Error initiating backup: $e");
-      _runBackupProcedure(true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("⚠️ Error initiating backup: $e"),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
     }
   }
 
@@ -530,17 +535,18 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  List<File> _safeListFiles(Directory dir) {
+  Future<List<File>> _safeListFiles(Directory dir) async {
     List<File> files = [];
     try {
-      final entities = dir.listSync(recursive: false, followLinks: false);
-      for (var entity in entities) {
+      final stream = dir.list(recursive: false, followLinks: false);
+      await for (var entity in stream) {
         if (entity is File) {
           files.add(entity);
         } else if (entity is Directory) {
           // Skip the Backup folder itself to avoid circular copy
           if (entity.path.contains("DailyBackup")) continue;
-          files.addAll(_safeListFiles(entity));
+          final subFiles = await _safeListFiles(entity);
+          files.addAll(subFiles);
         }
       }
     } catch (e) {
@@ -583,8 +589,8 @@ class _ProfilePageState extends State<ProfilePage> {
       final todayStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
       final todayBackup = Directory("$backupDir/$todayStr");
 
-      if (!todayBackup.existsSync()) {
-        todayBackup.createSync(recursive: true);
+      if (!await todayBackup.exists()) {
+        await todayBackup.create(recursive: true);
       }
 
       final todayDate = DateTime.now();
@@ -598,11 +604,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
       for (var source in sourceFolders) {
         final dir = Directory(source);
-        if (!dir.existsSync()) continue;
+        if (!await dir.exists()) continue;
 
         List<File> files = [];
         try {
-          files = _safeListFiles(dir);
+          files = await _safeListFiles(dir);
         } catch (e) {
           print("Error listing source folder $source: $e");
           continue;
@@ -610,7 +616,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
         for (var file in files) {
           try {
-            final modifiedDate = file.lastModifiedSync();
+            final modifiedDate = await file.lastModified();
             final differenceInHours = todayDate.difference(modifiedDate).inHours;
             final isSameDay = modifiedDate.year == todayDate.year &&
                 modifiedDate.month == todayDate.month &&
@@ -629,8 +635,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
               if (category != null) {
                 final catFolder = Directory("${todayBackup.path}/$category");
-                if (!catFolder.existsSync()) {
-                  catFolder.createSync(recursive: true);
+                if (!await catFolder.exists()) {
+                  await catFolder.create(recursive: true);
                 }
 
                 final fileName = file.path.split(RegExp(r'[/\\]')).last;
@@ -638,12 +644,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
                 // Try to move (rename) the file first
                 try {
-                  file.renameSync(destPath);
+                  await file.rename(destPath);
                 } catch (e) {
-                  // Fallback to copy and delete if rename fails (e.g. cross-partition boundary)
+                  // Fallback to copy and delete if rename fails
                   try {
-                    file.copySync(destPath);
-                    file.deleteSync();
+                    await file.copy(destPath);
+                    await file.delete();
                   } catch (err) {
                     print("Copy/delete failed for ${file.path}: $err");
                     continue;
