@@ -394,12 +394,7 @@ class _LearningsPageState extends State<LearningsPage> {
           '📚 My Learning Space',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: Colors.lightBlueAccent),
-            onPressed: _fetchLearnings,
-          ),
-        ],
+        actions: const [],
       ),
       body: Column(
         children: [
@@ -434,150 +429,165 @@ class _LearningsPageState extends State<LearningsPage> {
 
           // Main list
           Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator(color: Colors.lightBlueAccent))
-                : _errorMessage != null
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.error_outline_rounded, color: Colors.redAccent, size: 48),
-                            const SizedBox(height: 12),
-                            Text(_errorMessage!, style: const TextStyle(color: Colors.white70)),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: _fetchLearnings,
-                              child: const Text('Retry'),
-                            ),
-                          ],
-                        ),
-                      )
-                    : filteredLearnings.isEmpty
-                        ? Center(
+            child: RefreshIndicator(
+              onRefresh: _fetchLearnings,
+              color: Colors.lightBlueAccent,
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator(color: Colors.lightBlueAccent))
+                  : _errorMessage != null
+                      ? SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Container(
+                            height: MediaQuery.of(context).size.height * 0.6,
+                            alignment: Alignment.center,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.local_library_rounded, size: 72, color: Colors.white.withValues(alpha: 0.08)),
+                                const Icon(Icons.error_outline_rounded, color: Colors.redAccent, size: 48),
+                                const SizedBox(height: 12),
+                                Text(_errorMessage!, style: const TextStyle(color: Colors.white70)),
                                 const SizedBox(height: 16),
-                                const Text('No learning topics added yet', style: TextStyle(color: Colors.white54, fontSize: 15)),
+                                ElevatedButton(
+                                  onPressed: _fetchLearnings,
+                                  child: const Text('Retry'),
+                                ),
                               ],
                             ),
-                          )
-                        : ListView.builder(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            itemCount: filteredLearnings.length,
-                            itemBuilder: (ctx, idx) {
-                              final l = filteredLearnings[idx];
-                              final topic = l['learningTopic'] ?? 'Untitled Topic';
-                              final content = l['content'] ?? '';
-                              
-                              List<String> links = [];
-                              if (l['links'] != null && l['links'].toString().isNotEmpty) {
-                                try {
-                                  final decoded = jsonDecode(l['links'].toString());
-                                  if (decoded is List) {
-                                    links = decoded.map((li) => li.toString()).toList();
-                                  }
-                                } catch (_) {}
-                              }
-
-                              return Container(
-                                margin: const EdgeInsets.only(bottom: 16),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF1E1E1E),
-                                  borderRadius: BorderRadius.circular(18),
-                                  border: Border.all(color: Colors.white.withValues(alpha: 0.04)),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withValues(alpha: 0.2),
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 4),
-                                    )
+                          ),
+                        )
+                      : filteredLearnings.isEmpty
+                          ? SingleChildScrollView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              child: Container(
+                                height: MediaQuery.of(context).size.height * 0.6,
+                                alignment: Alignment.center,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.local_library_rounded, size: 72, color: Colors.white.withValues(alpha: 0.08)),
+                                    const SizedBox(height: 16),
+                                    const Text('No learning topics added yet', style: TextStyle(color: Colors.white54, fontSize: 15)),
                                   ],
                                 ),
-                                child: ExpansionTile(
-                                  iconColor: Colors.lightBlueAccent,
-                                  collapsedIconColor: Colors.white30,
-                                  title: Text(
-                                    topic,
-                                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                              ),
+                            )
+                          : ListView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              itemCount: filteredLearnings.length,
+                              itemBuilder: (ctx, idx) {
+                                final l = filteredLearnings[idx];
+                                final topic = l['learningTopic'] ?? 'Untitled Topic';
+                                final content = l['content'] ?? '';
+                                
+                                List<String> links = [];
+                                if (l['links'] != null && l['links'].toString().isNotEmpty) {
+                                  try {
+                                    final decoded = jsonDecode(l['links'].toString());
+                                    if (decoded is List) {
+                                      links = decoded.map((li) => li.toString()).toList();
+                                    }
+                                  } catch (_) {}
+                                }
+
+                                return Container(
+                                  margin: const EdgeInsets.only(bottom: 16),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF1E1E1E),
+                                    borderRadius: BorderRadius.circular(18),
+                                    border: Border.all(color: Colors.white.withValues(alpha: 0.04)),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withValues(alpha: 0.2),
+                                        blurRadius: 10,
+                                        offset: const Offset(0, 4),
+                                      )
+                                    ],
                                   ),
-                                  subtitle: const Text('Tap to view notes & resources', style: TextStyle(color: Colors.white30, fontSize: 12)),
-                                  childrenPadding: const EdgeInsets.all(16),
-                                  expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
-                                  children: [
-                                    const Divider(color: Colors.white12, height: 1),
-                                    const SizedBox(height: 12),
+                                  child: ExpansionTile(
+                                    iconColor: Colors.lightBlueAccent,
+                                    collapsedIconColor: Colors.white30,
+                                    title: Text(
+                                      topic,
+                                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                                    ),
+                                    subtitle: const Text('Tap to view notes & resources', style: TextStyle(color: Colors.white30, fontSize: 12)),
+                                    childrenPadding: const EdgeInsets.all(16),
+                                    expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
+                                    children: [
+                                      const Divider(color: Colors.white12, height: 1),
+                                      const SizedBox(height: 12),
 
-                                    // Content Text
-                                    if (content.toString().isNotEmpty) ...[
-                                      const Text(
-                                        'NOTES',
-                                        style: TextStyle(color: Colors.lightBlueAccent, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
-                                      ),
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        content,
-                                        style: TextStyle(
-                                          color: Colors.white.withValues(alpha: 0.85),
-                                          fontSize: 14,
-                                          height: 1.5,
+                                      // Content Text
+                                      if (content.toString().isNotEmpty) ...[
+                                        const Text(
+                                          'NOTES',
+                                          style: TextStyle(color: Colors.lightBlueAccent, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
                                         ),
-                                      ),
-                                      const SizedBox(height: 16),
-                                    ],
+                                        const SizedBox(height: 6),
+                                        Text(
+                                          content,
+                                          style: TextStyle(
+                                            color: Colors.white.withValues(alpha: 0.85),
+                                            fontSize: 14,
+                                            height: 1.5,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 16),
+                                      ],
 
-                                    // Links
-                                    if (links.isNotEmpty) ...[
-                                      const Text(
-                                        'RESOURCES & LINKS',
-                                        style: TextStyle(color: Colors.lightBlueAccent, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Wrap(
-                                        spacing: 8,
-                                        runSpacing: 8,
-                                        children: links.map((link) {
-                                          return ActionChip(
-                                            backgroundColor: Colors.lightBlueAccent.withValues(alpha: 0.1),
-                                            side: BorderSide(color: Colors.lightBlueAccent.withValues(alpha: 0.2)),
-                                            avatar: const Icon(Icons.link_rounded, size: 14, color: Colors.lightBlueAccent),
-                                            label: Text(
-                                              link.length > 30 ? '${link.substring(0, 27)}...' : link,
-                                              style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 11, fontWeight: FontWeight.bold),
-                                            ),
-                                            onPressed: () {
-                                              Clipboard.setData(ClipboardData(text: link));
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                const SnackBar(
-                                                  content: Text('📋 Link copied to clipboard!'),
-                                                  backgroundColor: Colors.lightBlueAccent,
-                                                  duration: Duration(seconds: 2),
-                                                ),
-                                              );
-                                            },
-                                          );
-                                        }).toList(),
-                                      ),
-                                    ],
-
-                                    const SizedBox(height: 16),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
-                                      children: [
-                                        TextButton.icon(
-                                          style: TextButton.styleFrom(foregroundColor: Colors.lightBlueAccent),
-                                          icon: const Icon(Icons.edit_rounded, size: 18),
-                                          label: const Text('Edit Details', style: TextStyle(fontWeight: FontWeight.bold)),
-                                          onPressed: () => _openFormSheet(existing: l),
+                                      // Links
+                                      if (links.isNotEmpty) ...[
+                                        const Text(
+                                          'RESOURCES & LINKS',
+                                          style: TextStyle(color: Colors.lightBlueAccent, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Wrap(
+                                          spacing: 8,
+                                          runSpacing: 8,
+                                          children: links.map((link) {
+                                            return ActionChip(
+                                              backgroundColor: Colors.lightBlueAccent.withValues(alpha: 0.1),
+                                              side: BorderSide(color: Colors.lightBlueAccent.withValues(alpha: 0.2)),
+                                              avatar: const Icon(Icons.link_rounded, size: 14, color: Colors.lightBlueAccent),
+                                              label: Text(
+                                                link.length > 30 ? '${link.substring(0, 27)}...' : link,
+                                                style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 11, fontWeight: FontWeight.bold),
+                                              ),
+                                              onPressed: () {
+                                                Clipboard.setData(ClipboardData(text: link));
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  const SnackBar(
+                                                    content: Text('📋 Link copied to clipboard!'),
+                                                    backgroundColor: Colors.lightBlueAccent,
+                                                    duration: Duration(seconds: 2),
+                                                  ),
+                                                );
+                                              },
+                                            );
+                                          }).toList(),
                                         ),
                                       ],
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
+
+                                      const SizedBox(height: 16),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          TextButton.icon(
+                                            style: TextButton.styleFrom(foregroundColor: Colors.lightBlueAccent),
+                                            icon: const Icon(Icons.edit_rounded, size: 18),
+                                            label: const Text('Edit Details', style: TextStyle(fontWeight: FontWeight.bold)),
+                                            onPressed: () => _openFormSheet(existing: l),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+            ),
           ),
         ],
       ),

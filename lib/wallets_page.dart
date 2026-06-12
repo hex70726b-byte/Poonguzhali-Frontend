@@ -1030,91 +1030,100 @@ class _WalletsPageState extends State<WalletsPage> {
               
               // Dynamic Content Area
               Expanded(
-                child: _isLoading
-                    ? const Center(
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.lightBlueAccent),
-                        ),
-                      )
-                    : _errorMessage != null
-                        ? Center(
-                            child: SingleChildScrollView(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(Icons.cloud_off_rounded, size: 64, color: Colors.redAccent),
-                                  const SizedBox(height: 16),
-                                  Text(
-                                    _errorMessage!,
-                                    textAlign: TextAlign.center,
-                                    style: const TextStyle(color: Colors.white70, fontSize: 14),
-                                  ),
-                                  const SizedBox(height: 20),
-                                  ElevatedButton.icon(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.lightBlueAccent,
-                                      foregroundColor: Colors.black,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                    ),
-                                    onPressed: () => _fetchData(),
-                                    icon: const Icon(Icons.refresh_rounded),
-                                    label: const Text('Try Again'),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          )
-                        : _accounts.isEmpty
-                            ? Center(
+                child: RefreshIndicator(
+                  onRefresh: _fetchData,
+                  color: Colors.lightBlueAccent,
+                  child: _isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.lightBlueAccent),
+                          ),
+                        )
+                      : _errorMessage != null
+                          ? Center(
+                              child: SingleChildScrollView(
+                                physics: const AlwaysScrollableScrollPhysics(),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(
-                                      Icons.account_balance_wallet_outlined,
-                                      size: 80,
-                                      color: Colors.white.withOpacity(0.15),
-                                    ),
+                                    const Icon(Icons.cloud_off_rounded, size: 64, color: Colors.redAccent),
                                     const SizedBox(height: 16),
-                                    const Text(
-                                      'No Active Wallets Found',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                    Text(
+                                      _errorMessage!,
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(color: Colors.white70, fontSize: 14),
                                     ),
-                                    const SizedBox(height: 8),
-                                    const Text(
-                                      'Add a wallet card to store encrypted accounts.',
-                                      style: TextStyle(
-                                        color: Colors.white54,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 24),
+                                    const SizedBox(height: 20),
                                     ElevatedButton.icon(
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.lightBlueAccent,
                                         foregroundColor: Colors.black,
-                                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(30),
+                                          borderRadius: BorderRadius.circular(20),
                                         ),
                                       ),
-                                      onPressed: _showAddWalletDialog,
-                                      icon: const Icon(Icons.add_rounded),
-                                      label: const Text(
-                                        'Create First Wallet',
-                                        style: TextStyle(fontWeight: FontWeight.bold),
-                                      ),
+                                      onPressed: () => _fetchData(),
+                                      icon: const Icon(Icons.refresh_rounded),
+                                      label: const Text('Try Again'),
                                     ),
                                   ],
                                 ),
-                              )
-                            : ListView.builder(
-                                physics: const BouncingScrollPhysics(),
+                              ),
+                            )
+                          : _accounts.isEmpty
+                              ? SingleChildScrollView(
+                                  physics: const AlwaysScrollableScrollPhysics(),
+                                  child: Container(
+                                    height: MediaQuery.of(context).size.height * 0.5,
+                                    alignment: Alignment.center,
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          Icons.account_balance_wallet_outlined,
+                                          size: 80,
+                                          color: Colors.white.withOpacity(0.15),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        const Text(
+                                          'No Active Wallets Found',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        const Text(
+                                          'Add a wallet card to store encrypted accounts.',
+                                          style: TextStyle(
+                                            color: Colors.white54,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 24),
+                                        ElevatedButton.icon(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.lightBlueAccent,
+                                            foregroundColor: Colors.black,
+                                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(30),
+                                            ),
+                                          ),
+                                          onPressed: _showAddWalletDialog,
+                                          icon: const Icon(Icons.add_rounded),
+                                          label: const Text(
+                                            'Create First Wallet',
+                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              : ListView.builder(
+                                  physics: const AlwaysScrollableScrollPhysics(),
                                 itemCount: _accounts.length,
                                 itemBuilder: (context, index) {
                                   final account = _accounts[index];
@@ -1233,6 +1242,7 @@ class _WalletsPageState extends State<WalletsPage> {
                                   );
                                 },
                               ),
+                ),
               ),
             ],
           ),

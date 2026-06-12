@@ -795,22 +795,35 @@ class _PasswordsPageState extends State<PasswordsPage> with SingleTickerProvider
 
   Widget _buildPasswordList(List<PasswordEntry> list, String emptyMessage) {
     if (list.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.lock_open_rounded, size: 72, color: Colors.white.withValues(alpha: 0.08)),
-            const SizedBox(height: 16),
-            Text(emptyMessage, style: const TextStyle(color: Colors.white54, fontSize: 15)),
-            const SizedBox(height: 8),
-            const Text('Tap + to add your first password entry!', style: TextStyle(color: Colors.white30, fontSize: 12)),
-          ],
+      return RefreshIndicator(
+        onRefresh: _loadPasswords,
+        color: AppColors.skyBlue,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.5,
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.lock_open_rounded, size: 72, color: Colors.white.withValues(alpha: 0.08)),
+                const SizedBox(height: 16),
+                Text(emptyMessage, style: const TextStyle(color: Colors.white54, fontSize: 15)),
+                const SizedBox(height: 8),
+                const Text('Tap + to add your first password entry!', style: TextStyle(color: Colors.white30, fontSize: 12)),
+              ],
+            ),
+          ),
         ),
       );
     }
 
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    return RefreshIndicator(
+      onRefresh: _loadPasswords,
+      color: AppColors.skyBlue,
+      child: ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       itemCount: list.length,
       itemBuilder: (ctx, idx) {
         final entry = list[idx];
@@ -933,8 +946,9 @@ class _PasswordsPageState extends State<PasswordsPage> with SingleTickerProvider
           ),
         );
       },
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildDetailRow(String label, String value, {bool canCopy = false}) {
     return Padding(

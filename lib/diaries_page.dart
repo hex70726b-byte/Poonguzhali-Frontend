@@ -395,12 +395,7 @@ class _DiariesPageState extends State<DiariesPage> {
           '📖 Personal Diary',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: Colors.lightBlueAccent),
-            onPressed: _fetchDiaries,
-          ),
-        ],
+        actions: const [],
       ),
       body: Column(
         children: [
@@ -484,120 +479,135 @@ class _DiariesPageState extends State<DiariesPage> {
 
           // Memories List
           Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator(color: Colors.lightBlueAccent))
-                : _errorMessage != null
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.error_outline_rounded, color: Colors.redAccent, size: 48),
-                            const SizedBox(height: 12),
-                            Text(_errorMessage!, style: const TextStyle(color: Colors.white70)),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: _fetchDiaries,
-                              child: const Text('Retry'),
-                            ),
-                          ],
-                        ),
-                      )
-                    : filteredDiaries.isEmpty
-                        ? Center(
+            child: RefreshIndicator(
+              onRefresh: _fetchDiaries,
+              color: Colors.lightBlueAccent,
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator(color: Colors.lightBlueAccent))
+                  : _errorMessage != null
+                      ? SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Container(
+                            height: MediaQuery.of(context).size.height * 0.5,
+                            alignment: Alignment.center,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.import_contacts_rounded, size: 72, color: Colors.white.withValues(alpha: 0.08)),
+                                const Icon(Icons.error_outline_rounded, color: Colors.redAccent, size: 48),
+                                const SizedBox(height: 12),
+                                Text(_errorMessage!, style: const TextStyle(color: Colors.white70)),
                                 const SizedBox(height: 16),
-                                const Text('No memories captured yet', style: TextStyle(color: Colors.white54, fontSize: 15)),
-                                const SizedBox(height: 8),
-                                const Text('Tap + to write down your day!', style: TextStyle(color: Colors.white30, fontSize: 12)),
+                                ElevatedButton(
+                                  onPressed: _fetchDiaries,
+                                  child: const Text('Retry'),
+                                ),
                               ],
                             ),
-                          )
-                        : ListView.builder(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            itemCount: filteredDiaries.length,
-                            itemBuilder: (ctx, idx) {
-                              final d = filteredDiaries[idx];
-                              final date = d['date'] ?? '—';
-                              final day = d['day'] ?? '—';
-                              final text = d['diary'] ?? '';
+                          ),
+                        )
+                      : filteredDiaries.isEmpty
+                          ? SingleChildScrollView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              child: Container(
+                                height: MediaQuery.of(context).size.height * 0.5,
+                                alignment: Alignment.center,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.import_contacts_rounded, size: 72, color: Colors.white.withValues(alpha: 0.08)),
+                                    const SizedBox(height: 16),
+                                    const Text('No memories captured yet', style: TextStyle(color: Colors.white54, fontSize: 15)),
+                                    const SizedBox(height: 8),
+                                    const Text('Tap + to write down your day!', style: TextStyle(color: Colors.white30, fontSize: 12)),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : ListView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              itemCount: filteredDiaries.length,
+                              itemBuilder: (ctx, idx) {
+                                final d = filteredDiaries[idx];
+                                final date = d['date'] ?? '—';
+                                final day = d['day'] ?? '—';
+                                final text = d['diary'] ?? '';
 
-                              // Format date string for displaying in user-friendly mode e.g. "May 28, 2026"
-                              String formattedDisplayDate = date;
-                              try {
-                                final parsed = DateTime.parse(date);
-                                formattedDisplayDate = DateFormat('MMMM dd, yyyy').format(parsed);
-                              } catch (_) {}
+                                // Format date string for displaying in user-friendly mode e.g. "May 28, 2026"
+                                String formattedDisplayDate = date;
+                                try {
+                                  final parsed = DateTime.parse(date);
+                                  formattedDisplayDate = DateFormat('MMMM dd, yyyy').format(parsed);
+                                } catch (_) {}
 
-                              return GestureDetector(
-                                onTap: () => _openFormSheet(existing: d),
-                                child: Container(
-                                  margin: const EdgeInsets.only(bottom: 16),
-                                  padding: const EdgeInsets.all(20),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF1E1E1E),
-                                    borderRadius: BorderRadius.circular(18),
-                                    border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      // Date & Day Card Header
-                                      Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Row(
-                                            children: [
-                                              const Icon(Icons.bookmark_rounded, color: Colors.lightBlueAccent, size: 18),
-                                              const SizedBox(width: 6),
-                                              Text(
-                                                formattedDisplayDate,
+                                return GestureDetector(
+                                  onTap: () => _openFormSheet(existing: d),
+                                  child: Container(
+                                    margin: const EdgeInsets.only(bottom: 16),
+                                    padding: const EdgeInsets.all(20),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF1E1E1E),
+                                      borderRadius: BorderRadius.circular(18),
+                                      border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        // Date & Day Card Header
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                const Icon(Icons.bookmark_rounded, color: Colors.lightBlueAccent, size: 18),
+                                                const SizedBox(width: 6),
+                                                Text(
+                                                  formattedDisplayDate,
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                              decoration: BoxDecoration(
+                                                color: Colors.lightBlueAccent.withValues(alpha: 0.12),
+                                                borderRadius: BorderRadius.circular(8),
+                                              ),
+                                              child: Text(
+                                                day,
                                                 style: const TextStyle(
-                                                  color: Colors.white,
+                                                  color: Colors.lightBlueAccent,
+                                                  fontSize: 11,
                                                   fontWeight: FontWeight.bold,
-                                                  fontSize: 14,
                                                 ),
                                               ),
-                                            ],
-                                          ),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                            decoration: BoxDecoration(
-                                              color: Colors.lightBlueAccent.withValues(alpha: 0.12),
-                                              borderRadius: BorderRadius.circular(8),
                                             ),
-                                            child: Text(
-                                              day,
-                                              style: const TextStyle(
-                                                color: Colors.lightBlueAccent,
-                                                fontSize: 11,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const Padding(
-                                        padding: EdgeInsets.symmetric(vertical: 12),
-                                        child: Divider(color: Colors.white10, height: 1),
-                                      ),
-                                      // Diary content paragraph
-                                      Text(
-                                        text,
-                                        style: TextStyle(
-                                          color: Colors.white.withValues(alpha: 0.85),
-                                          fontSize: 14,
-                                          height: 1.5,
+                                          ],
                                         ),
-                                      ),
-                                    ],
+                                        const Padding(
+                                          padding: EdgeInsets.symmetric(vertical: 12),
+                                          child: Divider(color: Colors.white10, height: 1),
+                                        ),
+                                        // Diary content paragraph
+                                        Text(
+                                          text,
+                                          style: TextStyle(
+                                            color: Colors.white.withValues(alpha: 0.85),
+                                            fontSize: 14,
+                                            height: 1.5,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                          ),
+                                );
+                              },
+                            ),
+            ),
           ),
         ],
       ),

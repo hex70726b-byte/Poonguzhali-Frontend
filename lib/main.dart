@@ -1072,7 +1072,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
     // TTS & Vibration notifications on completion
     try {
-      await _smsChannel.invokeMethod('speak', {'text': 'Backup Completed'});
+      await _smsChannel.invokeMethod('speak', {'text': 'backup complete'});
       await _smsChannel.invokeMethod('vibrate');
     } catch (e) {
       print("TTS/Vibrate failed: $e");
@@ -2568,15 +2568,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
                           child: Row(
                             children: [
-                              IconButton(
-                                style: IconButton.styleFrom(
-                                  backgroundColor: Color(0xFF232323),
-                                ),
-                                color: Colors.white,
-                                onPressed: changeText,
-                                icon: Icon(Icons.emoji_emotions_outlined),
-                              ),
-
+                              const SizedBox(width: 16),
                               Expanded(
                                 child: TextField(
                                   focusNode: messageFocusNode,

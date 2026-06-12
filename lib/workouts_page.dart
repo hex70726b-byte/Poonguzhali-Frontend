@@ -617,12 +617,6 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
             fontSize: 18,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: Colors.lightBlueAccent),
-            onPressed: _fetchWorkouts,
-          ),
-        ],
       ),
       body: Column(
         children: [
@@ -763,57 +757,71 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
 
           // Workouts List
           Expanded(
-            child: _isLoading
-                ? const Center(
-                    child: CircularProgressIndicator(color: Colors.lightBlueAccent),
-                  )
-                : _errorMessage != null
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(
-                          Icons.error_outline_rounded,
-                          color: Colors.lightBlueAccent,
-                          size: 48,
+            child: RefreshIndicator(
+              onRefresh: _fetchWorkouts,
+              color: Colors.lightBlueAccent,
+              child: _isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(color: Colors.lightBlueAccent),
+                    )
+                  : _errorMessage != null
+                  ? SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Container(
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        alignment: Alignment.center,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.error_outline_rounded,
+                              color: Colors.lightBlueAccent,
+                              size: 48,
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              _errorMessage!,
+                              style: const TextStyle(color: Colors.white70),
+                            ),
+                            const SizedBox(height: 16),
+                            ElevatedButton(
+                              onPressed: _fetchWorkouts,
+                              child: const Text('Retry'),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 12),
-                        Text(
-                          _errorMessage!,
-                          style: const TextStyle(color: Colors.white70),
+                      ),
+                    )
+                  : filteredWorkouts.isEmpty
+                  ? SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      child: Container(
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        alignment: Alignment.center,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.fitness_center_rounded,
+                              size: 72,
+                              color: Colors.white.withValues(alpha: 0.08),
+                            ),
+                            const SizedBox(height: 16),
+                            const Text(
+                              'No workouts logged yet',
+                              style: TextStyle(color: Colors.white54, fontSize: 15),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Tap + to log your first workout!',
+                              style: TextStyle(color: Colors.white30, fontSize: 12),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: _fetchWorkouts,
-                          child: const Text('Retry'),
-                        ),
-                      ],
-                    ),
-                  )
-                : filteredWorkouts.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.fitness_center_rounded,
-                          size: 72,
-                          color: Colors.white.withValues(alpha: 0.08),
-                        ),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'No workouts logged yet',
-                          style: TextStyle(color: Colors.white54, fontSize: 15),
-                        ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          'Tap + to log your first workout!',
-                          style: TextStyle(color: Colors.white30, fontSize: 12),
-                        ),
-                      ],
-                    ),
-                  )
-                : ListView.builder(
+                      ),
+                    )
+                  : ListView.builder(
+                      physics: const AlwaysScrollableScrollPhysics(),
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 8,
@@ -976,6 +984,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                       );
                     },
                   ),
+            ),
           ),
         ],
       ),

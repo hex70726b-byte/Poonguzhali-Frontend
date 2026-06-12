@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class AppConfig {
   static const String baseUrl = 'https://poonguzhali-backend.onrender.com';
+  // static const String baseUrl = 'http://192.168.1.34:5000';
 
   static ImageProvider? getImageProvider(String photoStr) {
     final cleanStr = photoStr.trim();

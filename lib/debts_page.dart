@@ -418,12 +418,7 @@ class _DebtsPageState extends State<DebtsPage> {
           '💸 Debt Manager',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: Colors.lightBlueAccent),
-            onPressed: _fetchDebts,
-          ),
-        ],
+        actions: const [],
       ),
       body: Column(
         children: [
@@ -521,124 +516,139 @@ class _DebtsPageState extends State<DebtsPage> {
 
           // Debt Records List
           Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator(color: Colors.lightBlueAccent))
-                : _errorMessage != null
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.error_outline_rounded, color: Colors.redAccent, size: 48),
-                            const SizedBox(height: 12),
-                            Text(_errorMessage!, style: const TextStyle(color: Colors.white70)),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: _fetchDebts,
-                              child: const Text('Retry'),
-                            ),
-                          ],
-                        ),
-                      )
-                    : filteredDebts.isEmpty
-                        ? Center(
+            child: RefreshIndicator(
+              onRefresh: _fetchDebts,
+              color: Colors.lightBlueAccent,
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator(color: Colors.lightBlueAccent))
+                  : _errorMessage != null
+                      ? SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Container(
+                            height: MediaQuery.of(context).size.height * 0.5,
+                            alignment: Alignment.center,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.money_off_rounded, size: 72, color: Colors.white.withOpacity(0.08)),
+                                const Icon(Icons.error_outline_rounded, color: Colors.redAccent, size: 48),
+                                const SizedBox(height: 12),
+                                Text(_errorMessage!, style: const TextStyle(color: Colors.white70)),
                                 const SizedBox(height: 16),
-                                const Text('No debt records found', style: TextStyle(color: Colors.white54, fontSize: 15)),
-                                const SizedBox(height: 8),
-                                const Text('Tap + to create a new record', style: TextStyle(color: Colors.white30, fontSize: 12)),
+                                ElevatedButton(
+                                  onPressed: _fetchDebts,
+                                  child: const Text('Retry'),
+                                ),
                               ],
                             ),
-                          )
-                        : ListView.builder(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            itemCount: filteredDebts.length,
-                            itemBuilder: (ctx, idx) {
-                              final d = filteredDebts[idx];
-                              final name = d['debtHolderName'] ?? '—';
-                              final amt = d['debtAmount'] ?? '0';
-                              final dateStr = d['dueDate'] ?? '';
-                              final dateColor = _getDueDateColor(dateStr);
-                              final statusText = _getDueDateStatusText(dateStr);
-
-                              return GestureDetector(
-                                onTap: () => _openFormSheet(existing: d),
-                                child: Container(
-                                  margin: const EdgeInsets.only(bottom: 12),
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF1E1E1E),
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(color: Colors.white.withOpacity(0.05)),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        width: 44,
-                                        height: 44,
-                                        decoration: BoxDecoration(
-                                          color: dateColor.withOpacity(0.12),
-                                          borderRadius: BorderRadius.circular(12),
-                                        ),
-                                        child: Icon(Icons.trending_down_rounded, color: dateColor, size: 22),
-                                      ),
-                                      const SizedBox(width: 14),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              name,
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 15,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Row(
-                                              children: [
-                                                const Icon(Icons.calendar_month_rounded, color: Colors.white38, size: 12),
-                                                const SizedBox(width: 4),
-                                                Text(
-                                                  'Due: $dateStr',
-                                                  style: const TextStyle(color: Colors.white54, fontSize: 12),
-                                                ),
-                                                if (statusText.isNotEmpty) ...[
-                                                  const SizedBox(width: 8),
-                                                  Container(
-                                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                                    decoration: BoxDecoration(
-                                                      color: dateColor.withOpacity(0.15),
-                                                      borderRadius: BorderRadius.circular(6),
-                                                    ),
-                                                    child: Text(
-                                                      statusText,
-                                                      style: TextStyle(color: dateColor, fontSize: 10, fontWeight: FontWeight.w600),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Text(
-                                        '₹$amt',
-                                        style: TextStyle(
-                                          color: dateColor,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
                           ),
+                        )
+                      : filteredDebts.isEmpty
+                          ? SingleChildScrollView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              child: Container(
+                                height: MediaQuery.of(context).size.height * 0.5,
+                                alignment: Alignment.center,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.money_off_rounded, size: 72, color: Colors.white.withOpacity(0.08)),
+                                    const SizedBox(height: 16),
+                                    const Text('No debt records found', style: TextStyle(color: Colors.white54, fontSize: 15)),
+                                    const SizedBox(height: 8),
+                                    const Text('Tap + to create a new record', style: TextStyle(color: Colors.white30, fontSize: 12)),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : ListView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              itemCount: filteredDebts.length,
+                              itemBuilder: (ctx, idx) {
+                                final d = filteredDebts[idx];
+                                final name = d['debtHolderName'] ?? '—';
+                                final amt = d['debtAmount'] ?? '0';
+                                final dateStr = d['dueDate'] ?? '';
+                                final dateColor = _getDueDateColor(dateStr);
+                                final statusText = _getDueDateStatusText(dateStr);
+
+                                return GestureDetector(
+                                  onTap: () => _openFormSheet(existing: d),
+                                  child: Container(
+                                    margin: const EdgeInsets.only(bottom: 12),
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF1E1E1E),
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(color: Colors.white.withOpacity(0.05)),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: 44,
+                                          height: 44,
+                                          decoration: BoxDecoration(
+                                            color: dateColor.withOpacity(0.12),
+                                            borderRadius: BorderRadius.circular(12),
+                                          ),
+                                          child: Icon(Icons.trending_down_rounded, color: dateColor, size: 22),
+                                        ),
+                                        const SizedBox(width: 14),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                name,
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 15,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Row(
+                                                children: [
+                                                  const Icon(Icons.calendar_month_rounded, color: Colors.white38, size: 12),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    'Due: $dateStr',
+                                                    style: const TextStyle(color: Colors.white54, fontSize: 12),
+                                                  ),
+                                                  if (statusText.isNotEmpty) ...[
+                                                    const SizedBox(width: 8),
+                                                    Container(
+                                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                                      decoration: BoxDecoration(
+                                                        color: dateColor.withOpacity(0.15),
+                                                        borderRadius: BorderRadius.circular(6),
+                                                      ),
+                                                      child: Text(
+                                                        statusText,
+                                                        style: TextStyle(color: dateColor, fontSize: 10, fontWeight: FontWeight.w600),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Text(
+                                          '₹$amt',
+                                          style: TextStyle(
+                                            color: dateColor,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+            ),
           ),
         ],
       ),

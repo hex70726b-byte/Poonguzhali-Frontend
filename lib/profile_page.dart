@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'dart:convert';
+import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,6 +30,7 @@ class _ProfilePageState extends State<ProfilePage> {
   static const _channel = MethodChannel('sms_reader_channel');
   bool _backupEnabled = false;
   final TextEditingController _backupTimeController = TextEditingController(text: "10:00 PM");
+  Timer? _countdownTimer;
 
   bool _isAppLockEnabled = false;
   String _appLockType = 'pin';
@@ -38,6 +40,16 @@ class _ProfilePageState extends State<ProfilePage> {
     super.initState();
     _loadBackupSettings();
     _loadAppLockSettings();
+    _startCountdownTimer();
+  }
+
+  void _startCountdownTimer() {
+    _countdownTimer?.cancel();
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
   Future<void> _loadAppLockSettings() async {
@@ -51,6 +63,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void dispose() {
     _backupTimeController.dispose();
+    _countdownTimer?.cancel();
     super.dispose();
   }
 
@@ -253,6 +266,21 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             trailing: const Icon(Icons.chevron_right, color: Colors.white30),
           ),
+
+          // 6. Transaction Categories tile
+          ListTile(
+            onTap: _showTransactionCategoriesPage,
+            leading: const Icon(Icons.category_rounded, color: Colors.lightBlueAccent),
+            title: const Text(
+              "Transaction Categories",
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            subtitle: const Text(
+              "Manage custom categories for income and expenses",
+              style: TextStyle(color: Colors.white54, fontSize: 13),
+            ),
+            trailing: const Icon(Icons.chevron_right, color: Colors.white30),
+          ),
         ],
       ),
     );
@@ -297,6 +325,15 @@ class _ProfilePageState extends State<ProfilePage> {
       context,
       MaterialPageRoute(
         builder: (context) => const ChatSettingsPage(),
+      ),
+    );
+  }
+
+  void _showTransactionCategoriesPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const TransactionCategoriesPage(),
       ),
     );
   }
@@ -458,6 +495,90 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  Future<void> _selectBackupTime(BuildContext context) async {
+    TimeOfDay initialTime = const TimeOfDay(hour: 22, minute: 0); // Default 10:00 PM
+    try {
+      final text = _backupTimeController.text.trim();
+      DateTime dateTime;
+      try {
+        dateTime = DateFormat('hh:mm a').parse(text);
+      } catch (_) {
+        dateTime = DateFormat.jm().parse(text);
+      }
+      initialTime = TimeOfDay(hour: dateTime.hour, minute: dateTime.minute);
+    } catch (e) {
+      print("Error parsing initial time: $e");
+    }
+
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: initialTime,
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: AppColors.skyBlue,
+              onPrimary: Colors.black,
+              surface: AppColors.surfaceCard,
+              onSurface: Colors.white,
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.skyBlue,
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      final now = DateTime.now();
+      final dt = DateTime(now.year, now.month, now.day, picked.hour, picked.minute);
+      final formattedTime = DateFormat('hh:mm a').format(dt);
+      setState(() {
+        _backupTimeController.text = formattedTime;
+      });
+    }
+  }
+
+  String _calculateGapTime() {
+    if (!_backupEnabled) return "";
+    try {
+      final text = _backupTimeController.text.trim();
+      DateTime parsedTime;
+      try {
+        parsedTime = DateFormat('hh:mm a').parse(text);
+      } catch (_) {
+        parsedTime = DateFormat.jm().parse(text);
+      }
+      final now = DateTime.now();
+      var target = DateTime(now.year, now.month, now.day, parsedTime.hour, parsedTime.minute);
+      if (target.isBefore(now)) {
+        target = target.add(const Duration(days: 1));
+      }
+
+      final diff = target.difference(now);
+      final hours = diff.inHours;
+      final minutes = diff.inMinutes % 60;
+      final seconds = diff.inSeconds % 60;
+
+      List<String> parts = [];
+      if (hours > 0) {
+        parts.add("$hours hr${hours > 1 ? 's' : ''}");
+        if (minutes > 0) parts.add("$minutes min${minutes > 1 ? 's' : ''}");
+      } else {
+        if (minutes > 0) parts.add("$minutes min${minutes > 1 ? 's' : ''}");
+        parts.add("$seconds sec${seconds > 1 ? 's' : ''}");
+      }
+
+      return parts.isEmpty ? "0 secs" : parts.join(' ');
+    } catch (_) {
+      return "";
+    }
+  }
+
   Widget _buildBackupSettingsSection() {
     return Container(
       color: AppColors.surfaceCard,
@@ -513,7 +634,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 setState(() {
                   _backupEnabled = val;
                 });
-                _saveBackupSettings();
               },
             ),
           ),
@@ -525,11 +645,13 @@ class _ProfilePageState extends State<ProfilePage> {
               Expanded(
                 child: TextField(
                   controller: _backupTimeController,
+                  readOnly: true,
+                  onTap: () => _selectBackupTime(context),
                   style: const TextStyle(color: Colors.white, fontSize: 15),
                   decoration: const InputDecoration(
                     labelText: "Backup Time",
                     labelStyle: TextStyle(color: Colors.white60, fontSize: 13),
-                    hintText: "e.g. 10:30 PM",
+                    hintText: "Select backup time",
                     hintStyle: TextStyle(color: Colors.white30),
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: AppColors.skyBlue),
@@ -538,18 +660,73 @@ class _ProfilePageState extends State<ProfilePage> {
                       borderSide: BorderSide(color: Colors.white24),
                     ),
                   ),
-                  onChanged: (_) => _saveBackupSettings(),
                 ),
               ),
-              const SizedBox(width: 16),
-              ElevatedButton.icon(
-                onPressed: _triggerManualBackup,
-                icon: const Icon(Icons.play_arrow_rounded, color: Colors.black, size: 20),
-                label: const Text("Backup Now", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 13)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.skyBlue,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            ],
+          ),
+          if (_backupEnabled) ...[
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.only(left: 36.0),
+              child: Row(
+                children: [
+                  const Icon(Icons.timer_outlined, color: Colors.orangeAccent, size: 16),
+                  const SizedBox(width: 8),
+                  Text(
+                    "Next backup in: ${_calculateGapTime()}",
+                    style: const TextStyle(
+                      color: Colors.orangeAccent,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+          const SizedBox(height: 20),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () async {
+                    await _saveBackupSettings();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("📁 Backup settings saved successfully!"),
+                        backgroundColor: AppColors.skyBlue,
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.save_rounded, color: Colors.black, size: 18),
+                  label: const Text(
+                    "Save Settings",
+                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 13),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.skyBlue,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: _triggerManualBackup,
+                  icon: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 18),
+                  label: const Text(
+                    "Backup Now",
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.transparent,
+                    foregroundColor: Colors.white,
+                    side: const BorderSide(color: Colors.white30),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
                 ),
               ),
             ],
@@ -693,7 +870,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
     // TTS & Vibration notifications on completion
     try {
-      await _channel.invokeMethod('speak', {'text': 'Backup Completed'});
+      await _channel.invokeMethod('speak', {'text': 'backup finished'});
       await _channel.invokeMethod('vibrate');
     } catch (e) {
       print("TTS/Vibrate failed: $e");
@@ -1475,8 +1652,8 @@ class ChatSettingsPage extends StatefulWidget {
 }
 
 class _ChatSettingsPageState extends State<ChatSettingsPage> {
-  String _selectedPersona = "gbf";
-  final TextEditingController _customPromptController = TextEditingController();
+  String _selectedPersona = "";
+  List<dynamic> _personas = [];
   bool _isLoading = true;
   bool _isSaving = false;
 
@@ -1486,25 +1663,34 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
     _fetchSettings();
   }
 
-  @override
-  void dispose() {
-    _customPromptController.dispose();
-    super.dispose();
-  }
-
   Future<void> _fetchSettings() async {
     try {
-      final response = await http.get(Uri.parse('${AppConfig.baseUrl}/api/ai/settings'));
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
+      final settingsRes = await http.get(Uri.parse('${AppConfig.baseUrl}/api/ai/settings'));
+      final personasRes = await http.get(Uri.parse('${AppConfig.baseUrl}/api/ai/personas'));
+
+      if (settingsRes.statusCode == 200 && personasRes.statusCode == 200) {
+        final settingsData = jsonDecode(settingsRes.body);
+        final List<dynamic> personasData = jsonDecode(personasRes.body);
+
         setState(() {
-          _selectedPersona = data['selectedPersona'] ?? "gbf";
-          _customPromptController.text = data['customPrompt'] ?? "";
+          _personas = personasData;
+          final String loadedPersona = settingsData['selectedPersona'] ?? "";
+          if (loadedPersona.isEmpty || loadedPersona == "gbf") {
+            if (_personas.isNotEmpty) {
+              final firstP = _personas.first;
+              final isSystem = firstP['isSystem'] ?? false;
+              _selectedPersona = isSystem ? (firstP['key'] ?? '') : (firstP['_id'] ?? '');
+            } else {
+              _selectedPersona = "";
+            }
+          } else {
+            _selectedPersona = loadedPersona;
+          }
           _isLoading = false;
         });
       } else {
         setState(() => _isLoading = false);
-        _showErrorSnackBar("Failed to load settings from server.");
+        _showErrorSnackBar("Failed to load settings or personas from server.");
       }
     } catch (e) {
       setState(() => _isLoading = false);
@@ -1520,7 +1706,6 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'selectedPersona': _selectedPersona,
-          'customPrompt': _customPromptController.text.trim(),
         }),
       );
       setState(() => _isSaving = false);
@@ -1540,6 +1725,226 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
       setState(() => _isSaving = false);
       _showErrorSnackBar("Connection error: $e");
     }
+  }
+
+  Future<void> _deletePersona(String id, String name) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppColors.surfaceCard,
+        title: const Text("Delete Persona", style: TextStyle(color: Colors.white)),
+        content: Text("Are you sure you want to delete '$name'?", style: const TextStyle(color: Colors.white70)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("Cancel", style: TextStyle(color: Colors.white54)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text("Delete", style: TextStyle(color: Colors.redAccent)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      try {
+        final res = await http.delete(Uri.parse('${AppConfig.baseUrl}/api/ai/personas/$id'));
+        if (res.statusCode == 200) {
+          await _fetchSettings();
+          if (_selectedPersona == id) {
+            setState(() {
+              if (_personas.isNotEmpty) {
+                final firstP = _personas.first;
+                final isSystem = firstP['isSystem'] ?? false;
+                _selectedPersona = isSystem ? (firstP['key'] ?? '') : (firstP['_id'] ?? '');
+              } else {
+                _selectedPersona = "";
+              }
+            });
+          }
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Persona deleted successfully"),
+              backgroundColor: AppColors.skyBlue,
+            ),
+          );
+        } else {
+          _showErrorSnackBar("Failed to delete persona.");
+        }
+      } catch (e) {
+        _showErrorSnackBar("Connection error: $e");
+      }
+    }
+  }
+
+  void _showCreatePersonaSheet() {
+    final nameController = TextEditingController();
+    final promptController = TextEditingController();
+    bool isCreating = false;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.surfaceCard,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                left: 20,
+                right: 20,
+                top: 20,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Create Custom Persona 🧠",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close, color: Colors.white54),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: nameController,
+                      style: const TextStyle(color: Colors.white, fontSize: 14),
+                      decoration: InputDecoration(
+                        labelText: "Persona Name (e.g. Angry GF, Code Coach)",
+                        labelStyle: const TextStyle(color: Colors.white60, fontSize: 13),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: AppColors.skyBlue),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.white24),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        fillColor: Colors.black26,
+                        filled: true,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: promptController,
+                      maxLines: 4,
+                      style: const TextStyle(color: Colors.white, fontSize: 14),
+                      decoration: InputDecoration(
+                        labelText: "Instructions / Prompt",
+                        labelStyle: const TextStyle(color: Colors.white60, fontSize: 13),
+                        hintText: "E.g., You are a highly toxic but caring companion who mocks me when I don't code...",
+                        hintStyle: const TextStyle(color: Colors.white30, fontSize: 12),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: AppColors.skyBlue),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.white24),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        fillColor: Colors.black26,
+                        filled: true,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: isCreating
+                          ? null
+                          : () async {
+                              final name = nameController.text.trim();
+                              final prompt = promptController.text.trim();
+                              if (name.isEmpty || prompt.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("Please fill all fields"),
+                                    backgroundColor: Colors.redAccent,
+                                  ),
+                                );
+                                return;
+                              }
+
+                              setSheetState(() => isCreating = true);
+                              try {
+                                final res = await http.post(
+                                  Uri.parse('${AppConfig.baseUrl}/api/ai/personas'),
+                                  headers: {'Content-Type': 'application/json'},
+                                  body: jsonEncode({'name': name, 'prompt': prompt}),
+                                );
+
+                                if (res.statusCode == 201) {
+                                  final newPersona = jsonDecode(res.body);
+                                  Navigator.pop(context);
+                                  _fetchSettings(); // Re-fetch list
+                                  setState(() {
+                                    _selectedPersona = newPersona['_id']; // Auto select new persona
+                                  });
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text("🎉 Persona '$name' created and selected!"),
+                                      backgroundColor: AppColors.skyBlue,
+                                    ),
+                                  );
+                                } else {
+                                  setSheetState(() => isCreating = false);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text("Failed to create persona"),
+                                      backgroundColor: Colors.redAccent,
+                                    ),
+                                  );
+                                }
+                              } catch (e) {
+                                setSheetState(() => isCreating = false);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text("Connection error: $e"),
+                                    backgroundColor: Colors.redAccent,
+                                  ),
+                                );
+                              }
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.skyBlue,
+                        foregroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: isCreating
+                          ? const SizedBox(
+                              height: 18,
+                              width: 18,
+                              child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2),
+                            )
+                          : const Text("Save & Add to List", style: TextStyle(fontWeight: FontWeight.bold)),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   void _showErrorSnackBar(String msg) {
@@ -1590,100 +1995,75 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
                         "Change Poonguzhali's behavior, relationship status, and speech style instantly.",
                         style: TextStyle(color: Colors.white54, fontSize: 13),
                       ),
+                      const SizedBox(height: 20),
+
+                      // List of Personas
+                      ..._personas.map((persona) {
+                        final isSystem = persona['isSystem'] ?? false;
+                        final String id = isSystem ? (persona['key'] ?? '') : (persona['_id'] ?? '');
+                        final String name = persona['name'] ?? '';
+                        final String prompt = persona['prompt'] ?? '';
+
+                        Color cardColor;
+                        String title;
+                        String subtitle;
+
+                        if (isSystem) {
+                          if (id == 'gbf') {
+                            cardColor = Colors.tealAccent;
+                            title = "Playful Girl Best Friend (GBF) 👩‍❤️‍👨";
+                            subtitle = "Super smart, mature bestie. Speaks witty Tanglish, cracks bold dark comedy & suggestive jokes.";
+                          } else if (id == 'romantic_gf') {
+                            cardColor = Colors.pinkAccent;
+                            title = "Romantic Girlfriend ❤️";
+                            subtitle = "Deeply affectionate, highly romantic, extremely sweet, smart doubt-solver. Always showers you with love.";
+                          } else if (id == 'possessive_gf') {
+                            cardColor = Colors.amberAccent;
+                            title = "Possessive Girlfriend 😤";
+                            subtitle = "Very sweet but super possessive and protective. Gets jealous if other girls' names are mentioned!";
+                          } else if (id == 'mentor') {
+                            cardColor = Colors.lightBlueAccent;
+                            title = "Strict Mentor 💪";
+                            subtitle = "Mature and encouraging. Explains coding, math, and science deeply to motivate you to focus and study.";
+                          } else {
+                            cardColor = Colors.blueAccent;
+                            title = name;
+                            subtitle = prompt;
+                          }
+                        } else {
+                          cardColor = Colors.purpleAccent;
+                          title = "$name ⚙️";
+                          subtitle = prompt.length > 100 ? prompt.substring(0, 100) + '...' : prompt;
+                        }
+
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12.0),
+                          child: _buildPersonaCard(
+                            id: id,
+                            title: title,
+                            subtitle: subtitle,
+                            color: cardColor,
+                            isCustom: !isSystem,
+                            onDelete: () => _deletePersona(id, name),
+                          ),
+                        );
+                      }).toList(),
+
                       const SizedBox(height: 16),
 
-                      // GBF Option
-                      _buildPersonaCard(
-                        id: "gbf",
-                        title: "Playful Girl Best Friend (GBF) 👩‍❤️‍👨",
-                        subtitle: "Super smart, mature bestie. Speaks witty Tanglish, cracks bold dark comedy & suggestive jokes, concise 5-line responses.",
-                        color: Colors.tealAccent,
-                      ),
-                      const SizedBox(height: 12),
-
-                      // Romantic GF Option
-                      _buildPersonaCard(
-                        id: "romantic_gf",
-                        title: "Romantic Girlfriend ❤️",
-                        subtitle: "Deeply affectionate, highly romantic, extremely sweet, smart doubt-solver. Always showers you with love.",
-                        color: Colors.pinkAccent,
-                      ),
-                      const SizedBox(height: 12),
-
-                      // Possessive GF Option
-                      _buildPersonaCard(
-                        id: "possessive_gf",
-                        title: "Possessive Girlfriend 😤",
-                        subtitle: "Very sweet but super possessive and protective. Gets jealous if other girls' names are mentioned!",
-                        color: Colors.amberAccent,
-                      ),
-                      const SizedBox(height: 12),
-
-                      // Strict Mentor Option
-                      _buildPersonaCard(
-                        id: "mentor",
-                        title: "Strict Mentor 💪",
-                        subtitle: "Mature and encouraging. Explains coding, math, and science deeply to motivate you to focus and study.",
-                        color: Colors.lightBlueAccent,
-                      ),
-                      const SizedBox(height: 12),
-
-                      // Custom Option
-                      _buildPersonaCard(
-                        id: "custom",
-                        title: "Custom Instructions ⚙️",
-                        subtitle: "Define your own prompt! Write exactly how you want Poonguzhali to talk and behave.",
-                        color: Colors.purpleAccent,
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Slide down custom prompt text field if "custom" is selected
-                      AnimatedCrossFade(
-                        firstChild: const SizedBox.shrink(),
-                        secondChild: Container(
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: AppColors.surfaceCard,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: Colors.purpleAccent.withOpacity(0.3), width: 1),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              const Text(
-                                "Custom Instructions",
-                                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
-                              ),
-                              const SizedBox(height: 8),
-                              TextField(
-                                controller: _customPromptController,
-                                maxLines: 5,
-                                style: const TextStyle(color: Colors.white, fontSize: 14),
-                                decoration: InputDecoration(
-                                  hintText: "E.g., You are a cool software engineer classmate. Talk to me in a sarcastic Tanglish style, help me practice coding, and mock me playfully when I write bugs.",
-                                  hintStyle: const TextStyle(color: Colors.white30, fontSize: 13),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: const BorderSide(color: Colors.white24),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: const BorderSide(color: Colors.purpleAccent, width: 1.5),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  fillColor: Colors.black26,
-                                  filled: true,
-                                ),
-                              ),
-                            ],
-                          ),
+                      // Button to create new persona
+                      OutlinedButton.icon(
+                        onPressed: _showCreatePersonaSheet,
+                        icon: const Icon(Icons.add_rounded, color: AppColors.skyBlue),
+                        label: const Text("Create Custom Persona", style: TextStyle(color: AppColors.skyBlue, fontWeight: FontWeight.bold)),
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: AppColors.skyBlue, width: 1.5),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
                         ),
-                        crossFadeState: _selectedPersona == "custom"
-                            ? CrossFadeState.showSecond
-                            : CrossFadeState.showFirst,
-                        duration: const Duration(milliseconds: 300),
                       ),
 
-                      const SizedBox(height: 100),
+                      const SizedBox(height: 120), // extra padding for save button
                     ],
                   ),
                 ),
@@ -1734,6 +2114,8 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
     required String title,
     required String subtitle,
     required Color color,
+    bool isCustom = false,
+    VoidCallback? onDelete,
   }) {
     final bool isSelected = _selectedPersona == id;
 
@@ -1797,9 +2179,258 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
                 ],
               ),
             ),
+            if (isCustom && onDelete != null)
+              IconButton(
+                icon: const Icon(Icons.delete_outline, color: Colors.redAccent, size: 20),
+                onPressed: onDelete,
+              ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class TransactionCategoriesPage extends StatefulWidget {
+  const TransactionCategoriesPage({super.key});
+
+  @override
+  State<TransactionCategoriesPage> createState() => _TransactionCategoriesPageState();
+}
+
+class _TransactionCategoriesPageState extends State<TransactionCategoriesPage> {
+  final TextEditingController _categoryController = TextEditingController();
+  List<dynamic> _categories = [];
+  bool _isLoading = true;
+  bool _isAdding = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCategories();
+  }
+
+  @override
+  void dispose() {
+    _categoryController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchCategories() async {
+    try {
+      final res = await http.get(Uri.parse('${AppConfig.baseUrl}/api/categories'));
+      if (res.statusCode == 200) {
+        setState(() {
+          _categories = jsonDecode(res.body);
+          _isLoading = false;
+        });
+      } else {
+        setState(() => _isLoading = false);
+        _showErrorSnackBar("Failed to load categories.");
+      }
+    } catch (e) {
+      setState(() => _isLoading = false);
+      _showErrorSnackBar("Connection error: $e");
+    }
+  }
+
+  Future<void> _addCategory() async {
+    final name = _categoryController.text.trim();
+    if (name.isEmpty) {
+      _showErrorSnackBar("Category name cannot be empty.");
+      return;
+    }
+
+    setState(() => _isAdding = true);
+    try {
+      final res = await http.post(
+        Uri.parse('${AppConfig.baseUrl}/api/categories'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'name': name}),
+      );
+
+      setState(() => _isAdding = false);
+      if (res.statusCode == 201) {
+        _categoryController.clear();
+        _fetchCategories();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("🎉 Category '$name' added!"),
+            backgroundColor: AppColors.skyBlue,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } else {
+        String msg = "Failed to add category.";
+        try {
+          msg = jsonDecode(res.body)['message'] ?? msg;
+        } catch (_) {}
+        _showErrorSnackBar(msg);
+      }
+    } catch (e) {
+      setState(() => _isAdding = false);
+      _showErrorSnackBar("Connection error: $e");
+    }
+  }
+
+  Future<void> _deleteCategory(String id, String name) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.surfaceCard,
+        title: const Text("Delete Category", style: TextStyle(color: Colors.white)),
+        content: Text("Are you sure you want to delete category '$name'?", style: const TextStyle(color: Colors.white70)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text("Cancel", style: TextStyle(color: Colors.white30)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text("Delete", style: TextStyle(color: Colors.redAccent)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    try {
+      final res = await http.delete(Uri.parse('${AppConfig.baseUrl}/api/categories/$id'));
+      if (res.statusCode == 200) {
+        _fetchCategories();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("🗑️ Category '$name' deleted!"),
+            backgroundColor: Colors.blueGrey,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } else {
+        _showErrorSnackBar("Failed to delete category.");
+      }
+    } catch (e) {
+      _showErrorSnackBar("Connection error: $e");
+    }
+  }
+
+  void _showErrorSnackBar(String msg) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("⚠️ $msg"),
+        backgroundColor: Colors.redAccent,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.scaffoldBackground,
+      appBar: AppBar(
+        backgroundColor: AppColors.surfaceCard,
+        elevation: 0,
+        title: const Text(
+          "Transaction Categories 📁",
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator(color: AppColors.skyBlue))
+          : Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Text(
+                    "Add New Category",
+                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _categoryController,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            hintText: "Category name (e.g. Food, Travel)",
+                            hintStyle: const TextStyle(color: Colors.white30),
+                            filled: true,
+                            fillColor: AppColors.surfaceCard,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          ),
+                          onSubmitted: (_) => _addCategory(),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      ElevatedButton(
+                        onPressed: _isAdding ? null : _addCategory,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.skyBlue,
+                          foregroundColor: Colors.black,
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: _isAdding
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2),
+                              )
+                            : const Icon(Icons.add),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    "Existing Categories",
+                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  Expanded(
+                    child: _categories.isEmpty
+                        ? const Center(
+                            child: Text(
+                              "No categories added yet.\nCreate one above to list in transactions!",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.white38),
+                            ),
+                          )
+                        : ListView.separated(
+                            itemCount: _categories.length,
+                            separatorBuilder: (_, __) => const Divider(color: Colors.white10),
+                            itemBuilder: (ctx, idx) {
+                              final cat = _categories[idx];
+                              return ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                title: Text(
+                                  cat['name'] ?? '',
+                                  style: const TextStyle(color: Colors.white, fontSize: 15),
+                                ),
+                                trailing: IconButton(
+                                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                                  onPressed: () => _deleteCategory(cat['_id'], cat['name']),
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+                ],
+              ),
+            ),
     );
   }
 }

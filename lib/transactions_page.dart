@@ -4,6 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'app_config.dart';
+import 'profile_page.dart';
+import 'debts_page.dart';
+import 'goals_page.dart';
 
 class TransactionsPage extends StatefulWidget {
   const TransactionsPage({super.key});
@@ -22,6 +25,7 @@ class _TransactionsPageState extends State<TransactionsPage>
   List<dynamic> _members = [];
   List<dynamic> _debts = [];
   List<dynamic> _goals = [];
+  List<dynamic> _categories = [];
   bool _isLoading = false;
   String? _errorMessage;
 
@@ -52,18 +56,21 @@ class _TransactionsPageState extends State<TransactionsPage>
         http.get(Uri.parse('$_baseUrl/api/accountsMembers')).timeout(const Duration(seconds: 6)),
         http.get(Uri.parse('$_baseUrl/api/debt')).timeout(const Duration(seconds: 6)),
         http.get(Uri.parse('$_baseUrl/api/goals')).timeout(const Duration(seconds: 6)),
+        http.get(Uri.parse('$_baseUrl/api/categories')).timeout(const Duration(seconds: 6)),
       ]);
       if (results[0].statusCode == 200 &&
           results[1].statusCode == 200 &&
           results[2].statusCode == 200 &&
           results[3].statusCode == 200 &&
-          results[4].statusCode == 200) {
+          results[4].statusCode == 200 &&
+          results[5].statusCode == 200) {
         setState(() {
           _transactions = jsonDecode(results[0].body);
           _accounts = jsonDecode(results[1].body);
           _members = jsonDecode(results[2].body);
           _debts = jsonDecode(results[3].body);
           _goals = jsonDecode(results[4].body);
+          _categories = jsonDecode(results[5].body);
           _isLoading = false;
         });
       } else {
@@ -451,11 +458,13 @@ class _TransactionsPageState extends State<TransactionsPage>
     String others = existing?['others'] ?? 'category';
     String? debtId = existing?['debtId']?.toString();
     String? goalId = existing?['goalId']?.toString();
-    String category = existing?['category'] ?? '';
+    String? selectedCategoryName = existing?['category']?.toString();
+    if (selectedCategoryName != null && selectedCategoryName.isEmpty) {
+      selectedCategoryName = null;
+    }
     String note = existing?['note'] ?? prefilledNote ?? '';
 
     final amtCtrl = TextEditingController(text: amount);
-    final catCtrl = TextEditingController(text: category);
     final noteCtrl = TextEditingController(text: note);
 
     showModalBottomSheet(
@@ -587,7 +596,66 @@ class _TransactionsPageState extends State<TransactionsPage>
 
                       // ── INCOME / EXPENSE: OTHERS ──
                       if (selType != 'exchange') ...[
-                        _label('LINK TO'),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _label('LINK TO'),
+                            GestureDetector(
+                              onTap: () {
+                                if (others == 'category') {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const TransactionCategoriesPage(),
+                                    ),
+                                  ).then((_) {
+                                    _fetchAll();
+                                  });
+                                } else if (others == 'debt') {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const DebtsPage(),
+                                    ),
+                                  ).then((_) {
+                                    _fetchAll();
+                                  });
+                                } else if (others == 'goals') {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const GoalsPage(),
+                                    ),
+                                  ).then((_) {
+                                    _fetchAll();
+                                  });
+                                }
+                              },
+                              child: Row(
+                                children: [
+                                  const Icon(
+                                    Icons.add_circle_outline_rounded,
+                                    size: 14,
+                                    color: Colors.lightBlueAccent,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    others == 'category'
+                                        ? 'Add Category'
+                                        : others == 'debt'
+                                            ? 'Add Debt'
+                                            : 'Add Goal',
+                                    style: const TextStyle(
+                                      color: Colors.lightBlueAccent,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                         const SizedBox(height: 8),
                         Row(
                           children: ['category', 'debt', 'goals'].map((o) {
@@ -624,11 +692,15 @@ class _TransactionsPageState extends State<TransactionsPage>
                         ),
                         const SizedBox(height: 16),
 
-                        // Category text input
+                        // Category dropdown picker
                         if (others == 'category') ...[
-                          _label('CATEGORY NAME'),
+                          _label('CATEGORY'),
                           const SizedBox(height: 8),
-                          _field(catCtrl, 'e.g. Food, Transport…'),
+                          _categoryPicker(
+                            value: selectedCategoryName,
+                            onChanged: (v) => selectedCategoryName = v,
+                            setSheet: setSheet,
+                          ),
                           const SizedBox(height: 16),
                         ],
 
@@ -735,6 +807,16 @@ class _TransactionsPageState extends State<TransactionsPage>
                                   return;
                                 }
 
+                                if (selType != 'exchange' && others == 'category' && (selectedCategoryName == null || selectedCategoryName!.isEmpty)) {
+                                  ScaffoldMessenger.of(ctx2).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('⚠️ Please select a category'),
+                                      backgroundColor: Colors.blueAccent,
+                                    ),
+                                  );
+                                  return;
+                                }
+
                                 final selectedMember = _members.firstWhere(
                                   (m) => m['_id'].toString() == memberId,
                                   orElse: () => null,
@@ -755,7 +837,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                   if (selType == 'exchange') 'toMemberId': toMemberId ?? '',
                                   if (selType == 'exchange') 'toAccountId': toAccId,
                                   if (selType != 'exchange') 'others': others,
-                                  if (others == 'category') 'category': catCtrl.text.trim(),
+                                  if (others == 'category') 'category': selectedCategoryName ?? '',
                                   if (others == 'debt' && debtId != null) 'debtId': debtId,
                                   if (others == 'goals' && goalId != null) 'goalId': goalId,
                                   if (noteCtrl.text.trim().isNotEmpty) 'note': noteCtrl.text.trim(),
@@ -1350,23 +1432,213 @@ class _TransactionsPageState extends State<TransactionsPage>
     );
   }
 
+  Widget _categoryPicker({
+    required String? value,
+    required ValueChanged<String?> onChanged,
+    required StateSetter setSheet,
+  }) {
+    final selectedCategory = _categories.firstWhere(
+      (c) => c['name']?.toString() == value,
+      orElse: () => null,
+    );
+    String selectedText = 'Select Category';
+    if (selectedCategory != null) {
+      selectedText = selectedCategory['name'] ?? '—';
+    } else if (value != null && value.isNotEmpty) {
+      selectedText = value;
+    }
+
+    return GestureDetector(
+      onTap: () {
+        showModalBottomSheet(
+          context: context,
+          backgroundColor: Colors.transparent,
+          isScrollControlled: true,
+          builder: (_) => Container(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.75,
+            ),
+            decoration: const BoxDecoration(
+              color: Color(0xFF1C1C1C),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 12),
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.white24,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Select Category',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextButton.icon(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const TransactionCategoriesPage(),
+                            ),
+                          ).then((_) {
+                            _fetchAll();
+                          });
+                        },
+                        icon: const Icon(Icons.settings, size: 16, color: Colors.lightBlueAccent),
+                        label: const Text('Manage', style: TextStyle(color: Colors.lightBlueAccent, fontSize: 13)),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Flexible(
+                  child: _categories.isEmpty
+                      ? Padding(
+                          padding: const EdgeInsets.all(24.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text(
+                                'No categories found! Click Manage to add some.',
+                                style: TextStyle(color: Colors.white54),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 16),
+                              ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.lightBlueAccent,
+                                  foregroundColor: Colors.black,
+                                ),
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const TransactionCategoriesPage(),
+                                    ),
+                                  ).then((_) {
+                                    _fetchAll();
+                                  });
+                                },
+                                icon: const Icon(Icons.add),
+                                label: const Text('Add Category'),
+                              ),
+                            ],
+                          ),
+                        )
+                      : ListView.separated(
+                          shrinkWrap: true,
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          itemCount: _categories.length,
+                          separatorBuilder: (_, __) => Divider(
+                            color: Colors.white.withOpacity(0.06),
+                            height: 1,
+                          ),
+                          itemBuilder: (_, idx) {
+                            final cat = _categories[idx];
+                            final catName = cat['name']?.toString() ?? '—';
+                            final isSelected = value == catName;
+
+                            return ListTile(
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                              title: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      catName,
+                                      style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  if (isSelected)
+                                    const Icon(Icons.check_circle_rounded, color: Colors.lightBlueAccent, size: 20),
+                                ],
+                              ),
+                              onTap: () {
+                                setSheet(() => onChanged(catName));
+                                Navigator.of(context).pop();
+                              },
+                            );
+                          },
+                        ),
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        );
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.white12),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.category_rounded, color: Colors.white38, size: 18),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                selectedText,
+                style: TextStyle(
+                  color: (selectedCategory != null || (value != null && value.isNotEmpty)) ? Colors.white : Colors.white30,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+            const Icon(Icons.expand_more_rounded, color: Colors.white38, size: 20),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildList(List<dynamic> list) {
     if (list.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.receipt_long_rounded, size: 72, color: Colors.white.withOpacity(0.08)),
-            const SizedBox(height: 16),
-            const Text('No transactions yet', style: TextStyle(color: Colors.white54, fontSize: 15)),
-            const SizedBox(height: 8),
-            const Text('Tap + to add one', style: TextStyle(color: Colors.white30, fontSize: 12)),
-          ],
+      return RefreshIndicator(
+        onRefresh: _fetchAll,
+        color: Colors.lightBlueAccent,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Container(
+            height: MediaQuery.of(context).size.height * 0.6,
+            alignment: Alignment.center,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.receipt_long_rounded, size: 72, color: Colors.white.withValues(alpha: 0.08)),
+                const SizedBox(height: 16),
+                const Text('No transactions yet', style: TextStyle(color: Colors.white54, fontSize: 15)),
+                const SizedBox(height: 8),
+                const Text('Tap + to add one', style: TextStyle(color: Colors.white30, fontSize: 12)),
+              ],
+            ),
+          ),
         ),
       );
     }
 
-    return ListView.builder(
+    return RefreshIndicator(
+      onRefresh: _fetchAll,
+      color: Colors.lightBlueAccent,
+      child: ListView.builder(
+        physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       itemCount: list.length,
       itemBuilder: (ctx, i) {
@@ -1499,6 +1771,7 @@ class _TransactionsPageState extends State<TransactionsPage>
           ),
         );
       },
+    ),
     );
   }
 

@@ -183,42 +183,43 @@ class _AnalysisPageState extends State<AnalysisPage> {
           '📊 Core Analysis Center',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: Colors.indigoAccent),
-            onPressed: _fetchDashboardData,
-          ),
-        ],
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Colors.indigoAccent))
-          : _errorMessage != null
-              ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.analytics_rounded, color: Colors.redAccent, size: 64),
-                        const SizedBox(height: 16),
-                        Text(_errorMessage!, style: const TextStyle(color: Colors.white70), textAlign: TextAlign.center),
-                        const SizedBox(height: 24),
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.indigoAccent),
-                          onPressed: _fetchDashboardData,
-                          child: const Text('Try Again'),
-                        ),
-                      ],
+      body: RefreshIndicator(
+        onRefresh: _fetchDashboardData,
+        color: Colors.indigoAccent,
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator(color: Colors.indigoAccent))
+            : _errorMessage != null
+                ? SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    child: Container(
+                      height: MediaQuery.of(context).size.height * 0.7,
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.analytics_rounded, color: Colors.redAccent, size: 64),
+                          const SizedBox(height: 16),
+                          Text(_errorMessage!, style: const TextStyle(color: Colors.white70), textAlign: TextAlign.center),
+                          const SizedBox(height: 24),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(backgroundColor: Colors.indigoAccent),
+                            onPressed: _fetchDashboardData,
+                            child: const Text('Try Again'),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                )
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // Grand Composite Life Score Card
-                      Container(
+                  )
+                : SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Grand Composite Life Score Card
+                        Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
@@ -430,6 +431,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                     ],
                   ),
                 ),
+      ),
     );
   }
 

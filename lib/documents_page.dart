@@ -558,154 +558,164 @@ class _DocumentsPageState extends State<DocumentsPage> {
 
           // Folders Grid List
           Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator(color: AppColors.skyBlue))
-                : filteredFolders.isEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.folder_off_rounded, color: Colors.white38, size: 48),
-                            const SizedBox(height: 12),
-                            const Text(
-                              'No folders or documents found!',
-                              style: TextStyle(color: Colors.white38, fontSize: 14),
+            child: RefreshIndicator(
+              onRefresh: _loadFolders,
+              color: AppColors.skyBlue,
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator(color: AppColors.skyBlue))
+                  : filteredFolders.isEmpty
+                      ? SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Container(
+                            height: MediaQuery.of(context).size.height * 0.5,
+                            alignment: Alignment.center,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.folder_off_rounded, color: Colors.white38, size: 48),
+                                const SizedBox(height: 12),
+                                const Text(
+                                  'No folders or documents found!',
+                                  style: TextStyle(color: Colors.white38, fontSize: 14),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      )
-                    : GridView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                          childAspectRatio: 1.1,
-                        ),
-                        itemCount: filteredFolders.length,
-                        itemBuilder: (context, index) {
-                          final folder = filteredFolders[index];
-                          final themeColor = Color(folder.colorValue);
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => FolderDetailsPage(
-                                    folder: folder,
-                                    onFolderUpdated: (updatedFolder) {
-                                      setState(() {
-                                        final idx = _folders.indexWhere((f) => f.id == updatedFolder.id);
-                                        if (idx != -1) {
-                                          _folders[idx] = updatedFolder;
-                                        }
-                                      });
-                                      _saveFolders();
-                                    },
-                                    launchURL: _launchURL,
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: AppColors.surfaceCard,
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                  color: themeColor.withValues(alpha: 0.3),
-                                  width: 1.5,
-                                ),
-                              ),
-                              child: Stack(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(16),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.all(8),
-                                          decoration: BoxDecoration(
-                                            color: themeColor.withValues(alpha: 0.15),
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Icon(
-                                            Icons.folder_open_rounded,
-                                            color: themeColor,
-                                            size: 26,
-                                          ),
-                                        ),
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              folder.name,
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16,
-                                              ),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Text(
-                                              "${folder.links.length} Docs Saved",
-                                              style: const TextStyle(
-                                                color: Colors.white54,
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Positioned(
-                                    top: 4,
-                                    right: 4,
-                                    child: PopupMenuButton<String>(
-                                      icon: const Icon(Icons.more_vert_rounded, color: Colors.white60, size: 20),
-                                      color: const Color(0xFF1E1E1E),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                      onSelected: (val) {
-                                        if (val == 'edit') {
-                                          _openFolderSheet(existing: folder);
-                                        } else if (val == 'delete') {
-                                          _deleteFolder(folder);
-                                        }
+                          ),
+                        )
+                      : GridView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                            childAspectRatio: 1.1,
+                          ),
+                          itemCount: filteredFolders.length,
+                          itemBuilder: (context, index) {
+                            final folder = filteredFolders[index];
+                            final themeColor = Color(folder.colorValue);
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => FolderDetailsPage(
+                                      folder: folder,
+                                      onFolderUpdated: (updatedFolder) {
+                                        setState(() {
+                                          final idx = _folders.indexWhere((f) => f.id == updatedFolder.id);
+                                          if (idx != -1) {
+                                            _folders[idx] = updatedFolder;
+                                          }
+                                        });
+                                        _saveFolders();
                                       },
-                                      itemBuilder: (ctx) => [
-                                        const PopupMenuItem(
-                                          value: 'edit',
-                                          child: Row(
-                                            children: [
-                                              Icon(Icons.edit_rounded, color: AppColors.skyBlue, size: 18),
-                                              SizedBox(width: 8),
-                                              Text("Edit", style: TextStyle(color: Colors.white)),
-                                            ],
-                                          ),
-                                        ),
-                                        const PopupMenuItem(
-                                          value: 'delete',
-                                          child: Row(
-                                            children: [
-                                              Icon(Icons.delete_rounded, color: Colors.redAccent, size: 18),
-                                              SizedBox(width: 8),
-                                              Text("Delete", style: TextStyle(color: Colors.white)),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
+                                      launchURL: _launchURL,
                                     ),
-                                  )
-                                ],
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: AppColors.surfaceCard,
+                                  borderRadius: BorderRadius.circular(20),
+                                  border: Border.all(
+                                    color: themeColor.withValues(alpha: 0.3),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                child: Stack(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(16),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.all(8),
+                                            decoration: BoxDecoration(
+                                              color: themeColor.withValues(alpha: 0.15),
+                                              shape: BoxShape.circle,
+                                            ),
+                                            child: Icon(
+                                              Icons.folder_open_rounded,
+                                              color: themeColor,
+                                              size: 26,
+                                            ),
+                                          ),
+                                          Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                folder.name,
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(
+                                                "${folder.links.length} Docs Saved",
+                                                style: const TextStyle(
+                                                  color: Colors.white54,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 4,
+                                      right: 4,
+                                      child: PopupMenuButton<String>(
+                                        icon: const Icon(Icons.more_vert_rounded, color: Colors.white60, size: 20),
+                                        color: const Color(0xFF1E1E1E),
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                        onSelected: (val) {
+                                          if (val == 'edit') {
+                                            _openFolderSheet(existing: folder);
+                                          } else if (val == 'delete') {
+                                            _deleteFolder(folder);
+                                          }
+                                        },
+                                        itemBuilder: (ctx) => [
+                                          const PopupMenuItem(
+                                            value: 'edit',
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.edit_rounded, color: AppColors.skyBlue, size: 18),
+                                                SizedBox(width: 8),
+                                                Text("Edit", style: TextStyle(color: Colors.white)),
+                                              ],
+                                            ),
+                                          ),
+                                          const PopupMenuItem(
+                                            value: 'delete',
+                                            child: Row(
+                                              children: [
+                                                Icon(Icons.delete_rounded, color: Colors.redAccent, size: 18),
+                                                SizedBox(width: 8),
+                                                Text("Delete", style: TextStyle(color: Colors.white)),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                      ),
+                            );
+                          },
+                        ),
+            ),
           ),
         ],
       ),

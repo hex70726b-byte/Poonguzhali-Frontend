@@ -729,12 +729,7 @@ class _HabitsPageState extends State<HabitsPage> {
           '⚡¡ Habit Tracker',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: Colors.lightBlueAccent),
-            onPressed: _fetchHabits,
-          ),
-        ],
+        actions: const [],
       ),
       body: Column(
         children: [
@@ -835,273 +830,288 @@ class _HabitsPageState extends State<HabitsPage> {
 
           // Habits List
           Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator(color: Colors.lightBlueAccent))
-                : _errorMessage != null
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.error_outline_rounded, color: Colors.redAccent, size: 48),
-                            const SizedBox(height: 12),
-                            Text(_errorMessage!, style: const TextStyle(color: Colors.white70)),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: _fetchHabits,
-                              child: const Text('Retry'),
-                            ),
-                          ],
-                        ),
-                      )
-                    : filteredHabits.isEmpty
-                        ? Center(
+            child: RefreshIndicator(
+              onRefresh: _fetchHabits,
+              color: Colors.lightBlueAccent,
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator(color: Colors.lightBlueAccent))
+                  : _errorMessage != null
+                      ? SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Container(
+                            height: MediaQuery.of(context).size.height * 0.6,
+                            alignment: Alignment.center,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.alarm_on_rounded, size: 72, color: Colors.white.withValues(alpha: 0.08)),
+                                const Icon(Icons.error_outline_rounded, color: Colors.redAccent, size: 48),
+                                const SizedBox(height: 12),
+                                Text(_errorMessage!, style: const TextStyle(color: Colors.white70)),
                                 const SizedBox(height: 16),
-                                const Text('No habits created yet', style: TextStyle(color: Colors.white54, fontSize: 15)),
-                                const SizedBox(height: 8),
-                                const Text('Tap + to set your first habit!', style: TextStyle(color: Colors.white30, fontSize: 12)),
+                                ElevatedButton(
+                                  onPressed: _fetchHabits,
+                                  child: const Text('Retry'),
+                                ),
                               ],
                             ),
-                          )
-                        : ListView.builder(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            itemCount: filteredHabits.length,
-                            itemBuilder: (ctx, idx) {
-                              final h = filteredHabits[idx];
-                              final id = h['_id']?.toString() ?? '';
-                              final name = h['habitName'] ?? '—';
-                              final type = h['type'] ?? 'single';
-                              final starting = h['startingTime'] ?? '';
-                              final ending = h['endingTime'] ?? '';
-                              final gapStr = h['gap'] ?? '';
-                              final isMultiple = type == 'multiple';
-                              final themeColor = isMultiple ? Colors.lightBlueAccent : Colors.lightBlueAccent;
+                          ),
+                        )
+                      : filteredHabits.isEmpty
+                          ? SingleChildScrollView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              child: Container(
+                                height: MediaQuery.of(context).size.height * 0.6,
+                                alignment: Alignment.center,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.alarm_on_rounded, size: 72, color: Colors.white.withValues(alpha: 0.08)),
+                                    const SizedBox(height: 16),
+                                    const Text('No habits created yet', style: TextStyle(color: Colors.white54, fontSize: 15)),
+                                    const SizedBox(height: 8),
+                                    const Text('Tap + to set your first habit!', style: TextStyle(color: Colors.white30, fontSize: 12)),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : ListView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              itemCount: filteredHabits.length,
+                              itemBuilder: (ctx, idx) {
+                                final h = filteredHabits[idx];
+                                final id = h['_id']?.toString() ?? '';
+                                final name = h['habitName'] ?? '—';
+                                final type = h['type'] ?? 'single';
+                                final starting = h['startingTime'] ?? '';
+                                final ending = h['endingTime'] ?? '';
+                                final gapStr = h['gap'] ?? '';
+                                final isMultiple = type == 'multiple';
+                                final themeColor = isMultiple ? Colors.lightBlueAccent : Colors.lightBlueAccent;
 
-                              // Streak and completion tracking
-                              final streak = h['streak'] ?? 0;
-                              final lastCompleted = h['lastCompletedDate'] ?? '';
-                              final multipleCompletions = h['multipleCompletions'] ?? 0;
-                              final isSingleCompletedToday = !isMultiple && (lastCompleted == todayStr);
+                                // Streak and completion tracking
+                                final streak = h['streak'] ?? 0;
+                                final lastCompleted = h['lastCompletedDate'] ?? '';
+                                final multipleCompletions = h['multipleCompletions'] ?? 0;
+                                final isSingleCompletedToday = !isMultiple && (lastCompleted == todayStr);
 
-                              // Calculate target check-ins for multiple
-                              final targetIntervals = isMultiple ? _calculateIntervals(starting, ending, gapStr) : 1;
+                                // Calculate target check-ins for multiple
+                                final targetIntervals = isMultiple ? _calculateIntervals(starting, ending, gapStr) : 1;
 
-// Calculate countdown remaining
-                              String countdownText = '';
-                              final gapMinutes = int.tryParse(gapStr) ?? 30;
-                              if (isMultiple && id.isNotEmpty && gapMinutes > 0) {
-                                var lastSent = HabitSchedulerShared.lastSentReminderTime[id];
-                                if (lastSent == null) {
-                                  // Start countdown instantly from now!
-                                  lastSent = DateTime.now();
-                                  HabitSchedulerShared.lastSentReminderTime[id] = lastSent;
+                                // Calculate countdown remaining
+                                String countdownText = '';
+                                final gapMinutes = int.tryParse(gapStr) ?? 30;
+                                if (isMultiple && id.isNotEmpty && gapMinutes > 0) {
+                                  var lastSent = HabitSchedulerShared.lastSentReminderTime[id];
+                                  if (lastSent == null) {
+                                    // Start countdown instantly from now!
+                                    lastSent = DateTime.now();
+                                    HabitSchedulerShared.lastSentReminderTime[id] = lastSent;
+                                  }
+                                  final nextSent = lastSent.add(Duration(minutes: gapMinutes));
+                                  final remaining = nextSent.difference(DateTime.now());
+                                  if (remaining.isNegative) {
+                                    countdownText = '00:00';
+                                  } else {
+                                    final min = remaining.inMinutes.toString().padLeft(2, '0');
+                                    final sec = (remaining.inSeconds % 60).toString().padLeft(2, '0');
+                                    countdownText = '$min:$sec';
+                                  }
                                 }
-                                final nextSent = lastSent.add(Duration(minutes: gapMinutes));
-                                final remaining = nextSent.difference(DateTime.now());
-                                if (remaining.isNegative) {
-                                  countdownText = '00:00';
-                                } else {
-                                  final min = remaining.inMinutes.toString().padLeft(2, '0');
-                                  final sec = (remaining.inSeconds % 60).toString().padLeft(2, '0');
-                                  countdownText = '$min:$sec';
-                                }
-                              }
 
-                              return GestureDetector(
-                                onTap: () => _openFormSheet(existing: h),
-                                child: Container(
-                                  margin: const EdgeInsets.only(bottom: 12),
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF1E1E1E),
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(
-                                      color: isSingleCompletedToday
-                                          ? Colors.lightBlueAccent.withValues(alpha: 0.1)
-                                          : Colors.white.withValues(alpha: 0.05),
+                                return GestureDetector(
+                                  onTap: () => _openFormSheet(existing: h),
+                                  child: Container(
+                                    margin: const EdgeInsets.only(bottom: 12),
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF1E1E1E),
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(
+                                        color: isSingleCompletedToday
+                                            ? Colors.lightBlueAccent.withValues(alpha: 0.1)
+                                            : Colors.white.withValues(alpha: 0.05),
+                                      ),
                                     ),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      // Leading Icon with quick action functionality
-                                      InkWell(
-                                        onTap: () {
-                                          if (isMultiple) {
-                                            _checkinHabit(id);
-                                          } else {
-                                            if (!isSingleCompletedToday) {
+                                    child: Row(
+                                      children: [
+                                        // Leading Icon with quick action functionality
+                                        InkWell(
+                                          onTap: () {
+                                            if (isMultiple) {
                                               _checkinHabit(id);
                                             } else {
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                const SnackBar(content: Text('🎉 Completed today! Keep it up tomorrow!'), backgroundColor: Colors.lightBlue),
-                                              );
+                                              if (!isSingleCompletedToday) {
+                                                _checkinHabit(id);
+                                              } else {
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  const SnackBar(content: Text('🎉 Completed today! Keep it up tomorrow!'), backgroundColor: Colors.lightBlue),
+                                                );
+                                              }
                                             }
-                                          }
-                                        },
-                                        borderRadius: BorderRadius.circular(12),
-                                        child: AnimatedContainer(
-                                          duration: const Duration(milliseconds: 250),
-                                          width: 44,
-                                          height: 44,
-                                          decoration: BoxDecoration(
-                                            color: isSingleCompletedToday
-                                                ? Colors.lightBlueAccent.withValues(alpha: 0.2)
-                                                : themeColor.withValues(alpha: 0.12),
-                                            borderRadius: BorderRadius.circular(12),
-                                            border: Border.all(
+                                          },
+                                          borderRadius: BorderRadius.circular(12),
+                                          child: AnimatedContainer(
+                                            duration: const Duration(milliseconds: 250),
+                                            width: 44,
+                                            height: 44,
+                                            decoration: BoxDecoration(
                                               color: isSingleCompletedToday
-                                                  ? Colors.lightBlueAccent
-                                                  : Colors.transparent,
-                                              width: 1.5,
+                                                  ? Colors.lightBlueAccent.withValues(alpha: 0.2)
+                                                  : themeColor.withValues(alpha: 0.12),
+                                              borderRadius: BorderRadius.circular(12),
+                                              border: Border.all(
+                                                color: isSingleCompletedToday
+                                                    ? Colors.lightBlueAccent
+                                                    : Colors.transparent,
+                                                width: 1.5,
+                                              ),
                                             ),
-                                          ),
-                                          child: Icon(
-                                            isSingleCompletedToday
-                                                ? Icons.check_circle_rounded
-                                                : (isMultiple ? Icons.add_circle_outline_rounded : Icons.done_all_rounded),
-                                            color: isSingleCompletedToday ? Colors.lightBlueAccent : themeColor,
-                                            size: 24,
+                                            child: Icon(
+                                              isSingleCompletedToday
+                                                  ? Icons.check_circle_rounded
+                                                  : (isMultiple ? Icons.add_circle_outline_rounded : Icons.done_all_rounded),
+                                              color: isSingleCompletedToday ? Colors.lightBlueAccent : themeColor,
+                                              size: 24,
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      const SizedBox(width: 14),
+                                        const SizedBox(width: 14),
 
-                                      // Habit Details
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              name,
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 15,
-                                                decoration: isSingleCompletedToday
-                                                    ? TextDecoration.lineThrough
-                                                    : null,
-                                                decorationColor: Colors.white38,
-                                              ),
-                                            ),
-                                            const SizedBox(height: 6),
-                                            if (isMultiple) ...[
-                                              Row(
-                                                children: [
-                                                  const Icon(Icons.access_time_rounded, size: 12, color: Colors.white38),
-                                                  const SizedBox(width: 4),
-                                                  Text(
-                                                    '$starting - $ending',
-                                                    style: const TextStyle(color: Colors.white38, fontSize: 11),
-                                                  ),
-                                                  const SizedBox(width: 8),
-                                                  const Icon(Icons.hourglass_empty_rounded, size: 12, color: Colors.white38),
-                                                  const SizedBox(width: 2),
-                                                  Text(
-                                                    'Every $gapStr min',
-                                                    style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 11, fontWeight: FontWeight.bold),
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 4),
-                                              Row(
-                                                children: [
-                                                  const Icon(Icons.reply_all_rounded, size: 13, color: Colors.lightBlueAccent),
-                                                  const SizedBox(width: 4),
-                                                  Text(
-                                                    'Replies: $multipleCompletions / $targetIntervals intervals',
-                                                    style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 11, fontWeight: FontWeight.bold),
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 4),
-                                              Row(
-                                                children: [
-                                                  const Icon(Icons.timer_outlined, size: 13, color: Colors.lightBlueAccent),
-                                                  const SizedBox(width: 4),
-                                                  Text(
-                                                    'Next in: $countdownText',
-                                                    style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 11, fontWeight: FontWeight.bold),
-                                                  ),
-                                                ],
-                                              ),
-                                              if (h['customChat'] != null && h['customChat'].toString().isNotEmpty) ...[
-                                                const SizedBox(height: 4),
-                                                Row(
-                                                  children: [
-                                                    const Icon(Icons.chat_bubble_outline_rounded, size: 12, color: Colors.lightBlueAccent),
-                                                    const SizedBox(width: 4),
-                                                    Expanded(
-                                                      child: Text(
-                                                        'Msg: ${h['customChat']}',
-                                                        style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 11),
-                                                        overflow: TextOverflow.ellipsis,
-                                                      ),
-                                                    ),
-                                                  ],
+                                        // Habit Details
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                name,
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 15,
+                                                  decoration: isSingleCompletedToday
+                                                      ? TextDecoration.lineThrough
+                                                      : null,
+                                                  decorationColor: Colors.white38,
                                                 ),
-                                              ],
-                                            ] else ...[
-                                              Row(
-                                                children: [
-                                                  const Icon(Icons.local_fire_department_rounded, size: 14, color: Colors.lightBlue),
-                                                  const SizedBox(width: 4),
-                                                  Text(
-                                                    'Streak: $streak days',
-                                                    style: const TextStyle(color: Colors.lightBlue, fontSize: 12, fontWeight: FontWeight.bold),
-                                                  ),
-                                                  const SizedBox(width: 8),
-                                                  Text(
-                                                    isSingleCompletedToday ? 'Completed' : 'Pending today',
-                                                    style: TextStyle(
-                                                      color: isSingleCompletedToday ? Colors.lightBlueAccent : Colors.white38,
-                                                      fontSize: 11,
-                                                    ),
-                                                  ),
-                                                ],
                                               ),
-                                              if (starting.isNotEmpty) ...[
-                                                const SizedBox(height: 4),
+                                              const SizedBox(height: 6),
+                                              if (isMultiple) ...[
                                                 Row(
                                                   children: [
                                                     const Icon(Icons.access_time_rounded, size: 12, color: Colors.white38),
                                                     const SizedBox(width: 4),
                                                     Text(
-                                                      'Scheduled: $starting',
+                                                      '$starting - $ending',
                                                       style: const TextStyle(color: Colors.white38, fontSize: 11),
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    const Icon(Icons.hourglass_empty_rounded, size: 12, color: Colors.white38),
+                                                    const SizedBox(width: 2),
+                                                    Text(
+                                                      'Every $gapStr min',
+                                                      style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 11, fontWeight: FontWeight.bold),
                                                     ),
                                                   ],
                                                 ),
-                                              ],
-                                              if (h['customChat'] != null && h['customChat'].toString().isNotEmpty) ...[
                                                 const SizedBox(height: 4),
                                                 Row(
                                                   children: [
-                                                    const Icon(Icons.chat_bubble_outline_rounded, size: 12, color: Colors.lightBlueAccent),
+                                                    const Icon(Icons.reply_all_rounded, size: 13, color: Colors.lightBlueAccent),
                                                     const SizedBox(width: 4),
-                                                    Expanded(
-                                                      child: Text(
-                                                        'Msg: ${h['customChat']}',
-                                                        style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 11),
-                                                        overflow: TextOverflow.ellipsis,
+                                                    Text(
+                                                      'Replies: $multipleCompletions / $targetIntervals intervals',
+                                                      style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 11, fontWeight: FontWeight.bold),
+                                                    ),
+                                                  ],
+                                                ),
+                                                const SizedBox(height: 4),
+                                                Row(
+                                                  children: [
+                                                    const Icon(Icons.timer_outlined, size: 13, color: Colors.lightBlueAccent),
+                                                    const SizedBox(width: 4),
+                                                    Text(
+                                                      'Next in: $countdownText',
+                                                      style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 11, fontWeight: FontWeight.bold),
+                                                    ),
+                                                  ],
+                                                ),
+                                                if (h['customChat'] != null && h['customChat'].toString().isNotEmpty) ...[
+                                                  const SizedBox(height: 4),
+                                                  Row(
+                                                    children: [
+                                                      const Icon(Icons.chat_bubble_outline_rounded, size: 12, color: Colors.lightBlueAccent),
+                                                      const SizedBox(width: 4),
+                                                      Expanded(
+                                                        child: Text(
+                                                          'Msg: ${h['customChat']}',
+                                                          style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 11),
+                                                          overflow: TextOverflow.ellipsis,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ] else ...[
+                                                Row(
+                                                  children: [
+                                                    const Icon(Icons.local_fire_department_rounded, size: 14, color: Colors.lightBlue),
+                                                    const SizedBox(width: 4),
+                                                    Text(
+                                                      'Streak: $streak days',
+                                                      style: const TextStyle(color: Colors.lightBlue, fontSize: 12, fontWeight: FontWeight.bold),
+                                                    ),
+                                                    const SizedBox(width: 8),
+                                                    Text(
+                                                      isSingleCompletedToday ? 'Completed' : 'Pending today',
+                                                      style: TextStyle(
+                                                        color: isSingleCompletedToday ? Colors.lightBlueAccent : Colors.white38,
+                                                        fontSize: 11,
                                                       ),
                                                     ),
                                                   ],
                                                 ),
-                                              ],
-                                            ]
-                                          ],
+                                                if (starting.isNotEmpty) ...[
+                                                  const SizedBox(height: 4),
+                                                  Row(
+                                                    children: [
+                                                      const Icon(Icons.access_time_rounded, size: 12, color: Colors.white38),
+                                                      const SizedBox(width: 4),
+                                                      Text(
+                                                        'Scheduled: $starting',
+                                                        style: const TextStyle(color: Colors.white38, fontSize: 11),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                                if (h['customChat'] != null && h['customChat'].toString().isNotEmpty) ...[
+                                                  const SizedBox(height: 4),
+                                                  Row(
+                                                    children: [
+                                                      const Icon(Icons.chat_bubble_outline_rounded, size: 12, color: Colors.lightBlueAccent),
+                                                      const SizedBox(width: 4),
+                                                      Expanded(
+                                                        child: Text(
+                                                          'Msg: ${h['customChat']}',
+                                                          style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 11),
+                                                          overflow: TextOverflow.ellipsis,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ],
+                                              ]
+                                            ],
+                                          ),
                                         ),
-                                      ),
-                                      const Icon(Icons.chevron_right_rounded, color: Colors.white24),
-                                    ],
+                                        const Icon(Icons.chevron_right_rounded, color: Colors.white24),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                          ),
+                                );
+                              },
+                            ),
+            ),
           ),
         ],
       ),

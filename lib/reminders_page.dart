@@ -373,12 +373,7 @@ class _RemindersPageState extends State<RemindersPage> with SingleTickerProvider
           '⏰ Reminders & Birthdays',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: Colors.lightBlueAccent),
-            onPressed: _fetchAllData,
-          ),
-        ],
+        actions: const [],
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.lightBlueAccent,
@@ -419,213 +414,232 @@ class _RemindersPageState extends State<RemindersPage> with SingleTickerProvider
               : TabBarView(
                   controller: _tabController,
                   children: [
-                    // Custom Reminders Tab View
-                    sortedReminders.isEmpty
-                        ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.alarm_add_rounded, size: 72, color: Colors.white.withValues(alpha: 0.08)),
-                                const SizedBox(height: 16),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 32),
-                                  child: Text(
-                                    'Inga custom reminders ethuvum illada chellam! Add button click panni reminder set panniko! 🔔❤️',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(color: Colors.white54, fontSize: 13, height: 1.5),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        : ListView.builder(
-                            padding: const EdgeInsets.all(16),
-                            itemCount: sortedReminders.length,
-                            itemBuilder: (ctx, idx) {
-                              final r = sortedReminders[idx];
-                              final id = r['_id'] ?? '';
-                              final title = r['title'] ?? 'No Title';
-                              final dateTimeStr = r['dateTime'] ?? '';
-
-                              // Format display date time
-                              var formatted = dateTimeStr;
-                              try {
-                                final parsed = DateFormat('yyyy-MM-dd HH:mm').parse(dateTimeStr);
-                                formatted = DateFormat('dd MMM yyyy, hh:mm a').format(parsed);
-                              } catch (_) {}
-
-                              return Container(
-                                margin: const EdgeInsets.only(bottom: 12),
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF1E1E1E),
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(color: Colors.white.withValues(alpha: 0.04)),
-                                  boxShadow: const [
-                                    BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4)),
-                                  ],
-                                ),
-                                child: Row(
+                                 // Custom Reminders Tab View
+                    RefreshIndicator(
+                      onRefresh: _fetchAllData,
+                      color: Colors.lightBlueAccent,
+                      child: sortedReminders.isEmpty
+                          ? SingleChildScrollView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              child: Container(
+                                height: MediaQuery.of(context).size.height * 0.6,
+                                alignment: Alignment.center,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Container(
-                                      padding: const EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                        color: Colors.lightBlueAccent.withValues(alpha: 0.1),
-                                        shape: BoxShape.circle,
+                                    Icon(Icons.alarm_add_rounded, size: 72, color: Colors.white.withValues(alpha: 0.08)),
+                                    const SizedBox(height: 16),
+                                    const Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: 32),
+                                      child: Text(
+                                        'Inga custom reminders ethuvum illada chellam! Add button click panni reminder set panniko! 🔔❤️',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(color: Colors.white54, fontSize: 13, height: 1.5),
                                       ),
-                                      child: const Icon(Icons.alarm_on_rounded, color: Colors.lightBlueAccent, size: 22),
-                                    ),
-                                    const SizedBox(width: 14),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            title,
-                                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Text(
-                                            formatted,
-                                            style: const TextStyle(color: Colors.white38, fontSize: 12),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 22),
-                                      onPressed: () => _deleteReminder(id),
                                     ),
                                   ],
                                 ),
-                              );
-                            },
-                          ),
+                              ),
+                            )
+                          : ListView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              padding: const EdgeInsets.all(16),
+                              itemCount: sortedReminders.length,
+                              itemBuilder: (ctx, idx) {
+                                final r = sortedReminders[idx];
+                                final id = r['_id'] ?? '';
+                                final title = r['title'] ?? 'No Title';
+                                final dateTimeStr = r['dateTime'] ?? '';
 
+                                // Format display date time
+                                var formatted = dateTimeStr;
+                                try {
+                                  final parsed = DateFormat('yyyy-MM-dd HH:mm').parse(dateTimeStr);
+                                  formatted = DateFormat('dd MMM yyyy, hh:mm a').format(parsed);
+                                } catch (_) {}
+
+                                return Container(
+                                  margin: const EdgeInsets.only(bottom: 12),
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF1E1E1E),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(color: Colors.white.withValues(alpha: 0.04)),
+                                    boxShadow: const [
+                                      BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4)),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: Colors.lightBlueAccent.withValues(alpha: 0.1),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: const Icon(Icons.alarm_on_rounded, color: Colors.lightBlueAccent, size: 22),
+                                      ),
+                                      const SizedBox(width: 14),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              title,
+                                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              formatted,
+                                              style: const TextStyle(color: Colors.white38, fontSize: 12),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 22),
+                                        onPressed: () => _deleteReminder(id),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                    ),
                     // Birthdays Tab View
-                    birthdayContacts.isEmpty
-                        ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.cake_rounded, size: 72, color: Colors.white.withValues(alpha: 0.08)),
-                                const SizedBox(height: 16),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 32),
-                                  child: Text(
-                                    'Contacts la yaarukum birthday dynamic-a setup panlana birthday list empty-a thaan varum da thambi! 👤🎂',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(color: Colors.white54, fontSize: 13, height: 1.5),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        : ListView.builder(
-                            padding: const EdgeInsets.all(16),
-                            itemCount: birthdayContacts.length,
-                            itemBuilder: (ctx, idx) {
-                              final item = birthdayContacts[idx];
-                              final c = item['contact'] as Map<String, dynamic>;
-                              final name = c['fullName'] ?? '—';
-                              final photo = c['profilePhoto'] ?? '';
-                              final phone = c['phoneNumber'] ?? '';
-                              final waNum = c['whatsAppNumber'] ?? '';
-                              final imageProvider = AppConfig.getImageProvider(photo.toString());
-                              
-                              final daysLeft = item['daysLeft'] as int;
-                              final ageNext = item['ageNext'] as int;
-                              final formattedDate = item['formattedDate'] as String;
-
-                              String daysText = '';
-                              if (daysLeft == 0) {
-                                daysText = 'Today! 🎉';
-                              } else if (daysLeft == 1) {
-                                daysText = 'Tomorrow 🎂';
-                              } else {
-                                daysText = 'In $daysLeft Days ⏳';
-                              }
-
-                              return Container(
-                                margin: const EdgeInsets.only(bottom: 12),
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF1E1E1E),
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(color: Colors.white.withValues(alpha: 0.04)),
-                                  boxShadow: const [
-                                    BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4)),
-                                  ],
-                                ),
-                                child: Row(
+                    RefreshIndicator(
+                      onRefresh: _fetchAllData,
+                      color: Colors.lightBlueAccent,
+                      child: birthdayContacts.isEmpty
+                          ? SingleChildScrollView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              child: Container(
+                                height: MediaQuery.of(context).size.height * 0.6,
+                                alignment: Alignment.center,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    CircleAvatar(
-                                      radius: 24,
-                                      backgroundColor: Colors.lightBlueAccent.withValues(alpha: 0.2),
-                                      backgroundImage: imageProvider,
-                                      child: imageProvider == null
-                                          ? Text(
-                                              name.toString().substring(0, 1).toUpperCase(),
-                                              style: const TextStyle(color: Colors.lightBlueAccent, fontWeight: FontWeight.bold, fontSize: 18),
-                                            )
-                                          : null,
-                                    ),
-                                    const SizedBox(width: 14),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            name,
-                                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
-                                          ),
-                                          const SizedBox(height: 4),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                '$formattedDate • Turning $ageNext',
-                                                style: const TextStyle(color: Colors.white38, fontSize: 12),
-                                              ),
-                                            ],
-                                          ),
-                                          const SizedBox(height: 6),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                            decoration: BoxDecoration(
-                                              color: daysLeft == 0
-                                                  ? Colors.lightBlueAccent.withValues(alpha: 0.2)
-                                                  : Colors.lightBlueAccent.withValues(alpha: 0.12),
-                                              borderRadius: BorderRadius.circular(6),
-                                            ),
-                                            child: Text(
-                                              daysText,
-                                              style: TextStyle(
-                                                color: daysLeft == 0 ? Colors.lightBlueAccent : Colors.lightBlueAccent,
-                                                fontSize: 10,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                                    Icon(Icons.cake_rounded, size: 72, color: Colors.white.withValues(alpha: 0.08)),
+                                    const SizedBox(height: 16),
+                                    const Padding(
+                                      padding: EdgeInsets.symmetric(horizontal: 32),
+                                      child: Text(
+                                        'Contacts la yaarukum birthday dynamic-a setup panlana birthday list empty-a thaan varum da thambi! 👤🎂',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(color: Colors.white54, fontSize: 13, height: 1.5),
                                       ),
                                     ),
-                                    
-                                    // Contact Shortcuts (WA and Call)
-                                    if (waNum.toString().isNotEmpty)
-                                      IconButton(
-                                        icon: const Icon(Icons.chat_rounded, color: Colors.lightBlueAccent, size: 20),
-                                        onPressed: () => _launchWhatsApp(waNum.toString()),
-                                      ),
-                                    if (phone.toString().isNotEmpty)
-                                      IconButton(
-                                        icon: const Icon(Icons.phone_rounded, color: Colors.lightBlueAccent, size: 20),
-                                        onPressed: () => _launchCall(phone.toString()),
-                                      ),
                                   ],
                                 ),
-                              );
-                            },
-                          ),
+                              ),
+                            )
+                          : ListView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              padding: const EdgeInsets.all(16),
+                              itemCount: birthdayContacts.length,
+                              itemBuilder: (ctx, idx) {
+                                final item = birthdayContacts[idx];
+                                final c = item['contact'] as Map<String, dynamic>;
+                                final name = c['fullName'] ?? '—';
+                                final photo = c['profilePhoto'] ?? '';
+                                final phone = c['phoneNumber'] ?? '';
+                                final waNum = c['whatsAppNumber'] ?? '';
+                                final imageProvider = AppConfig.getImageProvider(photo.toString());
+                                
+                                final daysLeft = item['daysLeft'] as int;
+                                final ageNext = item['ageNext'] as int;
+                                final formattedDate = item['formattedDate'] as String;
+
+                                String daysText = '';
+                                if (daysLeft == 0) {
+                                  daysText = 'Today! 🎉';
+                                } else if (daysLeft == 1) {
+                                  daysText = 'Tomorrow 🎂';
+                                } else {
+                                  daysText = 'In $daysLeft Days ⏳';
+                                }
+
+                                return Container(
+                                  margin: const EdgeInsets.only(bottom: 12),
+                                  padding: const EdgeInsets.all(16),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF1E1E1E),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(color: Colors.white.withValues(alpha: 0.04)),
+                                    boxShadow: const [
+                                      BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 4)),
+                                    ],
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 24,
+                                        backgroundColor: Colors.lightBlueAccent.withValues(alpha: 0.2),
+                                        backgroundImage: imageProvider,
+                                        child: imageProvider == null
+                                            ? Text(
+                                                name.toString().substring(0, 1).toUpperCase(),
+                                                style: const TextStyle(color: Colors.lightBlueAccent, fontWeight: FontWeight.bold, fontSize: 18),
+                                              )
+                                            : null,
+                                      ),
+                                      const SizedBox(width: 14),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              name,
+                                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  '$formattedDate • Turning $ageNext',
+                                                  style: const TextStyle(color: Colors.white38, fontSize: 12),
+                                                ),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 6),
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                              decoration: BoxDecoration(
+                                                color: daysLeft == 0
+                                                    ? Colors.lightBlueAccent.withValues(alpha: 0.2)
+                                                    : Colors.lightBlueAccent.withValues(alpha: 0.12),
+                                                borderRadius: BorderRadius.circular(6),
+                                              ),
+                                              child: Text(
+                                                daysText,
+                                                style: TextStyle(
+                                                  color: daysLeft == 0 ? Colors.lightBlueAccent : Colors.lightBlueAccent,
+                                                  fontSize: 10,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      
+                                      // Contact Shortcuts (WA and Call)
+                                      if (waNum.toString().isNotEmpty)
+                                        IconButton(
+                                          icon: const Icon(Icons.chat_rounded, color: Colors.lightBlueAccent, size: 20),
+                                          onPressed: () => _launchWhatsApp(waNum.toString()),
+                                        ),
+                                      if (phone.toString().isNotEmpty)
+                                        IconButton(
+                                          icon: const Icon(Icons.phone_rounded, color: Colors.lightBlueAccent, size: 20),
+                                          onPressed: () => _launchCall(phone.toString()),
+                                        ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                    ),
                   ],
                 ),
     );

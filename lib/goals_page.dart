@@ -410,12 +410,7 @@ class _GoalsPageState extends State<GoalsPage> {
           '🎯 Goal Tracker',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: Colors.lightBlueAccent),
-            onPressed: _fetchGoals,
-          ),
-        ],
+        actions: const [],
       ),
       body: Column(
         children: [
@@ -516,188 +511,203 @@ class _GoalsPageState extends State<GoalsPage> {
 
           // Goals List View
           Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator(color: Colors.lightBlueAccent))
-                : _errorMessage != null
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.error_outline_rounded, color: Colors.redAccent, size: 48),
-                            const SizedBox(height: 12),
-                            Text(_errorMessage!, style: const TextStyle(color: Colors.white70)),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: _fetchGoals,
-                              child: const Text('Retry'),
-                            ),
-                          ],
-                        ),
-                      )
-                    : filteredGoals.isEmpty
-                        ? Center(
+            child: RefreshIndicator(
+              onRefresh: _fetchGoals,
+              color: Colors.lightBlueAccent,
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator(color: Colors.lightBlueAccent))
+                  : _errorMessage != null
+                      ? SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Container(
+                            height: MediaQuery.of(context).size.height * 0.5,
+                            alignment: Alignment.center,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.emoji_events_rounded, size: 72, color: Colors.white.withValues(alpha: 0.08)),
+                                const Icon(Icons.error_outline_rounded, color: Colors.redAccent, size: 48),
+                                const SizedBox(height: 12),
+                                Text(_errorMessage!, style: const TextStyle(color: Colors.white70)),
                                 const SizedBox(height: 16),
-                                const Text('No goals setup yet', style: TextStyle(color: Colors.white54, fontSize: 15)),
-                                const SizedBox(height: 8),
-                                const Text('Tap + to set your first goal!', style: TextStyle(color: Colors.white30, fontSize: 12)),
+                                ElevatedButton(
+                                  onPressed: _fetchGoals,
+                                  child: const Text('Retry'),
+                                ),
                               ],
                             ),
-                          )
-                        : ListView.builder(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            itemCount: filteredGoals.length,
-                            itemBuilder: (ctx, idx) {
-                              final g = filteredGoals[idx];
-                              final name = g['goalName'] ?? '—';
-                              final type = g['type'] ?? 'general';
-                              final amountStr = g['amount'] ?? '0';
-                              final savedAmountStr = g['savedAmount'] ?? '0';
-                              final desc = g['description'] ?? '';
-                              final isMoney = type == 'money';
-                              final themeColor = isMoney ? Colors.blueAccent : Colors.lightBlueAccent;
+                          ),
+                        )
+                      : filteredGoals.isEmpty
+                          ? SingleChildScrollView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              child: Container(
+                                height: MediaQuery.of(context).size.height * 0.5,
+                                alignment: Alignment.center,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.emoji_events_rounded, size: 72, color: Colors.white.withValues(alpha: 0.08)),
+                                    const SizedBox(height: 16),
+                                    const Text('No goals setup yet', style: TextStyle(color: Colors.white54, fontSize: 15)),
+                                    const SizedBox(height: 8),
+                                    const Text('Tap + to set your first goal!', style: TextStyle(color: Colors.white30, fontSize: 12)),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : ListView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              itemCount: filteredGoals.length,
+                              itemBuilder: (ctx, idx) {
+                                final g = filteredGoals[idx];
+                                final name = g['goalName'] ?? '—';
+                                final type = g['type'] ?? 'general';
+                                final amountStr = g['amount'] ?? '0';
+                                final savedAmountStr = g['savedAmount'] ?? '0';
+                                final desc = g['description'] ?? '';
+                                final isMoney = type == 'money';
+                                final themeColor = isMoney ? Colors.blueAccent : Colors.lightBlueAccent;
 
-                              return GestureDetector(
-                                onTap: () => _openFormSheet(existing: g),
-                                child: Container(
-                                  margin: const EdgeInsets.only(bottom: 12),
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF1E1E1E),
-                                    borderRadius: BorderRadius.circular(16),
-                                    border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          // Leading Goal Type Icon
-                                          Container(
-                                            width: 44,
-                                            height: 44,
-                                            decoration: BoxDecoration(
-                                              color: themeColor.withValues(alpha: 0.12),
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
-                                            child: Icon(
-                                              isMoney ? Icons.currency_rupee_rounded : Icons.assignment_turned_in_rounded,
-                                              color: themeColor,
-                                              size: 22,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 14),
-                                          // Goal Details
-                                          Expanded(
-                                            child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  name,
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 15,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 4),
-                                                Text(
-                                                  desc.isNotEmpty ? desc : 'No description',
-                                                  style: const TextStyle(color: Colors.white38, fontSize: 12),
-                                                  maxLines: 1,
-                                                  overflow: TextOverflow.ellipsis,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                          const SizedBox(width: 12),
-                                          // Right-side value/type indicator
-                                          if (isMoney) ...[
-                                            Column(
-                                              crossAxisAlignment: CrossAxisAlignment.end,
-                                              children: [
-                                                Text(
-                                                  '₹$amountStr',
-                                                  style: TextStyle(
-                                                    color: themeColor,
-                                                    fontSize: 15,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 2),
-                                                const Text(
-                                                  'Target',
-                                                  style: TextStyle(color: Colors.white30, fontSize: 9),
-                                                ),
-                                              ],
-                                            ),
-                                          ] else ...[
-                                            Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                              decoration: BoxDecoration(
-                                                color: Colors.lightBlueAccent.withValues(alpha: 0.1),
-                                                borderRadius: BorderRadius.circular(8),
-                                              ),
-                                              child: const Text(
-                                                'General',
-                                                style: TextStyle(color: Colors.lightBlueAccent, fontSize: 10, fontWeight: FontWeight.bold),
-                                              ),
-                                            ),
-                                          ],
-                                        ],
-                                      ),
-                                      if (isMoney) ...[
-                                        const SizedBox(height: 16),
-                                        Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                return GestureDetector(
+                                  onTap: () => _openFormSheet(existing: g),
+                                  child: Container(
+                                    margin: const EdgeInsets.only(bottom: 12),
+                                    padding: const EdgeInsets.all(16),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF1E1E1E),
+                                      borderRadius: BorderRadius.circular(16),
+                                      border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                                      children: [
+                                        Row(
                                           children: [
-                                            Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              children: [
-                                                RichText(
-                                                  text: TextSpan(
-                                                    style: const TextStyle(fontSize: 12, color: Colors.white70),
-                                                    children: [
-                                                      const TextSpan(text: 'Saved: '),
-                                                      TextSpan(
-                                                        text: '₹$savedAmountStr',
-                                                        style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                                Text(
-                                                  '${((double.tryParse(savedAmountStr) ?? 0.0) / (double.tryParse(amountStr) ?? 1.0) * 100).clamp(0.0, 100.0).toStringAsFixed(1)}%',
-                                                  style: const TextStyle(
-                                                    color: Colors.blueAccent,
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            const SizedBox(height: 8),
-                                            ClipRRect(
-                                              borderRadius: BorderRadius.circular(4),
-                                              child: LinearProgressIndicator(
-                                                value: ((double.tryParse(savedAmountStr) ?? 0.0) / (double.tryParse(amountStr) ?? 1.0)).clamp(0.0, 1.0),
-                                                backgroundColor: Colors.white.withValues(alpha: 0.06),
-                                                valueColor: const AlwaysStoppedAnimation<Color>(Colors.blueAccent),
-                                                minHeight: 6,
+                                            // Leading Goal Type Icon
+                                            Container(
+                                              width: 44,
+                                              height: 44,
+                                              decoration: BoxDecoration(
+                                                color: themeColor.withValues(alpha: 0.12),
+                                                borderRadius: BorderRadius.circular(12),
+                                              ),
+                                              child: Icon(
+                                                isMoney ? Icons.currency_rupee_rounded : Icons.assignment_turned_in_rounded,
+                                                color: themeColor,
+                                                size: 22,
                                               ),
                                             ),
+                                            const SizedBox(width: 14),
+                                            // Goal Details
+                                            Expanded(
+                                              child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    name,
+                                                    style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 15,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 4),
+                                                  Text(
+                                                    desc.isNotEmpty ? desc : 'No description',
+                                                    style: const TextStyle(color: Colors.white38, fontSize: 12),
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                            const SizedBox(width: 12),
+                                            // Right-side value/type indicator
+                                            if (isMoney) ...[
+                                              Column(
+                                                crossAxisAlignment: CrossAxisAlignment.end,
+                                                children: [
+                                                  Text(
+                                                    '₹$amountStr',
+                                                    style: TextStyle(
+                                                      color: themeColor,
+                                                      fontSize: 15,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 2),
+                                                  const Text(
+                                                    'Target',
+                                                    style: TextStyle(color: Colors.white30, fontSize: 9),
+                                                  ),
+                                                ],
+                                              ),
+                                            ] else ...[
+                                              Container(
+                                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.lightBlueAccent.withValues(alpha: 0.1),
+                                                  borderRadius: BorderRadius.circular(8),
+                                                ),
+                                                child: const Text(
+                                                  'General',
+                                                  style: TextStyle(color: Colors.lightBlueAccent, fontSize: 10, fontWeight: FontWeight.bold),
+                                                ),
+                                              ),
+                                            ],
                                           ],
                                         ),
+                                        if (isMoney) ...[
+                                          const SizedBox(height: 16),
+                                          Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  RichText(
+                                                    text: TextSpan(
+                                                      style: const TextStyle(fontSize: 12, color: Colors.white70),
+                                                      children: [
+                                                        const TextSpan(text: 'Saved: '),
+                                                        TextSpan(
+                                                          text: '₹$savedAmountStr',
+                                                          style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    '${((double.tryParse(savedAmountStr) ?? 0.0) / (double.tryParse(amountStr) ?? 1.0) * 100).clamp(0.0, 100.0).toStringAsFixed(1)}%',
+                                                    style: const TextStyle(
+                                                      color: Colors.blueAccent,
+                                                      fontSize: 12,
+                                                      fontWeight: FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 8),
+                                              ClipRRect(
+                                                borderRadius: BorderRadius.circular(4),
+                                                child: LinearProgressIndicator(
+                                                  value: ((double.tryParse(savedAmountStr) ?? 0.0) / (double.tryParse(amountStr) ?? 1.0)).clamp(0.0, 1.0),
+                                                  backgroundColor: Colors.white.withValues(alpha: 0.06),
+                                                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.blueAccent),
+                                                  minHeight: 6,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
                                       ],
-                                    ],
+                                    ),
                                   ),
-                                ),
-                              );
-                            },
-                          ),
+                                );
+                              },
+                            ),
+            ),
           ),
         ],
       ),

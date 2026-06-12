@@ -531,12 +531,7 @@ class _ContactsPageState extends State<ContactsPage> {
           '👤 Contact Directory',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded, color: Colors.lightBlueAccent),
-            onPressed: _fetchContacts,
-          ),
-        ],
+        actions: const [],
       ),
       body: Column(
         children: [
@@ -608,208 +603,223 @@ class _ContactsPageState extends State<ContactsPage> {
 
           // Contacts List
           Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator(color: Colors.lightBlueAccent))
-                : _errorMessage != null
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons.error_outline_rounded, color: Colors.redAccent, size: 48),
-                            const SizedBox(height: 12),
-                            Text(_errorMessage!, style: const TextStyle(color: Colors.white70)),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: _fetchContacts,
-                              child: const Text('Retry'),
-                            ),
-                          ],
-                        ),
-                      )
-                    : filteredContacts.isEmpty
-                        ? Center(
+            child: RefreshIndicator(
+              onRefresh: _fetchContacts,
+              color: Colors.lightBlueAccent,
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator(color: Colors.lightBlueAccent))
+                  : _errorMessage != null
+                      ? SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          child: Container(
+                            height: MediaQuery.of(context).size.height * 0.6,
+                            alignment: Alignment.center,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.people_alt_rounded, size: 72, color: Colors.white.withValues(alpha: 0.08)),
+                                const Icon(Icons.error_outline_rounded, color: Colors.redAccent, size: 48),
+                                const SizedBox(height: 12),
+                                Text(_errorMessage!, style: const TextStyle(color: Colors.white70)),
                                 const SizedBox(height: 16),
-                                const Text('No contacts found', style: TextStyle(color: Colors.white54, fontSize: 15)),
+                                ElevatedButton(
+                                  onPressed: _fetchContacts,
+                                  child: const Text('Retry'),
+                                ),
                               ],
                             ),
-                          )
-                        : ListView.builder(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            itemCount: filteredContacts.length,
-                            itemBuilder: (ctx, idx) {
-                              final c = filteredContacts[idx];
-                              final name = c['fullName'] ?? '—';
-                              final nick = c['nickname'] ?? '';
-                              final primaryPhone = c['phoneNumber'] ?? '—';
-                              final email = c['email'] ?? '—';
-                              final address = c['address'] ?? '';
-                              final company = c['company'] ?? '';
-                              final job = c['jobTitle'] ?? '';
-                              final bday = c['birthday'] ?? '';
-                              final photo = c['profilePhoto'] ?? '';
-                              final whatsApp = c['whatsAppNumber'] ?? '';
-                              final web = c['website'] ?? '';
-                              final notes = c['notes'] ?? '';
-                              final grp = c['groupCategory'] ?? 'Other';
-
-                              // Multi-fields decode
-                              Map<String, dynamic> soc = {};
-                              if (c['socialMediaLinks'] != null && c['socialMediaLinks'].toString().isNotEmpty) {
-                                try { soc = Map<String, dynamic>.from(jsonDecode(c['socialMediaLinks'])); } catch (_) {}
-                              }
-                              Map<String, dynamic> mNums = {};
-                              if (c['multipleNumbers'] != null && c['multipleNumbers'].toString().isNotEmpty) {
-                                try { mNums = Map<String, dynamic>.from(jsonDecode(c['multipleNumbers'])); } catch (_) {}
-                              }
-                              Map<String, dynamic> mEms = {};
-                              if (c['multipleEmails'] != null && c['multipleEmails'].toString().isNotEmpty) {
-                                try { mEms = Map<String, dynamic>.from(jsonDecode(c['multipleEmails'])); } catch (_) {}
-                              }
-
-                              final imageProvider = AppConfig.getImageProvider(photo.toString());
-
-                              return Container(
-                                margin: const EdgeInsets.only(bottom: 14),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF1E1E1E),
-                                  borderRadius: BorderRadius.circular(16),
-                                  border: Border.all(color: Colors.white.withValues(alpha: 0.04)),
-                                ),
-                                child: ExpansionTile(
-                                  leading: CircleAvatar(
-                                    radius: 22,
-                                    backgroundColor: Colors.lightBlueAccent.withValues(alpha: 0.2),
-                                    backgroundImage: imageProvider,
-                                    child: imageProvider == null
-                                        ? Text(
-                                            name.toString().substring(0, 1).toUpperCase(),
-                                            style: const TextStyle(color: Colors.lightBlueAccent, fontWeight: FontWeight.bold, fontSize: 16),
-                                          )
-                                        : null,
-                                  ),
-                                  title: Row(
-                                    children: [
-                                      Expanded(
-                                        child: Text(
-                                          name,
-                                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
-                                        ),
-                                      ),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                        decoration: BoxDecoration(
-                                          color: Colors.lightBlueAccent.withValues(alpha: 0.12),
-                                          borderRadius: BorderRadius.circular(6),
-                                        ),
-                                        child: Text(
-                                          grp,
-                                          style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 10, fontWeight: FontWeight.bold),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  subtitle: Text(
-                                    nick.toString().isNotEmpty ? 'Nickname: $nick' : primaryPhone,
-                                    style: const TextStyle(color: Colors.white38, fontSize: 12),
-                                  ),
-                                  trailing: const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white24),
-                                  childrenPadding: const EdgeInsets.all(16),
-                                  expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
+                          ),
+                        )
+                      : filteredContacts.isEmpty
+                          ? SingleChildScrollView(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              child: Container(
+                                height: MediaQuery.of(context).size.height * 0.6,
+                                alignment: Alignment.center,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Divider(color: Colors.white12, height: 1),
-                                    const SizedBox(height: 12),
-
-                                    // Phone & Email Lists
-                                    if (primaryPhone.toString().isNotEmpty)
-                                      _buildInfoRow('Primary Phone', primaryPhone, Icons.phone_rounded, Colors.lightBlueAccent),
-                                    if (whatsApp.toString().isNotEmpty)
-                                      _buildInfoRow('WhatsApp', whatsApp, Icons.chat_rounded, Colors.lightBlueAccent),
-                                    if (email.toString().isNotEmpty)
-                                      _buildInfoRow('Primary Email', email, Icons.email_rounded, Colors.blueAccent),
-
-                                    // Multi Phone
-                                    if (mNums['home']?.toString().isNotEmpty ?? false)
-                                      _buildInfoRow('Home Phone', mNums['home'], Icons.home_rounded, Colors.lightBlue),
-                                    if (mNums['work']?.toString().isNotEmpty ?? false)
-                                      _buildInfoRow('Work Phone', mNums['work'], Icons.phone_android_rounded, Colors.lightBlue),
-                                    if (mNums['mobile']?.toString().isNotEmpty ?? false)
-                                      _buildInfoRow('Mobile Phone', mNums['mobile'], Icons.smartphone_rounded, Colors.lightBlue),
-
-                                    // Multi Email
-                                    if (mEms['home']?.toString().isNotEmpty ?? false)
-                                      _buildInfoRow('Home Email', mEms['home'], Icons.mail_outline_rounded, Colors.indigo),
-                                    if (mEms['work']?.toString().isNotEmpty ?? false)
-                                      _buildInfoRow('Work Email', mEms['work'], Icons.contact_mail_rounded, Colors.blueGrey),
-
-                                    // Professional Info
-                                    if (company.toString().isNotEmpty || job.toString().isNotEmpty)
-                                      _buildInfoRow(
-                                        'Work',
-                                        '${job.toString().isNotEmpty ? job : ""} ${company.toString().isNotEmpty ? "@ $company" : ""}',
-                                        Icons.business_rounded,
-                                        Colors.lightBlueAccent,
-                                      ),
-
-                                    // Website
-                                    if (web.toString().isNotEmpty)
-                                      _buildInfoRow('Website', web, Icons.language_rounded, Colors.indigoAccent),
-
-                                    // Birthday
-                                    if (bday.toString().isNotEmpty)
-                                      _buildInfoRow('Birthday', bday, Icons.cake_rounded, Colors.redAccent),
-
-                                    // Address
-                                    if (address.toString().isNotEmpty)
-                                      _buildInfoRow('Address', address, Icons.location_on_rounded, Colors.redAccent),
-
-                                    // Social Links
-                                    if ((soc['instagram']?.toString().isNotEmpty ?? false) ||
-                                        (soc['facebook']?.toString().isNotEmpty ?? false) ||
-                                        (soc['linkedin']?.toString().isNotEmpty ?? false)) ...[
-                                      const SizedBox(height: 8),
-                                      const Text('Socials', style: TextStyle(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold)),
-                                      const SizedBox(height: 6),
-                                      Row(
-                                        children: [
-                                          if (soc['instagram']?.toString().isNotEmpty ?? false)
-                                            _buildSocialChip('Instagram', Colors.lightBlueAccent),
-                                          if (soc['facebook']?.toString().isNotEmpty ?? false)
-                                            _buildSocialChip('Facebook', Colors.blueAccent),
-                                          if (soc['linkedin']?.toString().isNotEmpty ?? false)
-                                            _buildSocialChip('LinkedIn', Colors.blueAccent),
-                                        ],
-                                      ),
-                                    ],
-
-                                    // Notes
-                                    if (notes.toString().isNotEmpty) ...[
-                                      const SizedBox(height: 12),
-                                      const Text('Notes', style: TextStyle(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold)),
-                                      const SizedBox(height: 4),
-                                      Text(notes, style: const TextStyle(color: Colors.white70, fontSize: 13, height: 1.4)),
-                                    ],
-
+                                    Icon(Icons.people_alt_rounded, size: 72, color: Colors.white.withValues(alpha: 0.08)),
                                     const SizedBox(height: 16),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
+                                    const Text('No contacts found', style: TextStyle(color: Colors.white54, fontSize: 15)),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : ListView.builder(
+                              physics: const AlwaysScrollableScrollPhysics(),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              itemCount: filteredContacts.length,
+                              itemBuilder: (ctx, idx) {
+                                final c = filteredContacts[idx];
+                                final name = c['fullName'] ?? '—';
+                                final nick = c['nickname'] ?? '';
+                                final primaryPhone = c['phoneNumber'] ?? '—';
+                                final email = c['email'] ?? '—';
+                                final address = c['address'] ?? '';
+                                final company = c['company'] ?? '';
+                                final job = c['jobTitle'] ?? '';
+                                final bday = c['birthday'] ?? '';
+                                final photo = c['profilePhoto'] ?? '';
+                                final whatsApp = c['whatsAppNumber'] ?? '';
+                                final web = c['website'] ?? '';
+                                final notes = c['notes'] ?? '';
+                                final grp = c['groupCategory'] ?? 'Other';
+
+                                // Multi-fields decode
+                                Map<String, dynamic> soc = {};
+                                if (c['socialMediaLinks'] != null && c['socialMediaLinks'].toString().isNotEmpty) {
+                                  try { soc = Map<String, dynamic>.from(jsonDecode(c['socialMediaLinks'])); } catch (_) {}
+                                }
+                                Map<String, dynamic> mNums = {};
+                                if (c['multipleNumbers'] != null && c['multipleNumbers'].toString().isNotEmpty) {
+                                  try { mNums = Map<String, dynamic>.from(jsonDecode(c['multipleNumbers'])); } catch (_) {}
+                                }
+                                Map<String, dynamic> mEms = {};
+                                if (c['multipleEmails'] != null && c['multipleEmails'].toString().isNotEmpty) {
+                                  try { mEms = Map<String, dynamic>.from(jsonDecode(c['multipleEmails'])); } catch (_) {}
+                                }
+
+                                final imageProvider = AppConfig.getImageProvider(photo.toString());
+
+                                return Container(
+                                  margin: const EdgeInsets.only(bottom: 14),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF1E1E1E),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(color: Colors.white.withValues(alpha: 0.04)),
+                                  ),
+                                  child: ExpansionTile(
+                                    leading: CircleAvatar(
+                                      radius: 22,
+                                      backgroundColor: Colors.lightBlueAccent.withValues(alpha: 0.2),
+                                      backgroundImage: imageProvider,
+                                      child: imageProvider == null
+                                          ? Text(
+                                              name.toString().substring(0, 1).toUpperCase(),
+                                              style: const TextStyle(color: Colors.lightBlueAccent, fontWeight: FontWeight.bold, fontSize: 16),
+                                            )
+                                          : null,
+                                    ),
+                                    title: Row(
                                       children: [
-                                        TextButton.icon(
-                                          style: TextButton.styleFrom(foregroundColor: Colors.lightBlueAccent),
-                                          icon: const Icon(Icons.edit_rounded, size: 18),
-                                          label: const Text('Edit Details', style: TextStyle(fontWeight: FontWeight.bold)),
-                                          onPressed: () => _openFormSheet(existing: c),
+                                        Expanded(
+                                          child: Text(
+                                            name,
+                                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15),
+                                          ),
+                                        ),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                          decoration: BoxDecoration(
+                                            color: Colors.lightBlueAccent.withValues(alpha: 0.12),
+                                            borderRadius: BorderRadius.circular(6),
+                                          ),
+                                          child: Text(
+                                            grp,
+                                            style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 10, fontWeight: FontWeight.bold),
+                                          ),
                                         ),
                                       ],
                                     ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
+                                    subtitle: Text(
+                                      nick.toString().isNotEmpty ? 'Nickname: $nick' : primaryPhone,
+                                      style: const TextStyle(color: Colors.white38, fontSize: 12),
+                                    ),
+                                    trailing: const Icon(Icons.keyboard_arrow_down_rounded, color: Colors.white24),
+                                    childrenPadding: const EdgeInsets.all(16),
+                                    expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
+                                    children: [
+                                      const Divider(color: Colors.white12, height: 1),
+                                      const SizedBox(height: 12),
+
+                                      // Phone & Email Lists
+                                      if (primaryPhone.toString().isNotEmpty)
+                                        _buildInfoRow('Primary Phone', primaryPhone, Icons.phone_rounded, Colors.lightBlueAccent),
+                                      if (whatsApp.toString().isNotEmpty)
+                                        _buildInfoRow('WhatsApp', whatsApp, Icons.chat_rounded, Colors.lightBlueAccent),
+                                      if (email.toString().isNotEmpty)
+                                        _buildInfoRow('Primary Email', email, Icons.email_rounded, Colors.blueAccent),
+
+                                      // Multi Phone
+                                      if (mNums['home']?.toString().isNotEmpty ?? false)
+                                        _buildInfoRow('Home Phone', mNums['home'], Icons.home_rounded, Colors.lightBlue),
+                                      if (mNums['work']?.toString().isNotEmpty ?? false)
+                                        _buildInfoRow('Work Phone', mNums['work'], Icons.phone_android_rounded, Colors.lightBlue),
+                                      if (mNums['mobile']?.toString().isNotEmpty ?? false)
+                                        _buildInfoRow('Mobile Phone', mNums['mobile'], Icons.smartphone_rounded, Colors.lightBlue),
+
+                                      // Multi Email
+                                      if (mEms['home']?.toString().isNotEmpty ?? false)
+                                        _buildInfoRow('Home Email', mEms['home'], Icons.mail_outline_rounded, Colors.indigo),
+                                      if (mEms['work']?.toString().isNotEmpty ?? false)
+                                        _buildInfoRow('Work Email', mEms['work'], Icons.contact_mail_rounded, Colors.blueGrey),
+
+                                      // Professional Info
+                                      if (company.toString().isNotEmpty || job.toString().isNotEmpty)
+                                        _buildInfoRow(
+                                          'Work',
+                                          '${job.toString().isNotEmpty ? job : ""} ${company.toString().isNotEmpty ? "@ $company" : ""}',
+                                          Icons.business_rounded,
+                                          Colors.lightBlueAccent,
+                                        ),
+
+                                      // Website
+                                      if (web.toString().isNotEmpty)
+                                        _buildInfoRow('Website', web, Icons.language_rounded, Colors.indigoAccent),
+
+                                      // Birthday
+                                      if (bday.toString().isNotEmpty)
+                                        _buildInfoRow('Birthday', bday, Icons.cake_rounded, Colors.redAccent),
+
+                                      // Address
+                                      if (address.toString().isNotEmpty)
+                                        _buildInfoRow('Address', address, Icons.location_on_rounded, Colors.redAccent),
+
+                                      // Social Links
+                                      if ((soc['instagram']?.toString().isNotEmpty ?? false) ||
+                                          (soc['facebook']?.toString().isNotEmpty ?? false) ||
+                                          (soc['linkedin']?.toString().isNotEmpty ?? false)) ...[
+                                        const SizedBox(height: 8),
+                                        const Text('Socials', style: TextStyle(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold)),
+                                        const SizedBox(height: 6),
+                                        Row(
+                                          children: [
+                                            if (soc['instagram']?.toString().isNotEmpty ?? false)
+                                              _buildSocialChip('Instagram', Colors.lightBlueAccent),
+                                            if (soc['facebook']?.toString().isNotEmpty ?? false)
+                                              _buildSocialChip('Facebook', Colors.blueAccent),
+                                            if (soc['linkedin']?.toString().isNotEmpty ?? false)
+                                              _buildSocialChip('LinkedIn', Colors.blueAccent),
+                                          ],
+                                        ),
+                                      ],
+
+                                      // Notes
+                                      if (notes.toString().isNotEmpty) ...[
+                                        const SizedBox(height: 12),
+                                        const Text('Notes', style: TextStyle(color: Colors.white38, fontSize: 10, fontWeight: FontWeight.bold)),
+                                        const SizedBox(height: 4),
+                                        Text(notes, style: const TextStyle(color: Colors.white70, fontSize: 13, height: 1.4)),
+                                      ],
+
+                                      const SizedBox(height: 16),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.end,
+                                        children: [
+                                          TextButton.icon(
+                                            style: TextButton.styleFrom(foregroundColor: Colors.lightBlueAccent),
+                                            icon: const Icon(Icons.edit_rounded, size: 18),
+                                            label: const Text('Edit Details', style: TextStyle(fontWeight: FontWeight.bold)),
+                                            onPressed: () => _openFormSheet(existing: c),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+            ),
           ),
         ],
       ),
