@@ -18,10 +18,14 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
   String? _errorMessage;
   String _searchQuery = '';
 
+  int _stepCount = 0;
+  int _stepLimit = 10000;
+
   @override
   void initState() {
     super.initState();
     _fetchWorkouts();
+    _fetchTodaySteps();
   }
 
   Future<void> _fetchWorkouts() async {
@@ -190,6 +194,226 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
         _errorMessage = e.toString();
       });
     }
+  }
+
+  Future<void> _fetchTodaySteps() async {
+    final todayStr = DateTime.now().toIso8601String().split('T')[0];
+    try {
+      final res = await http
+          .get(Uri.parse('$_baseUrl/api/steps/$todayStr'))
+          .timeout(const Duration(seconds: 6));
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body);
+        setState(() {
+          _stepCount = data['steps'] ?? 0;
+          _stepLimit = data['limit'] ?? 10000;
+        });
+      } else {
+        throw Exception('Server error: ${res.statusCode}');
+      }
+    } catch (e) {
+      debugPrint('Error fetching steps: $e');
+    }
+  }
+
+  Future<void> _updateTodaySteps({int? steps, int? limit}) async {
+    final todayStr = DateTime.now().toIso8601String().split('T')[0];
+    try {
+      final bodyMap = <String, dynamic>{};
+      if (steps != null) bodyMap['steps'] = steps;
+      if (limit != null) bodyMap['limit'] = limit;
+
+      final res = await http
+          .post(
+            Uri.parse('$_baseUrl/api/steps/$todayStr'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode(bodyMap),
+          )
+          .timeout(const Duration(seconds: 6));
+
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body);
+        setState(() {
+          _stepCount = data['steps'] ?? 0;
+          _stepLimit = data['limit'] ?? 10000;
+        });
+      } else {
+        throw Exception('Failed to update steps');
+      }
+    } catch (e) {
+      debugPrint('Error updating steps: $e');
+    }
+  }
+
+  Future<void> _handleRefresh() async {
+    await Future.wait([
+      _fetchWorkouts(),
+      _fetchTodaySteps(),
+    ]);
+  }
+
+  void _openStepLimitDialog() {
+    final limitCtrl = TextEditingController(text: _stepLimit.toString());
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E1E),
+        title: const Row(
+          children: [
+            Icon(Icons.settings_rounded, color: AppColors.skyBlue),
+            SizedBox(width: 10),
+            Text('Daily Goal Limit', style: TextStyle(color: Colors.white)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Set your target daily step limit:',
+              style: TextStyle(color: Colors.white70, fontSize: 13),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: limitCtrl,
+              keyboardType: TextInputType.number,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: 'e.g. 10000',
+                hintStyle: const TextStyle(color: Colors.white30),
+                suffixText: 'steps',
+                suffixStyle: const TextStyle(color: Colors.white54),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.white24),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: AppColors.skyBlue, width: 1.5),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel', style: TextStyle(color: Colors.white54)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.skyBlue,
+              foregroundColor: Colors.black,
+            ),
+            onPressed: () {
+              final limit = int.tryParse(limitCtrl.text.trim());
+              if (limit != null && limit > 0) {
+                _updateTodaySteps(limit: limit);
+                Navigator.pop(ctx);
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _openCustomStepsDialog() {
+    final stepsCtrl = TextEditingController(text: _stepCount.toString());
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: const Color(0xFF1E1E1E),
+        title: const Row(
+          children: [
+            Icon(Icons.directions_walk_rounded, color: AppColors.skyBlue),
+            SizedBox(width: 10),
+            Text('Update Today\'s Steps', style: TextStyle(color: Colors.white)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Enter your current steps for today:',
+              style: TextStyle(color: Colors.white70, fontSize: 13),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: stepsCtrl,
+              keyboardType: TextInputType.number,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: 'e.g. 5000',
+                hintStyle: const TextStyle(color: Colors.white30),
+                suffixText: 'steps',
+                suffixStyle: const TextStyle(color: Colors.white54),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: Colors.white24),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: const BorderSide(color: AppColors.skyBlue, width: 1.5),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel', style: TextStyle(color: Colors.white54)),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.skyBlue,
+              foregroundColor: Colors.black,
+            ),
+            onPressed: () {
+              final steps = int.tryParse(stepsCtrl.text.trim());
+              if (steps != null && steps >= 0) {
+                _updateTodaySteps(steps: steps);
+                Navigator.pop(ctx);
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _quickStepButton({
+    required String label,
+    required IconData icon,
+    required VoidCallback onPressed,
+  }) {
+    return ElevatedButton.icon(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white.withValues(alpha: 0.04),
+        foregroundColor: Colors.white,
+        elevation: 0,
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: Colors.white.withValues(alpha: 0.08),
+          ),
+        ),
+      ),
+      onPressed: onPressed,
+      icon: Icon(icon, size: 14, color: AppColors.skyBlue),
+      label: Text(
+        label,
+        style: const TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
   }
 
 
@@ -716,6 +940,171 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
             ),
           ),
 
+          // Step Tracker Card
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [
+                  AppColors.surfaceCard,
+                  AppColors.surfaceSecondary,
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: AppColors.skyBlue.withValues(alpha: 0.1),
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.3),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColors.skyBlue.withValues(alpha: 0.15),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.directions_walk_rounded,
+                            color: AppColors.skyBlue,
+                            size: 22,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        const Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Daily Walk Steps',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            Text(
+                              'Keep moving to reach your goal',
+                              style: TextStyle(
+                                color: Colors.white54,
+                                fontSize: 11,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.settings_rounded,
+                        color: Colors.white54,
+                        size: 20,
+                      ),
+                      onPressed: _openStepLimitDialog,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '$_stepCount',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                        Text(
+                          'Goal: $_stepLimit steps',
+                          style: const TextStyle(
+                            color: Colors.white38,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        SizedBox(
+                          width: 60,
+                          height: 60,
+                          child: CircularProgressIndicator(
+                            value: _stepLimit > 0 ? (_stepCount / _stepLimit).clamp(0.0, 1.0) : 0.0,
+                            backgroundColor: Colors.white.withValues(alpha: 0.05),
+                            valueColor: const AlwaysStoppedAnimation<Color>(AppColors.skyBlue),
+                            strokeWidth: 6,
+                          ),
+                        ),
+                        Text(
+                          '${_stepLimit > 0 ? ((_stepCount / _stepLimit) * 100).toInt().clamp(0, 100) : 0}%',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _quickStepButton(
+                        label: '+500 steps',
+                        icon: Icons.directions_run_rounded,
+                        onPressed: () {
+                          _updateTodaySteps(steps: _stepCount + 500);
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _quickStepButton(
+                        label: '+1,000 steps',
+                        icon: Icons.flash_on_rounded,
+                        onPressed: () {
+                          _updateTodaySteps(steps: _stepCount + 1000);
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _quickStepButton(
+                        label: 'Custom',
+                        icon: Icons.edit_rounded,
+                        onPressed: _openCustomStepsDialog,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
           // Search input
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -758,7 +1147,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
           // Workouts List
           Expanded(
             child: RefreshIndicator(
-              onRefresh: _fetchWorkouts,
+              onRefresh: _handleRefresh,
               color: Colors.lightBlueAccent,
               child: _isLoading
                   ? const Center(
