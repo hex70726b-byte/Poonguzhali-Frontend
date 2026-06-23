@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'app_config.dart';
+import 'app_drawer.dart';
 
 class WalletsPage extends StatefulWidget {
   const WalletsPage({super.key});
@@ -997,12 +998,15 @@ class _WalletsPageState extends State<WalletsPage> {
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
+      drawer: const AppDrawer(activePage: 'wallets'),
       appBar: AppBar(
         backgroundColor: AppColors.surfaceCard,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.lightBlueAccent, size: 20),
-          onPressed: () => Navigator.of(context).pop(),
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu_rounded, color: AppColors.lightBlueAccent, size: 24),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
         ),
         title: const Text(
           'Wallets & Accounts',

@@ -24,6 +24,7 @@ import 'app_lock_screen.dart';
 import 'passwords_page.dart';
 import 'documents_page.dart';
 import 'todo_page.dart';
+import 'app_drawer.dart';
 
 void main() {
   runApp(const MyApp());
@@ -2037,6 +2038,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const AppDrawer(activePage: 'chat'),
       appBar: selectedMessage != null
           ? AppBar(
               backgroundColor: const Color(0xFF1F2C34),
@@ -2114,6 +2116,16 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             )
           : AppBar(
               backgroundColor: const Color(0xFF232323),
+              leading: Builder(
+                builder: (context) => IconButton(
+                  icon: const Icon(
+                    Icons.menu_rounded,
+                    color: AppColors.lightBlueAccent,
+                    size: 24,
+                  ),
+                  onPressed: () => Scaffold.of(context).openDrawer(),
+                ),
+              ),
               title: GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -2596,17 +2608,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                   ),
                                 ),
                               ),
-
-                              IconButton(
-                                style: IconButton.styleFrom(
-                                  backgroundColor: Color(0xFF232323),
-                                ),
-                                color: Colors.white,
-                                onPressed: () {
-                                  showAttachmentSheet(context);
-                                },
-                                icon: Icon(Icons.attach_file),
-                              ),
+                              const SizedBox(width: 8),
                             ],
                           ),
                         ),

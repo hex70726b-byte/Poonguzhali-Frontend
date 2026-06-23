@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'app_config.dart';
+import 'app_drawer.dart';
 
 class WorkoutsPage extends StatefulWidget {
   const WorkoutsPage({super.key});
@@ -598,16 +599,19 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
+      drawer: const AppDrawer(activePage: 'workout'),
       appBar: AppBar(
         backgroundColor: AppColors.surfaceCard,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            color: AppColors.lightBlueAccent,
-            size: 20,
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(
+              Icons.menu_rounded,
+              color: AppColors.lightBlueAccent,
+              size: 24,
+            ),
+            onPressed: () => Scaffold.of(context).openDrawer(),
           ),
-          onPressed: () => Navigator.of(context).pop(),
         ),
         title: const Text(
           '💪 Workouts Tracker',

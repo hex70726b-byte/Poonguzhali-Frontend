@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'app_config.dart';
+import 'app_drawer.dart';
 
 class PasswordEntry {
   final String id;
@@ -626,12 +627,15 @@ class _PasswordsPageState extends State<PasswordsPage> with SingleTickerProvider
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
+      drawer: const AppDrawer(activePage: 'passwords'),
       appBar: AppBar(
         backgroundColor: AppColors.surfaceCard,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.skyBlue, size: 20),
-          onPressed: () => Navigator.of(context).pop(),
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu_rounded, color: AppColors.skyBlue, size: 24),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
         ),
         title: const Text(
           '🔑 Passwords Vault',

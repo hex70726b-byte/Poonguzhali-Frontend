@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'app_config.dart';
+import 'app_drawer.dart';
 
 class AnalysisPage extends StatefulWidget {
   const AnalysisPage({super.key});
@@ -172,12 +173,15 @@ class _AnalysisPageState extends State<AnalysisPage> {
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
+      drawer: const AppDrawer(activePage: 'analysis'),
       appBar: AppBar(
         backgroundColor: AppColors.surfaceCard,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.indigoAccent, size: 20),
-          onPressed: () => Navigator.of(context).pop(),
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu_rounded, color: AppColors.indigoAccent, size: 24),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
         ),
         title: const Text(
           '📊 Core Analysis Center',
