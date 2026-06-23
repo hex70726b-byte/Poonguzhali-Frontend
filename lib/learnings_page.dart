@@ -60,7 +60,7 @@ class _LearningsPageState extends State<LearningsPage> {
       if (res.statusCode == 201) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('📚 Topic added to learning path!'), backgroundColor: Colors.lightBlueAccent),
+          const SnackBar(content: Text('📚 Topic added to learning path!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchLearnings();
       } else {
@@ -86,7 +86,7 @@ class _LearningsPageState extends State<LearningsPage> {
       if (res.statusCode == 200) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('📚 Topic updated successfully!'), backgroundColor: Colors.lightBlueAccent),
+          const SnackBar(content: Text('📚 Topic updated successfully!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchLearnings();
       } else {
@@ -188,13 +188,13 @@ class _LearningsPageState extends State<LearningsPage> {
                         decoration: InputDecoration(
                           labelText: 'Learning Topic / Title',
                           labelStyle: const TextStyle(color: Colors.white60),
-                          prefixIcon: const Icon(Icons.menu_book_rounded, color: Colors.lightBlueAccent),
+                          prefixIcon: const Icon(Icons.menu_book_rounded, color: AppColors.lightBlueAccent),
                           enabledBorder: OutlineInputBorder(
                             borderSide: const BorderSide(color: Colors.white24),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.5),
+                            borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 1.5),
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
@@ -212,14 +212,14 @@ class _LearningsPageState extends State<LearningsPage> {
                           labelStyle: const TextStyle(color: Colors.white60),
                           prefixIcon: const Padding(
                             padding: EdgeInsets.only(bottom: 90),
-                            child: Icon(Icons.article_rounded, color: Colors.lightBlueAccent),
+                            child: Icon(Icons.article_rounded, color: AppColors.lightBlueAccent),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderSide: const BorderSide(color: Colors.white24),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.5),
+                            borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 1.5),
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
@@ -235,7 +235,7 @@ class _LearningsPageState extends State<LearningsPage> {
                             style: TextStyle(color: Colors.white70, fontWeight: FontWeight.bold, fontSize: 14),
                           ),
                           TextButton.icon(
-                            style: TextButton.styleFrom(foregroundColor: Colors.lightBlueAccent),
+                            style: TextButton.styleFrom(foregroundColor: AppColors.lightBlueAccent),
                             icon: const Icon(Icons.add_circle_outline_rounded, size: 18),
                             label: const Text('Add Link', style: TextStyle(fontWeight: FontWeight.bold)),
                             onPressed: () {
@@ -264,14 +264,14 @@ class _LearningsPageState extends State<LearningsPage> {
                                   decoration: InputDecoration(
                                     hintText: 'https://example.com/resource',
                                     hintStyle: const TextStyle(color: Colors.white24),
-                                    prefixIcon: const Icon(Icons.link_rounded, color: Colors.lightBlueAccent, size: 18),
+                                    prefixIcon: const Icon(Icons.link_rounded, color: AppColors.lightBlueAccent, size: 18),
                                     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                                     enabledBorder: OutlineInputBorder(
                                       borderSide: const BorderSide(color: Colors.white12),
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                     focusedBorder: OutlineInputBorder(
-                                      borderSide: const BorderSide(color: Colors.lightBlueAccent),
+                                      borderSide: const BorderSide(color: AppColors.lightBlueAccent),
                                       borderRadius: BorderRadius.circular(10),
                                     ),
                                   ),
@@ -323,7 +323,7 @@ class _LearningsPageState extends State<LearningsPage> {
                             flex: 2,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.lightBlueAccent,
+                                backgroundColor: AppColors.lightBlueAccent,
                                 foregroundColor: Colors.black87,
                                 padding: const EdgeInsets.symmetric(vertical: 14),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -411,7 +411,7 @@ class _LearningsPageState extends State<LearningsPage> {
               decoration: InputDecoration(
                 hintText: 'Search topics & titles...',
                 hintStyle: const TextStyle(color: Colors.white30),
-                prefixIcon: const Icon(Icons.search_rounded, color: Colors.lightBlueAccent),
+                prefixIcon: const Icon(Icons.search_rounded, color: AppColors.lightBlueAccent),
                 contentPadding: const EdgeInsets.symmetric(vertical: 0),
                 fillColor: const Color(0xFF1E1E1E),
                 filled: true,
@@ -420,7 +420,7 @@ class _LearningsPageState extends State<LearningsPage> {
                   borderRadius: BorderRadius.circular(14),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.5),
+                  borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 1.5),
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
@@ -431,9 +431,9 @@ class _LearningsPageState extends State<LearningsPage> {
           Expanded(
             child: RefreshIndicator(
               onRefresh: _fetchLearnings,
-              color: Colors.lightBlueAccent,
+              color: AppColors.lightBlueAccent,
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator(color: Colors.lightBlueAccent))
+                  ? const Center(child: CircularProgressIndicator(color: AppColors.lightBlueAccent))
                   : _errorMessage != null
                       ? SingleChildScrollView(
                           physics: const AlwaysScrollableScrollPhysics(),
@@ -505,7 +505,7 @@ class _LearningsPageState extends State<LearningsPage> {
                                     ],
                                   ),
                                   child: ExpansionTile(
-                                    iconColor: Colors.lightBlueAccent,
+                                    iconColor: AppColors.lightBlueAccent,
                                     collapsedIconColor: Colors.white30,
                                     title: Text(
                                       topic,
@@ -522,7 +522,7 @@ class _LearningsPageState extends State<LearningsPage> {
                                       if (content.toString().isNotEmpty) ...[
                                         const Text(
                                           'NOTES',
-                                          style: TextStyle(color: Colors.lightBlueAccent, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
+                                          style: TextStyle(color: AppColors.lightBlueAccent, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
                                         ),
                                         const SizedBox(height: 6),
                                         Text(
@@ -540,7 +540,7 @@ class _LearningsPageState extends State<LearningsPage> {
                                       if (links.isNotEmpty) ...[
                                         const Text(
                                           'RESOURCES & LINKS',
-                                          style: TextStyle(color: Colors.lightBlueAccent, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
+                                          style: TextStyle(color: AppColors.lightBlueAccent, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1),
                                         ),
                                         const SizedBox(height: 8),
                                         Wrap(
@@ -548,19 +548,19 @@ class _LearningsPageState extends State<LearningsPage> {
                                           runSpacing: 8,
                                           children: links.map((link) {
                                             return ActionChip(
-                                              backgroundColor: Colors.lightBlueAccent.withValues(alpha: 0.1),
-                                              side: BorderSide(color: Colors.lightBlueAccent.withValues(alpha: 0.2)),
-                                              avatar: const Icon(Icons.link_rounded, size: 14, color: Colors.lightBlueAccent),
+                                              backgroundColor: AppColors.lightBlueAccent.withValues(alpha: 0.1),
+                                              side: BorderSide(color: AppColors.lightBlueAccent.withValues(alpha: 0.2)),
+                                              avatar: const Icon(Icons.link_rounded, size: 14, color: AppColors.lightBlueAccent),
                                               label: Text(
                                                 link.length > 30 ? '${link.substring(0, 27)}...' : link,
-                                                style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 11, fontWeight: FontWeight.bold),
+                                                style: const TextStyle(color: AppColors.lightBlueAccent, fontSize: 11, fontWeight: FontWeight.bold),
                                               ),
                                               onPressed: () {
                                                 Clipboard.setData(ClipboardData(text: link));
                                                 ScaffoldMessenger.of(context).showSnackBar(
                                                   const SnackBar(
                                                     content: Text('📋 Link copied to clipboard!'),
-                                                    backgroundColor: Colors.lightBlueAccent,
+                                                    backgroundColor: AppColors.lightBlueAccent,
                                                     duration: Duration(seconds: 2),
                                                   ),
                                                 );
@@ -575,7 +575,7 @@ class _LearningsPageState extends State<LearningsPage> {
                                         mainAxisAlignment: MainAxisAlignment.end,
                                         children: [
                                           TextButton.icon(
-                                            style: TextButton.styleFrom(foregroundColor: Colors.lightBlueAccent),
+                                            style: TextButton.styleFrom(foregroundColor: AppColors.lightBlueAccent),
                                             icon: const Icon(Icons.edit_rounded, size: 18),
                                             label: const Text('Edit Details', style: TextStyle(fontWeight: FontWeight.bold)),
                                             onPressed: () => _openFormSheet(existing: l),
@@ -592,7 +592,7 @@ class _LearningsPageState extends State<LearningsPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.lightBlueAccent,
+        backgroundColor: AppColors.lightBlueAccent,
         foregroundColor: Colors.black87,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         onPressed: () => _openFormSheet(),

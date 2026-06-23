@@ -75,7 +75,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('💪 Workout created! Let\'s crush it!'),
-            backgroundColor: Colors.lightBlue,
+            backgroundColor: AppColors.lightBlueAccent,
           ),
         );
         _fetchWorkouts();
@@ -117,7 +117,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('💪 Workout updated successfully!'),
-            backgroundColor: Colors.lightBlue,
+            backgroundColor: AppColors.lightBlueAccent,
           ),
         );
         _fetchWorkouts();
@@ -177,7 +177,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(completedMsg),
-            backgroundColor: Colors.lightBlueAccent,
+            backgroundColor: AppColors.lightBlueAccent,
           ),
         );
         _fetchWorkouts();
@@ -266,7 +266,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                           labelStyle: const TextStyle(color: Colors.white60),
                           prefixIcon: const Icon(
                             Icons.fitness_center_rounded,
-                            color: Colors.lightBlueAccent,
+                            color: AppColors.lightBlueAccent,
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderSide: const BorderSide(color: Colors.white24),
@@ -274,7 +274,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
-                              color: Colors.lightBlueAccent,
+                              color: AppColors.lightBlueAccent,
                               width: 1.5,
                             ),
                             borderRadius: BorderRadius.circular(12),
@@ -298,8 +298,8 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                         children: ['time', 'count'].map((t) {
                           final isSelected = selectedType == t;
                           final themeColor = t == 'time'
-                              ? Colors.blueAccent
-                              : Colors.lightBlueAccent;
+                              ? AppColors.blueAccent
+                              : AppColors.lightBlueAccent;
                           return Expanded(
                             child: GestureDetector(
                               onTap: () {
@@ -376,8 +376,8 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                                 ? Icons.timer_rounded
                                 : Icons.plus_one_rounded,
                             color: selectedType == 'time'
-                                ? Colors.blueAccent
-                                : Colors.lightBlueAccent,
+                                ? AppColors.blueAccent
+                                : AppColors.lightBlueAccent,
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderSide: const BorderSide(color: Colors.white24),
@@ -386,8 +386,8 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               color: selectedType == 'time'
-                                  ? Colors.blueAccent
-                                  : Colors.lightBlueAccent,
+                                  ? AppColors.blueAccent
+                                  : AppColors.lightBlueAccent,
                               width: 1.5,
                             ),
                             borderRadius: BorderRadius.circular(12),
@@ -436,13 +436,13 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                                   height: 40,
                                   decoration: BoxDecoration(
                                     color: isDaySelected
-                                        ? Colors.lightBlueAccent.withValues(
+                                        ? AppColors.lightBlueAccent.withValues(
                                             alpha: 0.18,
                                           )
                                         : Colors.white.withValues(alpha: 0.04),
                                     border: Border.all(
                                       color: isDaySelected
-                                          ? Colors.lightBlueAccent
+                                          ? AppColors.lightBlueAccent
                                           : Colors.white12,
                                       width: 1.2,
                                     ),
@@ -473,12 +473,12 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                             Expanded(
                               child: ElevatedButton.icon(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.lightBlueAccent.withValues(
+                                  backgroundColor: AppColors.lightBlueAccent.withValues(
                                     alpha: 0.15,
                                   ),
-                                  foregroundColor: Colors.lightBlueAccent,
+                                  foregroundColor: AppColors.lightBlueAccent,
                                   side: const BorderSide(
-                                    color: Colors.lightBlueAccent,
+                                    color: AppColors.lightBlueAccent,
                                   ),
                                   padding: const EdgeInsets.symmetric(
                                     vertical: 14,
@@ -508,8 +508,8 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: selectedType == 'time'
-                                    ? Colors.blueAccent
-                                    : Colors.lightBlueAccent,
+                                    ? AppColors.blueAccent
+                                    : AppColors.lightBlueAccent,
                                 foregroundColor: Colors.black,
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 14,
@@ -528,7 +528,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                                       content: Text(
                                         '⚠️ Workout Name is required',
                                       ),
-                                      backgroundColor: Colors.lightBlueAccent,
+                                      backgroundColor: AppColors.lightBlueAccent,
                                     ),
                                   );
                                   return;
@@ -540,7 +540,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                                       content: Text(
                                         '⚠️ Target value is required',
                                       ),
-                                      backgroundColor: Colors.lightBlueAccent,
+                                      backgroundColor: AppColors.lightBlueAccent,
                                     ),
                                   );
                                   return;
@@ -632,7 +632,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                       color: const Color(0xFF1E1E1E),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: Colors.blueAccent.withValues(alpha: 0.15),
+                        color: AppColors.blueAccent.withValues(alpha: 0.15),
                       ),
                     ),
                     child: Column(
@@ -642,7 +642,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                           children: [
                             Icon(
                               Icons.timer_rounded,
-                              color: Colors.blueAccent,
+                              color: AppColors.blueAccent,
                               size: 18,
                             ),
                             SizedBox(width: 6),
@@ -676,7 +676,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                       color: const Color(0xFF1E1E1E),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: Colors.lightBlueAccent.withValues(alpha: 0.15),
+                        color: AppColors.lightBlueAccent.withValues(alpha: 0.15),
                       ),
                     ),
                     child: Column(
@@ -686,7 +686,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                           children: [
                             Icon(
                               Icons.replay_circle_filled_rounded,
-                              color: Colors.lightBlueAccent,
+                              color: AppColors.lightBlueAccent,
                               size: 18,
                             ),
                             SizedBox(width: 6),
@@ -731,7 +731,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                 hintStyle: const TextStyle(color: Colors.white30),
                 prefixIcon: const Icon(
                   Icons.search_rounded,
-                  color: Colors.lightBlueAccent,
+                  color: AppColors.lightBlueAccent,
                 ),
                 contentPadding: const EdgeInsets.symmetric(vertical: 0),
                 fillColor: const Color(0xFF1E1E1E),
@@ -744,7 +744,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderSide: const BorderSide(
-                    color: Colors.lightBlueAccent,
+                    color: AppColors.lightBlueAccent,
                     width: 1.5,
                   ),
                   borderRadius: BorderRadius.circular(14),
@@ -759,10 +759,10 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
           Expanded(
             child: RefreshIndicator(
               onRefresh: _fetchWorkouts,
-              color: Colors.lightBlueAccent,
+              color: AppColors.lightBlueAccent,
               child: _isLoading
                   ? const Center(
-                      child: CircularProgressIndicator(color: Colors.lightBlueAccent),
+                      child: CircularProgressIndicator(color: AppColors.lightBlueAccent),
                     )
                   : _errorMessage != null
                   ? SingleChildScrollView(
@@ -775,7 +775,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                           children: [
                             const Icon(
                               Icons.error_outline_rounded,
-                              color: Colors.lightBlueAccent,
+                              color: AppColors.lightBlueAccent,
                               size: 48,
                             ),
                             const SizedBox(height: 12),
@@ -839,8 +839,8 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                       final isCompletedToday = lastCompleted == todayStr;
                       final isTime = type == 'time';
                       final themeColor = isTime
-                          ? Colors.blueAccent
-                          : Colors.lightBlueAccent;
+                          ? AppColors.blueAccent
+                          : AppColors.lightBlueAccent;
 
                       return GestureDetector(
                         onTap: () => _openFormSheet(existing: w),
@@ -852,7 +852,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
                               color: isCompletedToday
-                                  ? Colors.lightBlueAccent.withValues(alpha: 0.15)
+                                  ? AppColors.lightBlueAccent.withValues(alpha: 0.15)
                                   : Colors.white.withValues(alpha: 0.05),
                             ),
                           ),
@@ -870,14 +870,14 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                                   height: 44,
                                   decoration: BoxDecoration(
                                     color: isCompletedToday
-                                        ? Colors.lightBlueAccent.withValues(
+                                        ? AppColors.lightBlueAccent.withValues(
                                             alpha: 0.2,
                                           )
                                         : themeColor.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
                                       color: isCompletedToday
-                                          ? Colors.lightBlueAccent
+                                          ? AppColors.lightBlueAccent
                                           : Colors.transparent,
                                       width: 1.5,
                                     ),
@@ -887,7 +887,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                                         ? Icons.check_circle_rounded
                                         : Icons.fitness_center_rounded,
                                     color: isCompletedToday
-                                        ? Colors.lightBlueAccent
+                                        ? AppColors.lightBlueAccent
                                         : themeColor,
                                     size: 22,
                                   ),
@@ -958,13 +958,13 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                                         const Icon(
                                           Icons.local_fire_department_rounded,
                                           size: 14,
-                                          color: Colors.lightBlueAccent,
+                                          color: AppColors.lightBlueAccent,
                                         ),
                                         const SizedBox(width: 2),
                                         Text(
                                           'Streak: $streak days',
                                           style: const TextStyle(
-                                            color: Colors.lightBlueAccent,
+                                            color: AppColors.lightBlueAccent,
                                             fontSize: 11,
                                             fontWeight: FontWeight.bold,
                                           ),
@@ -989,7 +989,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.lightBlueAccent,
+        backgroundColor: AppColors.lightBlueAccent,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         onPressed: () => _openFormSheet(),

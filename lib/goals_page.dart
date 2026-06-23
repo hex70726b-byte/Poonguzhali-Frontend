@@ -64,7 +64,7 @@ class _GoalsPageState extends State<GoalsPage> {
       if (res.statusCode == 201) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('🎯 Goal created successfully!'), backgroundColor: Colors.blue),
+          const SnackBar(content: Text('🎯 Goal created successfully!'), backgroundColor: AppColors.primary),
         );
         _fetchGoals();
       } else {
@@ -95,7 +95,7 @@ class _GoalsPageState extends State<GoalsPage> {
       if (res.statusCode == 200) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('🎯 Goal updated successfully!'), backgroundColor: Colors.blue),
+          const SnackBar(content: Text('🎯 Goal updated successfully!'), backgroundColor: AppColors.primary),
         );
         _fetchGoals();
       } else {
@@ -187,13 +187,13 @@ class _GoalsPageState extends State<GoalsPage> {
                         decoration: InputDecoration(
                           labelText: 'Goal Name',
                           labelStyle: const TextStyle(color: Colors.white60),
-                          prefixIcon: const Icon(Icons.stars_rounded, color: Colors.lightBlueAccent),
+                          prefixIcon: const Icon(Icons.stars_rounded, color: AppColors.lightBlueAccent),
                           enabledBorder: OutlineInputBorder(
                             borderSide: const BorderSide(color: Colors.white24),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.5),
+                            borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 1.5),
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
@@ -214,7 +214,7 @@ class _GoalsPageState extends State<GoalsPage> {
                       Row(
                         children: ['general', 'money'].map((t) {
                           final isSelected = selectedType == t;
-                          final themeColor = t == 'money' ? Colors.blueAccent : Colors.lightBlueAccent;
+                          final themeColor = t == 'money' ? AppColors.blueAccent : AppColors.lightBlueAccent;
                           return Expanded(
                             child: GestureDetector(
                               onTap: () {
@@ -275,13 +275,13 @@ class _GoalsPageState extends State<GoalsPage> {
                           decoration: InputDecoration(
                             labelText: 'Target Amount (₹)',
                             labelStyle: const TextStyle(color: Colors.white60),
-                            prefixIcon: const Icon(Icons.account_balance_wallet_rounded, color: Colors.blueAccent),
+                            prefixIcon: const Icon(Icons.account_balance_wallet_rounded, color: AppColors.blueAccent),
                             enabledBorder: OutlineInputBorder(
                               borderSide: const BorderSide(color: Colors.white24),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.blueAccent, width: 1.5),
+                              borderSide: const BorderSide(color: AppColors.blueAccent, width: 1.5),
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
@@ -303,7 +303,7 @@ class _GoalsPageState extends State<GoalsPage> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.5),
+                            borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 1.5),
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
@@ -337,7 +337,7 @@ class _GoalsPageState extends State<GoalsPage> {
                             flex: 2,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: selectedType == 'money' ? Colors.blueAccent : Colors.lightBlueAccent,
+                                backgroundColor: selectedType == 'money' ? AppColors.blueAccent : AppColors.lightBlueAccent,
                                 foregroundColor: Colors.black,
                                 padding: const EdgeInsets.symmetric(vertical: 14),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -425,14 +425,14 @@ class _GoalsPageState extends State<GoalsPage> {
                     decoration: BoxDecoration(
                       color: const Color(0xFF1E1E1E),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.lightBlueAccent.withValues(alpha: 0.15)),
+                      border: Border.all(color: AppColors.lightBlueAccent.withValues(alpha: 0.15)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Row(
                           children: [
-                            Icon(Icons.assignment_turned_in_rounded, color: Colors.lightBlueAccent, size: 18),
+                            Icon(Icons.assignment_turned_in_rounded, color: AppColors.lightBlueAccent, size: 18),
                             SizedBox(width: 6),
                             Text('General Goals', style: TextStyle(color: Colors.white60, fontSize: 11)),
                           ],
@@ -453,14 +453,14 @@ class _GoalsPageState extends State<GoalsPage> {
                     decoration: BoxDecoration(
                       color: const Color(0xFF1E1E1E),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.blueAccent.withValues(alpha: 0.15)),
+                      border: Border.all(color: AppColors.blueAccent.withValues(alpha: 0.15)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Row(
                           children: [
-                            Icon(Icons.currency_rupee_rounded, color: Colors.blueAccent, size: 18),
+                            Icon(Icons.currency_rupee_rounded, color: AppColors.blueAccent, size: 18),
                             SizedBox(width: 6),
                             Text('Money Goals', style: TextStyle(color: Colors.white60, fontSize: 11)),
                           ],
@@ -491,7 +491,7 @@ class _GoalsPageState extends State<GoalsPage> {
               decoration: InputDecoration(
                 hintText: 'Search goals...',
                 hintStyle: const TextStyle(color: Colors.white30),
-                prefixIcon: const Icon(Icons.search_rounded, color: Colors.lightBlueAccent),
+                prefixIcon: const Icon(Icons.search_rounded, color: AppColors.lightBlueAccent),
                 contentPadding: const EdgeInsets.symmetric(vertical: 0),
                 fillColor: const Color(0xFF1E1E1E),
                 filled: true,
@@ -500,7 +500,7 @@ class _GoalsPageState extends State<GoalsPage> {
                   borderRadius: BorderRadius.circular(14),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.5),
+                  borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 1.5),
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
@@ -513,9 +513,9 @@ class _GoalsPageState extends State<GoalsPage> {
           Expanded(
             child: RefreshIndicator(
               onRefresh: _fetchGoals,
-              color: Colors.lightBlueAccent,
+              color: AppColors.lightBlueAccent,
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator(color: Colors.lightBlueAccent))
+                  ? const Center(child: CircularProgressIndicator(color: AppColors.lightBlueAccent))
                   : _errorMessage != null
                       ? SingleChildScrollView(
                           physics: const AlwaysScrollableScrollPhysics(),
@@ -567,7 +567,7 @@ class _GoalsPageState extends State<GoalsPage> {
                                 final savedAmountStr = g['savedAmount'] ?? '0';
                                 final desc = g['description'] ?? '';
                                 final isMoney = type == 'money';
-                                final themeColor = isMoney ? Colors.blueAccent : Colors.lightBlueAccent;
+                                final themeColor = isMoney ? AppColors.blueAccent : AppColors.lightBlueAccent;
 
                                 return GestureDetector(
                                   onTap: () => _openFormSheet(existing: g),
@@ -647,12 +647,12 @@ class _GoalsPageState extends State<GoalsPage> {
                                               Container(
                                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                                 decoration: BoxDecoration(
-                                                  color: Colors.lightBlueAccent.withValues(alpha: 0.1),
+                                                  color: AppColors.lightBlueAccent.withValues(alpha: 0.1),
                                                   borderRadius: BorderRadius.circular(8),
                                                 ),
                                                 child: const Text(
                                                   'General',
-                                                  style: TextStyle(color: Colors.lightBlueAccent, fontSize: 10, fontWeight: FontWeight.bold),
+                                                  style: TextStyle(color: AppColors.lightBlueAccent, fontSize: 10, fontWeight: FontWeight.bold),
                                                 ),
                                               ),
                                             ],
@@ -673,7 +673,7 @@ class _GoalsPageState extends State<GoalsPage> {
                                                         const TextSpan(text: 'Saved: '),
                                                         TextSpan(
                                                           text: '₹$savedAmountStr',
-                                                          style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold),
+                                                          style: const TextStyle(color: AppColors.blueAccent, fontWeight: FontWeight.bold),
                                                         ),
                                                       ],
                                                     ),
@@ -681,7 +681,7 @@ class _GoalsPageState extends State<GoalsPage> {
                                                   Text(
                                                     '${((double.tryParse(savedAmountStr) ?? 0.0) / (double.tryParse(amountStr) ?? 1.0) * 100).clamp(0.0, 100.0).toStringAsFixed(1)}%',
                                                     style: const TextStyle(
-                                                      color: Colors.blueAccent,
+                                                      color: AppColors.blueAccent,
                                                       fontSize: 12,
                                                       fontWeight: FontWeight.bold,
                                                     ),
@@ -694,7 +694,7 @@ class _GoalsPageState extends State<GoalsPage> {
                                                 child: LinearProgressIndicator(
                                                   value: ((double.tryParse(savedAmountStr) ?? 0.0) / (double.tryParse(amountStr) ?? 1.0)).clamp(0.0, 1.0),
                                                   backgroundColor: Colors.white.withValues(alpha: 0.06),
-                                                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.blueAccent),
+                                                  valueColor: const AlwaysStoppedAnimation<Color>(AppColors.blueAccent),
                                                   minHeight: 6,
                                                 ),
                                               ),
@@ -712,7 +712,7 @@ class _GoalsPageState extends State<GoalsPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.lightBlueAccent,
+        backgroundColor: AppColors.lightBlueAccent,
         foregroundColor: Colors.black,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         onPressed: () => _openFormSheet(),

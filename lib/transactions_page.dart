@@ -143,7 +143,7 @@ class _TransactionsPageState extends State<TransactionsPage>
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('⚠️ SMS permission access denied!'),
-                backgroundColor: Colors.blueAccent,
+                backgroundColor: AppColors.blueAccent,
               ),
             );
           }
@@ -168,7 +168,7 @@ class _TransactionsPageState extends State<TransactionsPage>
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(ctx),
-                child: const Text('Ok', style: TextStyle(color: Colors.lightBlueAccent)),
+                child: const Text('Ok', style: TextStyle(color: AppColors.lightBlueAccent)),
               ),
             ],
           ),
@@ -218,10 +218,10 @@ class _TransactionsPageState extends State<TransactionsPage>
                               Container(
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                  color: Colors.lightBlueAccent.withValues(alpha: 0.1),
+                                  color: AppColors.lightBlueAccent.withValues(alpha: 0.1),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: const Icon(Icons.account_balance_wallet_rounded, color: Colors.lightBlueAccent, size: 24),
+                                child: const Icon(Icons.account_balance_wallet_rounded, color: AppColors.lightBlueAccent, size: 24),
                               ),
                               const SizedBox(width: 14),
                               Expanded(
@@ -255,7 +255,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: const [
-                                      Icon(Icons.done_all_rounded, size: 64, color: Colors.lightBlueAccent),
+                                      Icon(Icons.done_all_rounded, size: 64, color: AppColors.lightBlueAccent),
                                       SizedBox(height: 16),
                                       Text(
                                         'All Messages Processed',
@@ -288,8 +288,8 @@ class _TransactionsPageState extends State<TransactionsPage>
                                     final amount = _extractAmount(body);
                                     
                                     final accentColor = isDebit
-                                        ? Colors.blueAccent
-                                        : (isCredit ? Colors.lightBlueAccent : Colors.lightBlueAccent);
+                                        ? AppColors.blueAccent
+                                        : (isCredit ? AppColors.lightBlueAccent : AppColors.lightBlueAccent);
 
                                     return Container(
                                       margin: const EdgeInsets.only(bottom: 12),
@@ -385,7 +385,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                                       );
                                                     },
                                                     style: TextButton.styleFrom(
-                                                      foregroundColor: Colors.blueAccent,
+                                                      foregroundColor: AppColors.blueAccent,
                                                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                                                       minimumSize: Size.zero,
                                                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -409,7 +409,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                                       );
                                                     },
                                                     style: ElevatedButton.styleFrom(
-                                                      backgroundColor: Colors.lightBlueAccent,
+                                                      backgroundColor: AppColors.lightBlueAccent,
                                                       foregroundColor: Colors.black,
                                                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                                       minimumSize: Size.zero,
@@ -516,10 +516,10 @@ class _TransactionsPageState extends State<TransactionsPage>
                         children: ['income', 'expense', 'exchange'].map((t) {
                           final sel = selType == t;
                           final color = t == 'income'
-                              ? Colors.lightBlueAccent
+                              ? AppColors.lightBlueAccent
                               : t == 'expense'
-                                  ? Colors.blueAccent
-                                  : Colors.lightBlueAccent;
+                                  ? AppColors.blueAccent
+                                  : AppColors.lightBlueAccent;
                           return Expanded(
                             child: GestureDetector(
                               onTap: () => setSheet(() {
@@ -636,7 +636,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                   const Icon(
                                     Icons.add_circle_outline_rounded,
                                     size: 14,
-                                    color: Colors.lightBlueAccent,
+                                    color: AppColors.lightBlueAccent,
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
@@ -646,7 +646,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                             ? 'Add Debt'
                                             : 'Add Goal',
                                     style: const TextStyle(
-                                      color: Colors.lightBlueAccent,
+                                      color: AppColors.lightBlueAccent,
                                       fontSize: 12,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -669,10 +669,10 @@ class _TransactionsPageState extends State<TransactionsPage>
                                   padding: const EdgeInsets.symmetric(vertical: 10),
                                   decoration: BoxDecoration(
                                     color: sel
-                                        ? Colors.lightBlueAccent.withOpacity(0.2)
+                                        ? AppColors.lightBlueAccent.withOpacity(0.2)
                                         : Colors.white.withOpacity(0.04),
                                     border: Border.all(
-                                      color: sel ? Colors.lightBlueAccent : Colors.white12,
+                                      color: sel ? AppColors.lightBlueAccent : Colors.white12,
                                     ),
                                     borderRadius: BorderRadius.circular(10),
                                   ),
@@ -680,7 +680,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                     o[0].toUpperCase() + o.substring(1),
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                      color: sel ? Colors.lightBlueAccent : Colors.white38,
+                                      color: sel ? AppColors.lightBlueAccent : Colors.white38,
                                       fontSize: 11,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -740,15 +740,15 @@ class _TransactionsPageState extends State<TransactionsPage>
                             Expanded(
                               child: OutlinedButton.icon(
                                 style: OutlinedButton.styleFrom(
-                                  side: const BorderSide(color: Colors.blueAccent),
+                                  side: const BorderSide(color: AppColors.blueAccent),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   padding: const EdgeInsets.symmetric(vertical: 14),
                                 ),
                                 onPressed: () => _delete(existing['_id']),
-                                icon: const Icon(Icons.delete_outline_rounded, color: Colors.blueAccent, size: 18),
-                                label: const Text('Delete', style: TextStyle(color: Colors.blueAccent)),
+                                icon: const Icon(Icons.delete_outline_rounded, color: AppColors.blueAccent, size: 18),
+                                label: const Text('Delete', style: TextStyle(color: AppColors.blueAccent)),
                               ),
                             ),
                           if (existing != null) const SizedBox(width: 12),
@@ -756,7 +756,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                             flex: 2,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.lightBlueAccent,
+                                backgroundColor: AppColors.lightBlueAccent,
                                 foregroundColor: Colors.black,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -769,7 +769,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                   ScaffoldMessenger.of(ctx2).showSnackBar(
                                     const SnackBar(
                                       content: Text('⚠️ Please enter a valid amount'),
-                                      backgroundColor: Colors.blueAccent,
+                                      backgroundColor: AppColors.blueAccent,
                                     ),
                                   );
                                   return;
@@ -781,7 +781,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                       content: Text(selType == 'exchange'
                                           ? '⚠️ Please select the source member'
                                           : '⚠️ Please select a member'),
-                                      backgroundColor: Colors.blueAccent,
+                                      backgroundColor: AppColors.blueAccent,
                                     ),
                                   );
                                   return;
@@ -791,7 +791,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                   ScaffoldMessenger.of(ctx2).showSnackBar(
                                     const SnackBar(
                                       content: Text('⚠️ Please select the destination member'),
-                                      backgroundColor: Colors.blueAccent,
+                                      backgroundColor: AppColors.blueAccent,
                                     ),
                                   );
                                   return;
@@ -801,7 +801,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                   ScaffoldMessenger.of(ctx2).showSnackBar(
                                     const SnackBar(
                                       content: Text('⚠️ Source and destination members cannot be the same'),
-                                      backgroundColor: Colors.blueAccent,
+                                      backgroundColor: AppColors.blueAccent,
                                     ),
                                   );
                                   return;
@@ -811,7 +811,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                   ScaffoldMessenger.of(ctx2).showSnackBar(
                                     const SnackBar(
                                       content: Text('⚠️ Please select a category'),
-                                      backgroundColor: Colors.blueAccent,
+                                      backgroundColor: AppColors.blueAccent,
                                     ),
                                   );
                                   return;
@@ -867,7 +867,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                           content: Text(existing == null
                                               ? '🎉 Transaction saved!'
                                               : '🎉 Transaction updated!'),
-                                          backgroundColor: Colors.lightBlue,
+                                          backgroundColor: AppColors.lightBlueAccent,
                                         ),
                                       );
                                       if (onSaveSuccess != null) {
@@ -885,7 +885,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
                                           content: Text('⚠️ $errMsg'),
-                                          backgroundColor: Colors.blueAccent,
+                                          backgroundColor: AppColors.blueAccent,
                                         ),
                                       );
                                     }
@@ -896,7 +896,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text('⚠️ Error: ${e.toString()}'),
-                                        backgroundColor: Colors.blueAccent,
+                                        backgroundColor: AppColors.blueAccent,
                                       ),
                                     );
                                   }
@@ -946,7 +946,7 @@ class _TransactionsPageState extends State<TransactionsPage>
           borderRadius: BorderRadius.circular(12),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 1.5),
           borderRadius: BorderRadius.circular(12),
         ),
       ),
@@ -1068,7 +1068,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                           ),
                                           TextSpan(
                                             text: '  -  ₹$mAmt',
-                                            style: const TextStyle(color: Colors.lightBlueAccent, fontWeight: FontWeight.w600),
+                                            style: const TextStyle(color: AppColors.lightBlueAccent, fontWeight: FontWeight.w600),
                                           ),
                                           TextSpan(
                                             text: '  -  $accName',
@@ -1079,7 +1079,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                     ),
                                   ),
                                   if (isSelected)
-                                    const Icon(Icons.check_circle_rounded, color: Colors.lightBlueAccent, size: 20),
+                                    const Icon(Icons.check_circle_rounded, color: AppColors.lightBlueAccent, size: 20),
                                 ],
                               ),
                               onTap: () {
@@ -1219,7 +1219,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                           ),
                                           TextSpan(
                                             text: '  -  ₹$amt',
-                                            style: const TextStyle(color: Colors.lightBlueAccent, fontWeight: FontWeight.w600),
+                                            style: const TextStyle(color: AppColors.lightBlueAccent, fontWeight: FontWeight.w600),
                                           ),
                                           TextSpan(
                                             text: '  (Due: $date)',
@@ -1230,7 +1230,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                     ),
                                   ),
                                   if (isSelected)
-                                    const Icon(Icons.check_circle_rounded, color: Colors.lightBlueAccent, size: 20),
+                                    const Icon(Icons.check_circle_rounded, color: AppColors.lightBlueAccent, size: 20),
                                 ],
                               ),
                               onTap: () {
@@ -1372,7 +1372,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                           if (isMoney) ...[
                                             TextSpan(
                                               text: '  -  ₹$amt',
-                                              style: const TextStyle(color: Colors.lightBlueAccent, fontWeight: FontWeight.w600),
+                                              style: const TextStyle(color: AppColors.lightBlueAccent, fontWeight: FontWeight.w600),
                                             ),
                                             const TextSpan(
                                               text: '  (Money Goal)',
@@ -1381,7 +1381,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                           ] else ...[
                                             const TextSpan(
                                               text: '  (General Goal)',
-                                              style: TextStyle(color: Colors.lightBlueAccent, fontSize: 11, fontWeight: FontWeight.bold),
+                                              style: TextStyle(color: AppColors.lightBlueAccent, fontSize: 11, fontWeight: FontWeight.bold),
                                             ),
                                           ]
                                         ],
@@ -1389,7 +1389,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                     ),
                                   ),
                                   if (isSelected)
-                                    const Icon(Icons.check_circle_rounded, color: Colors.lightBlueAccent, size: 20),
+                                    const Icon(Icons.check_circle_rounded, color: AppColors.lightBlueAccent, size: 20),
                                 ],
                               ),
                               onTap: () {
@@ -1500,8 +1500,8 @@ class _TransactionsPageState extends State<TransactionsPage>
                             _fetchAll();
                           });
                         },
-                        icon: const Icon(Icons.settings, size: 16, color: Colors.lightBlueAccent),
-                        label: const Text('Manage', style: TextStyle(color: Colors.lightBlueAccent, fontSize: 13)),
+                        icon: const Icon(Icons.settings, size: 16, color: AppColors.lightBlueAccent),
+                        label: const Text('Manage', style: TextStyle(color: AppColors.lightBlueAccent, fontSize: 13)),
                       ),
                     ],
                   ),
@@ -1522,7 +1522,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                               const SizedBox(height: 16),
                               ElevatedButton.icon(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.lightBlueAccent,
+                                  backgroundColor: AppColors.lightBlueAccent,
                                   foregroundColor: Colors.black,
                                 ),
                                 onPressed: () {
@@ -1566,7 +1566,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                     ),
                                   ),
                                   if (isSelected)
-                                    const Icon(Icons.check_circle_rounded, color: Colors.lightBlueAccent, size: 20),
+                                    const Icon(Icons.check_circle_rounded, color: AppColors.lightBlueAccent, size: 20),
                                 ],
                               ),
                               onTap: () {
@@ -1613,7 +1613,7 @@ class _TransactionsPageState extends State<TransactionsPage>
     if (list.isEmpty) {
       return RefreshIndicator(
         onRefresh: _fetchAll,
-        color: Colors.lightBlueAccent,
+        color: AppColors.lightBlueAccent,
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           child: Container(
@@ -1636,7 +1636,7 @@ class _TransactionsPageState extends State<TransactionsPage>
 
     return RefreshIndicator(
       onRefresh: _fetchAll,
-      color: Colors.lightBlueAccent,
+      color: AppColors.lightBlueAccent,
       child: ListView.builder(
         physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -1645,10 +1645,10 @@ class _TransactionsPageState extends State<TransactionsPage>
         final tx = list[i];
         final type = tx['type'] ?? 'income';
         final typeColor = type == 'income'
-            ? Colors.lightBlueAccent
+            ? AppColors.lightBlueAccent
             : type == 'expense'
-                ? Colors.blueAccent
-                : Colors.lightBlueAccent;
+                ? AppColors.blueAccent
+                : AppColors.lightBlueAccent;
         final typeIcon = type == 'income'
             ? Icons.arrow_downward_rounded
             : type == 'expense'
@@ -1731,12 +1731,12 @@ class _TransactionsPageState extends State<TransactionsPage>
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                               decoration: BoxDecoration(
-                                color: Colors.lightBlueAccent.withOpacity(0.15),
+                                color: AppColors.lightBlueAccent.withOpacity(0.15),
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
                                 otherLabel,
-                                style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 11),
+                                style: const TextStyle(color: AppColors.lightBlueAccent, fontSize: 11),
                               ),
                             ),
                           ] else
@@ -1796,7 +1796,7 @@ class _TransactionsPageState extends State<TransactionsPage>
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.qr_code_scanner_rounded, color: Colors.lightBlueAccent),
+            icon: const Icon(Icons.qr_code_scanner_rounded, color: AppColors.lightBlueAccent),
             tooltip: 'Scan Bank SMS',
             onPressed: _scanSmsAndShowPopup,
           ),
@@ -1804,9 +1804,9 @@ class _TransactionsPageState extends State<TransactionsPage>
         ],
         bottom: TabBar(
           controller: _tabController,
-          labelColor: Colors.lightBlueAccent,
+          labelColor: AppColors.lightBlueAccent,
           unselectedLabelColor: Colors.white38,
-          indicatorColor: Colors.lightBlueAccent,
+          indicatorColor: AppColors.lightBlueAccent,
           indicatorSize: TabBarIndicatorSize.label,
           tabs: [
             Tab(
@@ -1823,7 +1823,7 @@ class _TransactionsPageState extends State<TransactionsPage>
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.arrow_upward_rounded, size: 14, color: Colors.blueAccent),
+                  const Icon(Icons.arrow_upward_rounded, size: 14, color: AppColors.blueAccent),
                   const SizedBox(width: 4),
                   Text('Expense (${expense.length})'),
                 ],
@@ -1833,7 +1833,7 @@ class _TransactionsPageState extends State<TransactionsPage>
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.swap_horiz_rounded, size: 14, color: Colors.lightBlueAccent),
+                  const Icon(Icons.swap_horiz_rounded, size: 14, color: AppColors.lightBlueAccent),
                   const SizedBox(width: 4),
                   Text('Exchange (${exchange.length})'),
                 ],
@@ -1845,7 +1845,7 @@ class _TransactionsPageState extends State<TransactionsPage>
       body: _isLoading
           ? const Center(
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.lightBlueAccent),
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.lightBlueAccent),
               ),
             )
           : _errorMessage != null
@@ -1853,7 +1853,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.cloud_off_rounded, color: Colors.blueAccent, size: 60),
+                      const Icon(Icons.cloud_off_rounded, color: AppColors.blueAccent, size: 60),
                       const SizedBox(height: 12),
                       Text(_errorMessage!,
                           textAlign: TextAlign.center,
@@ -1861,7 +1861,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                       const SizedBox(height: 20),
                       ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.lightBlueAccent,
+                          backgroundColor: AppColors.lightBlueAccent,
                           foregroundColor: Colors.black,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                         ),
@@ -1881,7 +1881,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                   ],
                 ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.lightBlueAccent,
+        backgroundColor: AppColors.lightBlueAccent,
         foregroundColor: Colors.black,
         onPressed: _showAddSheet,
         child: const Icon(Icons.add_rounded),

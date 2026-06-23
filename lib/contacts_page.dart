@@ -73,7 +73,7 @@ class _ContactsPageState extends State<ContactsPage> {
       if (res.statusCode == 201) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('👤 Contact created successfully!'), backgroundColor: Colors.lightBlueAccent),
+          const SnackBar(content: Text('👤 Contact created successfully!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchContacts();
       } else {
@@ -99,7 +99,7 @@ class _ContactsPageState extends State<ContactsPage> {
       if (res.statusCode == 200) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('👤 Contact updated successfully!'), backgroundColor: Colors.lightBlueAccent),
+          const SnackBar(content: Text('👤 Contact updated successfully!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchContacts();
       } else {
@@ -234,7 +234,7 @@ class _ContactsPageState extends State<ContactsPage> {
                           return ChoiceChip(
                             label: Text(g),
                             selected: isSel,
-                            selectedColor: Colors.lightBlueAccent,
+                            selectedColor: AppColors.lightBlueAccent,
                             backgroundColor: Colors.white.withValues(alpha: 0.05),
                             labelStyle: TextStyle(color: isSel ? Colors.white : Colors.white60, fontSize: 12),
                             onSelected: (val) {
@@ -253,53 +253,53 @@ class _ContactsPageState extends State<ContactsPage> {
                       ExpansionTile(
                         title: const Text('Primary Info', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
                         initiallyExpanded: true,
-                        iconColor: Colors.lightBlueAccent,
+                        iconColor: AppColors.lightBlueAccent,
                         collapsedIconColor: Colors.white54,
                         childrenPadding: const EdgeInsets.symmetric(vertical: 8),
                         children: [
-                          _buildField(nameCtrl, 'Full Name', Icons.person_rounded, Colors.lightBlueAccent),
+                          _buildField(nameCtrl, 'Full Name', Icons.person_rounded, AppColors.lightBlueAccent),
                           const SizedBox(height: 12),
-                          _buildField(nickCtrl, 'Nickname', Icons.face_rounded, Colors.lightBlueAccent),
+                          _buildField(nickCtrl, 'Nickname', Icons.face_rounded, AppColors.lightBlueAccent),
                           const SizedBox(height: 12),
-                          _buildField(phoneCtrl, 'Primary Phone Number', Icons.phone_rounded, Colors.lightBlueAccent, isPhone: true),
+                          _buildField(phoneCtrl, 'Primary Phone Number', Icons.phone_rounded, AppColors.lightBlueAccent, isPhone: true),
                           const SizedBox(height: 12),
-                          _buildField(whatsCtrl, 'WhatsApp Number', Icons.chat_rounded, Colors.lightBlueAccent, isPhone: true),
+                          _buildField(whatsCtrl, 'WhatsApp Number', Icons.chat_rounded, AppColors.lightBlueAccent, isPhone: true),
                           const SizedBox(height: 12),
-                          _buildField(emailCtrl, 'Primary Email Address', Icons.email_rounded, Colors.blueAccent),
+                          _buildField(emailCtrl, 'Primary Email Address', Icons.email_rounded, AppColors.blueAccent),
                           const SizedBox(height: 12),
-                          _buildField(photoCtrl, 'Profile Image Url / Base64', Icons.image_rounded, Colors.lightBlueAccent),
+                          _buildField(photoCtrl, 'Profile Image Url / Base64', Icons.image_rounded, AppColors.lightBlueAccent),
                         ],
                       ),
 
                       // Professional Info
                       ExpansionTile(
                         title: const Text('Professional Info', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
-                        iconColor: Colors.lightBlueAccent,
+                        iconColor: AppColors.lightBlueAccent,
                         collapsedIconColor: Colors.white54,
                         childrenPadding: const EdgeInsets.symmetric(vertical: 8),
                         children: [
-                          _buildField(companyCtrl, 'Company Name', Icons.business_rounded, Colors.blueAccent),
+                          _buildField(companyCtrl, 'Company Name', Icons.business_rounded, AppColors.blueAccent),
                           const SizedBox(height: 12),
-                          _buildField(jobCtrl, 'Job Title', Icons.work_rounded, Colors.lightBlueAccent),
+                          _buildField(jobCtrl, 'Job Title', Icons.work_rounded, AppColors.lightBlueAccent),
                           const SizedBox(height: 12),
-                          _buildField(webCtrl, 'Website', Icons.language_rounded, Colors.indigoAccent),
+                          _buildField(webCtrl, 'Website', Icons.language_rounded, AppColors.indigoAccent),
                         ],
                       ),
 
                       // Multiple Numbers & Emails
                       ExpansionTile(
                         title: const Text('Multiple Numbers & Emails', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
-                        iconColor: Colors.lightBlueAccent,
+                        iconColor: AppColors.lightBlueAccent,
                         collapsedIconColor: Colors.white54,
                         childrenPadding: const EdgeInsets.symmetric(vertical: 8),
                         children: [
-                          _buildField(homePhoneCtrl, 'Home Phone', Icons.home_rounded, Colors.lightBlue),
+                          _buildField(homePhoneCtrl, 'Home Phone', Icons.home_rounded, AppColors.lightBlueAccent),
                           const SizedBox(height: 12),
-                          _buildField(workPhoneCtrl, 'Work Phone', Icons.phone_android_rounded, Colors.lightBlue),
+                          _buildField(workPhoneCtrl, 'Work Phone', Icons.phone_android_rounded, AppColors.lightBlueAccent),
                           const SizedBox(height: 12),
-                          _buildField(mobilePhoneCtrl, 'Mobile Phone', Icons.smartphone_rounded, Colors.lightBlue),
+                          _buildField(mobilePhoneCtrl, 'Mobile Phone', Icons.smartphone_rounded, AppColors.lightBlueAccent),
                           const SizedBox(height: 16),
-                          _buildField(homeEmailCtrl, 'Home Email', Icons.mail_outline_rounded, Colors.indigo),
+                          _buildField(homeEmailCtrl, 'Home Email', Icons.mail_outline_rounded, AppColors.royalBlue),
                           const SizedBox(height: 12),
                           _buildField(workEmailCtrl, 'Work Email', Icons.contact_mail_rounded, Colors.blueGrey),
                         ],
@@ -308,15 +308,15 @@ class _ContactsPageState extends State<ContactsPage> {
                       // Social Links & Birthday
                       ExpansionTile(
                         title: const Text('Social Links & Birthday', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
-                        iconColor: Colors.lightBlueAccent,
+                        iconColor: AppColors.lightBlueAccent,
                         collapsedIconColor: Colors.white54,
                         childrenPadding: const EdgeInsets.symmetric(vertical: 8),
                         children: [
-                          _buildField(instaCtrl, 'Instagram Link', Icons.camera_alt_rounded, Colors.lightBlue),
+                          _buildField(instaCtrl, 'Instagram Link', Icons.camera_alt_rounded, AppColors.lightBlueAccent),
                           const SizedBox(height: 12),
-                          _buildField(fbCtrl, 'Facebook Link', Icons.facebook_rounded, Colors.blue),
+                          _buildField(fbCtrl, 'Facebook Link', Icons.facebook_rounded, AppColors.primary),
                           const SizedBox(height: 12),
-                          _buildField(linkedCtrl, 'LinkedIn Link', Icons.group_work_rounded, Colors.lightBlue),
+                          _buildField(linkedCtrl, 'LinkedIn Link', Icons.group_work_rounded, AppColors.lightBlueAccent),
                           const SizedBox(height: 12),
                           TextField(
                             controller: bdayCtrl,
@@ -327,7 +327,7 @@ class _ContactsPageState extends State<ContactsPage> {
                               labelStyle: const TextStyle(color: Colors.white60),
                               prefixIcon: const Icon(Icons.cake_rounded, color: Colors.redAccent),
                               suffixIcon: IconButton(
-                                icon: const Icon(Icons.calendar_month_rounded, color: Colors.lightBlueAccent),
+                                icon: const Icon(Icons.calendar_month_rounded, color: AppColors.lightBlueAccent),
                                 onPressed: () async {
                                   final DateTime? pick = await showDatePicker(
                                     context: context,
@@ -345,7 +345,7 @@ class _ContactsPageState extends State<ContactsPage> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.5),
+                                borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 1.5),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
@@ -356,7 +356,7 @@ class _ContactsPageState extends State<ContactsPage> {
                       // Notes & Address
                       ExpansionTile(
                         title: const Text('Notes & Address', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
-                        iconColor: Colors.lightBlueAccent,
+                        iconColor: AppColors.lightBlueAccent,
                         collapsedIconColor: Colors.white54,
                         childrenPadding: const EdgeInsets.symmetric(vertical: 8),
                         children: [
@@ -369,13 +369,13 @@ class _ContactsPageState extends State<ContactsPage> {
                             decoration: InputDecoration(
                               labelText: 'Notes',
                               labelStyle: const TextStyle(color: Colors.white60),
-                              prefixIcon: const Icon(Icons.note_alt_rounded, color: Colors.lightBlueAccent),
+                              prefixIcon: const Icon(Icons.note_alt_rounded, color: AppColors.lightBlueAccent),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(color: Colors.white24),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.5),
+                                borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 1.5),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
@@ -412,7 +412,7 @@ class _ContactsPageState extends State<ContactsPage> {
                             flex: 2,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.lightBlueAccent,
+                                backgroundColor: AppColors.lightBlueAccent,
                                 foregroundColor: Colors.white,
                                 padding: const EdgeInsets.symmetric(vertical: 14),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -503,7 +503,7 @@ class _ContactsPageState extends State<ContactsPage> {
           borderRadius: BorderRadius.circular(12),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.5),
+          borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 1.5),
           borderRadius: BorderRadius.circular(12),
         ),
       ),
@@ -549,7 +549,7 @@ class _ContactsPageState extends State<ContactsPage> {
                     child: ChoiceChip(
                       label: Text('$g (${_getGroupCount(g)})'),
                       selected: isSel,
-                      selectedColor: Colors.lightBlueAccent,
+                      selectedColor: AppColors.lightBlueAccent,
                       backgroundColor: const Color(0xFF1E1E1E),
                       labelStyle: TextStyle(
                         color: isSel ? Colors.white : Colors.white60,
@@ -583,7 +583,7 @@ class _ContactsPageState extends State<ContactsPage> {
               decoration: InputDecoration(
                 hintText: 'Search contacts...',
                 hintStyle: const TextStyle(color: Colors.white30),
-                prefixIcon: const Icon(Icons.search_rounded, color: Colors.lightBlueAccent),
+                prefixIcon: const Icon(Icons.search_rounded, color: AppColors.lightBlueAccent),
                 contentPadding: const EdgeInsets.symmetric(vertical: 0),
                 fillColor: const Color(0xFF1E1E1E),
                 filled: true,
@@ -592,7 +592,7 @@ class _ContactsPageState extends State<ContactsPage> {
                   borderRadius: BorderRadius.circular(14),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.5),
+                  borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 1.5),
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
@@ -605,9 +605,9 @@ class _ContactsPageState extends State<ContactsPage> {
           Expanded(
             child: RefreshIndicator(
               onRefresh: _fetchContacts,
-              color: Colors.lightBlueAccent,
+              color: AppColors.lightBlueAccent,
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator(color: Colors.lightBlueAccent))
+                  ? const Center(child: CircularProgressIndicator(color: AppColors.lightBlueAccent))
                   : _errorMessage != null
                       ? SingleChildScrollView(
                           physics: const AlwaysScrollableScrollPhysics(),
@@ -691,12 +691,12 @@ class _ContactsPageState extends State<ContactsPage> {
                                   child: ExpansionTile(
                                     leading: CircleAvatar(
                                       radius: 22,
-                                      backgroundColor: Colors.lightBlueAccent.withValues(alpha: 0.2),
+                                      backgroundColor: AppColors.lightBlueAccent.withValues(alpha: 0.2),
                                       backgroundImage: imageProvider,
                                       child: imageProvider == null
                                           ? Text(
                                               name.toString().substring(0, 1).toUpperCase(),
-                                              style: const TextStyle(color: Colors.lightBlueAccent, fontWeight: FontWeight.bold, fontSize: 16),
+                                              style: const TextStyle(color: AppColors.lightBlueAccent, fontWeight: FontWeight.bold, fontSize: 16),
                                             )
                                           : null,
                                     ),
@@ -711,12 +711,12 @@ class _ContactsPageState extends State<ContactsPage> {
                                         Container(
                                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                           decoration: BoxDecoration(
-                                            color: Colors.lightBlueAccent.withValues(alpha: 0.12),
+                                            color: AppColors.lightBlueAccent.withValues(alpha: 0.12),
                                             borderRadius: BorderRadius.circular(6),
                                           ),
                                           child: Text(
                                             grp,
-                                            style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 10, fontWeight: FontWeight.bold),
+                                            style: const TextStyle(color: AppColors.lightBlueAccent, fontSize: 10, fontWeight: FontWeight.bold),
                                           ),
                                         ),
                                       ],
@@ -734,23 +734,23 @@ class _ContactsPageState extends State<ContactsPage> {
 
                                       // Phone & Email Lists
                                       if (primaryPhone.toString().isNotEmpty)
-                                        _buildInfoRow('Primary Phone', primaryPhone, Icons.phone_rounded, Colors.lightBlueAccent),
+                                        _buildInfoRow('Primary Phone', primaryPhone, Icons.phone_rounded, AppColors.lightBlueAccent),
                                       if (whatsApp.toString().isNotEmpty)
-                                        _buildInfoRow('WhatsApp', whatsApp, Icons.chat_rounded, Colors.lightBlueAccent),
+                                        _buildInfoRow('WhatsApp', whatsApp, Icons.chat_rounded, AppColors.lightBlueAccent),
                                       if (email.toString().isNotEmpty)
-                                        _buildInfoRow('Primary Email', email, Icons.email_rounded, Colors.blueAccent),
+                                        _buildInfoRow('Primary Email', email, Icons.email_rounded, AppColors.blueAccent),
 
                                       // Multi Phone
                                       if (mNums['home']?.toString().isNotEmpty ?? false)
-                                        _buildInfoRow('Home Phone', mNums['home'], Icons.home_rounded, Colors.lightBlue),
+                                        _buildInfoRow('Home Phone', mNums['home'], Icons.home_rounded, AppColors.lightBlueAccent),
                                       if (mNums['work']?.toString().isNotEmpty ?? false)
-                                        _buildInfoRow('Work Phone', mNums['work'], Icons.phone_android_rounded, Colors.lightBlue),
+                                        _buildInfoRow('Work Phone', mNums['work'], Icons.phone_android_rounded, AppColors.lightBlueAccent),
                                       if (mNums['mobile']?.toString().isNotEmpty ?? false)
-                                        _buildInfoRow('Mobile Phone', mNums['mobile'], Icons.smartphone_rounded, Colors.lightBlue),
+                                        _buildInfoRow('Mobile Phone', mNums['mobile'], Icons.smartphone_rounded, AppColors.lightBlueAccent),
 
                                       // Multi Email
                                       if (mEms['home']?.toString().isNotEmpty ?? false)
-                                        _buildInfoRow('Home Email', mEms['home'], Icons.mail_outline_rounded, Colors.indigo),
+                                        _buildInfoRow('Home Email', mEms['home'], Icons.mail_outline_rounded, AppColors.royalBlue),
                                       if (mEms['work']?.toString().isNotEmpty ?? false)
                                         _buildInfoRow('Work Email', mEms['work'], Icons.contact_mail_rounded, Colors.blueGrey),
 
@@ -760,12 +760,12 @@ class _ContactsPageState extends State<ContactsPage> {
                                           'Work',
                                           '${job.toString().isNotEmpty ? job : ""} ${company.toString().isNotEmpty ? "@ $company" : ""}',
                                           Icons.business_rounded,
-                                          Colors.lightBlueAccent,
+                                          AppColors.lightBlueAccent,
                                         ),
 
                                       // Website
                                       if (web.toString().isNotEmpty)
-                                        _buildInfoRow('Website', web, Icons.language_rounded, Colors.indigoAccent),
+                                        _buildInfoRow('Website', web, Icons.language_rounded, AppColors.indigoAccent),
 
                                       // Birthday
                                       if (bday.toString().isNotEmpty)
@@ -785,11 +785,11 @@ class _ContactsPageState extends State<ContactsPage> {
                                         Row(
                                           children: [
                                             if (soc['instagram']?.toString().isNotEmpty ?? false)
-                                              _buildSocialChip('Instagram', Colors.lightBlueAccent),
+                                              _buildSocialChip('Instagram', AppColors.lightBlueAccent),
                                             if (soc['facebook']?.toString().isNotEmpty ?? false)
-                                              _buildSocialChip('Facebook', Colors.blueAccent),
+                                              _buildSocialChip('Facebook', AppColors.blueAccent),
                                             if (soc['linkedin']?.toString().isNotEmpty ?? false)
-                                              _buildSocialChip('LinkedIn', Colors.blueAccent),
+                                              _buildSocialChip('LinkedIn', AppColors.blueAccent),
                                           ],
                                         ),
                                       ],
@@ -807,7 +807,7 @@ class _ContactsPageState extends State<ContactsPage> {
                                         mainAxisAlignment: MainAxisAlignment.end,
                                         children: [
                                           TextButton.icon(
-                                            style: TextButton.styleFrom(foregroundColor: Colors.lightBlueAccent),
+                                            style: TextButton.styleFrom(foregroundColor: AppColors.lightBlueAccent),
                                             icon: const Icon(Icons.edit_rounded, size: 18),
                                             label: const Text('Edit Details', style: TextStyle(fontWeight: FontWeight.bold)),
                                             onPressed: () => _openFormSheet(existing: c),
@@ -824,7 +824,7 @@ class _ContactsPageState extends State<ContactsPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.lightBlueAccent,
+        backgroundColor: AppColors.lightBlueAccent,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         onPressed: () => _openFormSheet(),

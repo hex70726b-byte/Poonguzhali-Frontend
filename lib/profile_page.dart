@@ -270,7 +270,7 @@ class _ProfilePageState extends State<ProfilePage> {
           // 6. Transaction Categories tile
           ListTile(
             onTap: _showTransactionCategoriesPage,
-            leading: const Icon(Icons.category_rounded, color: Colors.lightBlueAccent),
+            leading: const Icon(Icons.category_rounded, color: AppColors.lightBlueAccent),
             title: const Text(
               "Transaction Categories",
               style: TextStyle(color: Colors.white, fontSize: 16),
@@ -2022,11 +2022,11 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
                             title = "Possessive Girlfriend 😤";
                             subtitle = "Very sweet but super possessive and protective. Gets jealous if other girls' names are mentioned!";
                           } else if (id == 'mentor') {
-                            cardColor = Colors.lightBlueAccent;
+                            cardColor = AppColors.lightBlueAccent;
                             title = "Strict Mentor 💪";
                             subtitle = "Mature and encouraging. Explains coding, math, and science deeply to motivate you to focus and study.";
                           } else {
-                            cardColor = Colors.blueAccent;
+                            cardColor = AppColors.blueAccent;
                             title = name;
                             subtitle = prompt;
                           }

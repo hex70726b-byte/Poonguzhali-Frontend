@@ -68,7 +68,7 @@ class _DiariesPageState extends State<DiariesPage> {
       if (res.statusCode == 201) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('📖 Diary entry saved!'), backgroundColor: Colors.lightBlue),
+          const SnackBar(content: Text('📖 Diary entry saved!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchDiaries();
       } else {
@@ -103,7 +103,7 @@ class _DiariesPageState extends State<DiariesPage> {
       if (res.statusCode == 200) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('📖 Diary entry updated successfully!'), backgroundColor: Colors.lightBlue),
+          const SnackBar(content: Text('📖 Diary entry updated successfully!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchDiaries();
       } else {
@@ -215,7 +215,7 @@ class _DiariesPageState extends State<DiariesPage> {
                                 ),
                                 child: Row(
                                   children: [
-                                    const Icon(Icons.calendar_month_rounded, color: Colors.lightBlueAccent),
+                                    const Icon(Icons.calendar_month_rounded, color: AppColors.lightBlueAccent),
                                     const SizedBox(width: 12),
                                     Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,7 +247,7 @@ class _DiariesPageState extends State<DiariesPage> {
                               ),
                               child: Row(
                                 children: [
-                                  const Icon(Icons.today_rounded, color: Colors.lightBlueAccent),
+                                  const Icon(Icons.today_rounded, color: AppColors.lightBlueAccent),
                                   const SizedBox(width: 12),
                                   Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -286,7 +286,7 @@ class _DiariesPageState extends State<DiariesPage> {
                             borderRadius: BorderRadius.circular(16),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.5),
+                            borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 1.5),
                             borderRadius: BorderRadius.circular(16),
                           ),
                         ),
@@ -320,7 +320,7 @@ class _DiariesPageState extends State<DiariesPage> {
                             flex: 2,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.lightBlueAccent,
+                                backgroundColor: AppColors.lightBlueAccent,
                                 foregroundColor: Colors.white,
                                 padding: const EdgeInsets.symmetric(vertical: 14),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -407,22 +407,22 @@ class _DiariesPageState extends State<DiariesPage> {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.lightBlueAccent.withValues(alpha: 0.15), Colors.lightBlueAccent.withValues(alpha: 0.05)],
+                  colors: [AppColors.lightBlueAccent.withValues(alpha: 0.15), AppColors.lightBlueAccent.withValues(alpha: 0.05)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Colors.lightBlueAccent.withValues(alpha: 0.2)),
+                border: Border.all(color: AppColors.lightBlueAccent.withValues(alpha: 0.2)),
               ),
               child: Row(
                 children: [
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.lightBlueAccent.withValues(alpha: 0.2),
+                      color: AppColors.lightBlueAccent.withValues(alpha: 0.2),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.menu_book_rounded, color: Colors.lightBlueAccent, size: 28),
+                    child: const Icon(Icons.menu_book_rounded, color: AppColors.lightBlueAccent, size: 28),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -459,7 +459,7 @@ class _DiariesPageState extends State<DiariesPage> {
               decoration: InputDecoration(
                 hintText: 'Search memories by word, day, or date...',
                 hintStyle: const TextStyle(color: Colors.white30),
-                prefixIcon: const Icon(Icons.search_rounded, color: Colors.lightBlueAccent),
+                prefixIcon: const Icon(Icons.search_rounded, color: AppColors.lightBlueAccent),
                 contentPadding: const EdgeInsets.symmetric(vertical: 0),
                 fillColor: const Color(0xFF1E1E1E),
                 filled: true,
@@ -468,7 +468,7 @@ class _DiariesPageState extends State<DiariesPage> {
                   borderRadius: BorderRadius.circular(14),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.5),
+                  borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 1.5),
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
@@ -481,9 +481,9 @@ class _DiariesPageState extends State<DiariesPage> {
           Expanded(
             child: RefreshIndicator(
               onRefresh: _fetchDiaries,
-              color: Colors.lightBlueAccent,
+              color: AppColors.lightBlueAccent,
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator(color: Colors.lightBlueAccent))
+                  ? const Center(child: CircularProgressIndicator(color: AppColors.lightBlueAccent))
                   : _errorMessage != null
                       ? SingleChildScrollView(
                           physics: const AlwaysScrollableScrollPhysics(),
@@ -559,7 +559,7 @@ class _DiariesPageState extends State<DiariesPage> {
                                           children: [
                                             Row(
                                               children: [
-                                                const Icon(Icons.bookmark_rounded, color: Colors.lightBlueAccent, size: 18),
+                                                const Icon(Icons.bookmark_rounded, color: AppColors.lightBlueAccent, size: 18),
                                                 const SizedBox(width: 6),
                                                 Text(
                                                   formattedDisplayDate,
@@ -574,13 +574,13 @@ class _DiariesPageState extends State<DiariesPage> {
                                             Container(
                                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                               decoration: BoxDecoration(
-                                                color: Colors.lightBlueAccent.withValues(alpha: 0.12),
+                                                color: AppColors.lightBlueAccent.withValues(alpha: 0.12),
                                                 borderRadius: BorderRadius.circular(8),
                                               ),
                                               child: Text(
                                                 day,
                                                 style: const TextStyle(
-                                                  color: Colors.lightBlueAccent,
+                                                  color: AppColors.lightBlueAccent,
                                                   fontSize: 11,
                                                   fontWeight: FontWeight.bold,
                                                 ),
@@ -612,7 +612,7 @@ class _DiariesPageState extends State<DiariesPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.lightBlueAccent,
+        backgroundColor: AppColors.lightBlueAccent,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         onPressed: () => _openFormSheet(),

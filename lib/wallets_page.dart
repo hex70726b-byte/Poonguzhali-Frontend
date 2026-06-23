@@ -113,7 +113,7 @@ class _WalletsPageState extends State<WalletsPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('🎉 Wallet account created successfully!'),
-              backgroundColor: Colors.lightBlue,
+              backgroundColor: AppColors.lightBlueAccent,
             ),
           );
         }
@@ -162,7 +162,7 @@ class _WalletsPageState extends State<WalletsPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('🎉 Wallet updated successfully!'),
-              backgroundColor: Colors.lightBlue,
+              backgroundColor: AppColors.lightBlueAccent,
             ),
           );
         }
@@ -235,7 +235,7 @@ class _WalletsPageState extends State<WalletsPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('⚠️ Please fill out all fields'),
-          backgroundColor: Colors.blue,
+          backgroundColor: AppColors.primary,
         ),
       );
       return;
@@ -267,7 +267,7 @@ class _WalletsPageState extends State<WalletsPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('👥 Member added to wallet successfully!'),
-              backgroundColor: Colors.lightBlue,
+              backgroundColor: AppColors.lightBlueAccent,
             ),
           );
         }
@@ -322,7 +322,7 @@ class _WalletsPageState extends State<WalletsPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('🎉 Member updated successfully!'),
-              backgroundColor: Colors.lightBlue,
+              backgroundColor: AppColors.lightBlueAccent,
             ),
           );
         }
@@ -430,7 +430,7 @@ class _WalletsPageState extends State<WalletsPage> {
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Account Name',
-                  labelStyle: const TextStyle(color: Colors.lightBlueAccent),
+                  labelStyle: const TextStyle(color: AppColors.lightBlueAccent),
                   hintText: 'e.g., Personal Savings, HDFC Bank',
                   hintStyle: const TextStyle(color: Colors.white30),
                   enabledBorder: OutlineInputBorder(
@@ -438,7 +438,7 @@ class _WalletsPageState extends State<WalletsPage> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 2),
+                    borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
@@ -455,7 +455,7 @@ class _WalletsPageState extends State<WalletsPage> {
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.lightBlueAccent,
+                backgroundColor: AppColors.lightBlueAccent,
                 foregroundColor: Colors.black,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
@@ -492,13 +492,13 @@ class _WalletsPageState extends State<WalletsPage> {
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Account Name',
-                  labelStyle: const TextStyle(color: Colors.lightBlueAccent),
+                  labelStyle: const TextStyle(color: AppColors.lightBlueAccent),
                   enabledBorder: OutlineInputBorder(
                     borderSide: const BorderSide(color: Colors.white24),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 2),
+                    borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
@@ -515,7 +515,7 @@ class _WalletsPageState extends State<WalletsPage> {
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.lightBlueAccent,
+                backgroundColor: AppColors.lightBlueAccent,
                 foregroundColor: Colors.black,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
@@ -589,13 +589,13 @@ class _WalletsPageState extends State<WalletsPage> {
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Member Name',
-                  labelStyle: const TextStyle(color: Colors.lightBlueAccent),
+                  labelStyle: const TextStyle(color: AppColors.lightBlueAccent),
                   enabledBorder: OutlineInputBorder(
                     borderSide: const BorderSide(color: Colors.white24),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 2),
+                    borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
@@ -607,13 +607,13 @@ class _WalletsPageState extends State<WalletsPage> {
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   labelText: 'Amount (₹)',
-                  labelStyle: const TextStyle(color: Colors.lightBlueAccent),
+                  labelStyle: const TextStyle(color: AppColors.lightBlueAccent),
                   enabledBorder: OutlineInputBorder(
                     borderSide: const BorderSide(color: Colors.white24),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 2),
+                    borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
@@ -631,7 +631,7 @@ class _WalletsPageState extends State<WalletsPage> {
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.lightBlueAccent,
+                backgroundColor: AppColors.lightBlueAccent,
                 foregroundColor: Colors.black,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
@@ -743,7 +743,7 @@ class _WalletsPageState extends State<WalletsPage> {
                                     ),
                                   ),
                                   IconButton(
-                                    icon: const Icon(Icons.edit_rounded, color: Colors.lightBlueAccent, size: 18),
+                                    icon: const Icon(Icons.edit_rounded, color: AppColors.lightBlueAccent, size: 18),
                                     constraints: const BoxConstraints(),
                                     padding: const EdgeInsets.symmetric(horizontal: 6),
                                     onPressed: () {
@@ -778,7 +778,7 @@ class _WalletsPageState extends State<WalletsPage> {
                             Text(
                               '₹${total.toStringAsFixed(2)}',
                               style: const TextStyle(
-                                color: Colors.lightBlueAccent,
+                                color: AppColors.lightBlueAccent,
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -838,10 +838,10 @@ class _WalletsPageState extends State<WalletsPage> {
                                           children: [
                                             CircleAvatar(
                                               radius: 14,
-                                              backgroundColor: Colors.lightBlue.withOpacity(0.2),
+                                              backgroundColor: AppColors.lightBlueAccent.withOpacity(0.2),
                                               child: Text(
                                                 mName.isNotEmpty ? mName[0].toUpperCase() : 'M',
-                                                style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 12, fontWeight: FontWeight.bold),
+                                                style: const TextStyle(color: AppColors.lightBlueAccent, fontSize: 12, fontWeight: FontWeight.bold),
                                               ),
                                             ),
                                             const SizedBox(width: 12),
@@ -857,7 +857,7 @@ class _WalletsPageState extends State<WalletsPage> {
                                                   const SizedBox(height: 2),
                                                   Text(
                                                     'Amount: ₹$mAmount',
-                                                    style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 12, fontWeight: FontWeight.bold),
+                                                    style: const TextStyle(color: AppColors.lightBlueAccent, fontSize: 12, fontWeight: FontWeight.bold),
                                                   ),
                                                 ],
                                               ),
@@ -869,7 +869,7 @@ class _WalletsPageState extends State<WalletsPage> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           IconButton(
-                                            icon: const Icon(Icons.edit_rounded, color: Colors.lightBlueAccent, size: 16),
+                                            icon: const Icon(Icons.edit_rounded, color: AppColors.lightBlueAccent, size: 16),
                                             padding: EdgeInsets.zero,
                                             constraints: const BoxConstraints(),
                                             onPressed: () {
@@ -924,7 +924,7 @@ class _WalletsPageState extends State<WalletsPage> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.lightBlueAccent),
+                                borderSide: const BorderSide(color: AppColors.lightBlueAccent),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
@@ -947,7 +947,7 @@ class _WalletsPageState extends State<WalletsPage> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(color: Colors.lightBlueAccent),
+                                borderSide: const BorderSide(color: AppColors.lightBlueAccent),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
@@ -961,7 +961,7 @@ class _WalletsPageState extends State<WalletsPage> {
                       height: 48,
                       child: ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.lightBlueAccent,
+                          backgroundColor: AppColors.lightBlueAccent,
                           foregroundColor: Colors.black,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -988,10 +988,10 @@ class _WalletsPageState extends State<WalletsPage> {
   @override
   Widget build(BuildContext context) {
     final List<Color> cardColors = [
-      Colors.indigo,
-      Colors.lightBlue,
-      Colors.lightBlue,
-      Colors.lightBlue,
+      AppColors.royalBlue,
+      AppColors.lightBlueAccent,
+      AppColors.lightBlueAccent,
+      AppColors.lightBlueAccent,
       Colors.blueGrey
     ];
 
@@ -1032,11 +1032,11 @@ class _WalletsPageState extends State<WalletsPage> {
               Expanded(
                 child: RefreshIndicator(
                   onRefresh: _fetchData,
-                  color: Colors.lightBlueAccent,
+                  color: AppColors.lightBlueAccent,
                   child: _isLoading
                       ? const Center(
                           child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.lightBlueAccent),
+                            valueColor: AlwaysStoppedAnimation<Color>(AppColors.lightBlueAccent),
                           ),
                         )
                       : _errorMessage != null
@@ -1056,7 +1056,7 @@ class _WalletsPageState extends State<WalletsPage> {
                                     const SizedBox(height: 20),
                                     ElevatedButton.icon(
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.lightBlueAccent,
+                                        backgroundColor: AppColors.lightBlueAccent,
                                         foregroundColor: Colors.black,
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(20),
@@ -1104,7 +1104,7 @@ class _WalletsPageState extends State<WalletsPage> {
                                         const SizedBox(height: 24),
                                         ElevatedButton.icon(
                                           style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.lightBlueAccent,
+                                            backgroundColor: AppColors.lightBlueAccent,
                                             foregroundColor: Colors.black,
                                             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                                             shape: RoundedRectangleBorder(
@@ -1250,7 +1250,7 @@ class _WalletsPageState extends State<WalletsPage> {
       ),
       floatingActionButton: _accounts.isNotEmpty
           ? FloatingActionButton(
-              backgroundColor: Colors.lightBlueAccent,
+              backgroundColor: AppColors.lightBlueAccent,
               foregroundColor: Colors.black,
               onPressed: _showAddWalletDialog,
               child: const Icon(Icons.add_rounded),

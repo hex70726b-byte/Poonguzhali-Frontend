@@ -186,9 +186,9 @@ class _AnalysisPageState extends State<AnalysisPage> {
       ),
       body: RefreshIndicator(
         onRefresh: _fetchDashboardData,
-        color: Colors.indigoAccent,
+        color: AppColors.indigoAccent,
         child: _isLoading
-            ? const Center(child: CircularProgressIndicator(color: Colors.indigoAccent))
+            ? const Center(child: CircularProgressIndicator(color: AppColors.indigoAccent))
             : _errorMessage != null
                 ? SingleChildScrollView(
                     physics: const AlwaysScrollableScrollPhysics(),
@@ -204,7 +204,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                           Text(_errorMessage!, style: const TextStyle(color: Colors.white70), textAlign: TextAlign.center),
                           const SizedBox(height: 24),
                           ElevatedButton(
-                            style: ElevatedButton.styleFrom(backgroundColor: Colors.indigoAccent),
+                            style: ElevatedButton.styleFrom(backgroundColor: AppColors.indigoAccent),
                             onPressed: _fetchDashboardData,
                             child: const Text('Try Again'),
                           ),
@@ -230,7 +230,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                           borderRadius: BorderRadius.circular(24),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.indigo.withValues(alpha: 0.3),
+                              color: AppColors.royalBlue.withValues(alpha: 0.3),
                               blurRadius: 15,
                               offset: const Offset(0, 5),
                             )
@@ -274,7 +274,7 @@ class _AnalysisPageState extends State<AnalysisPage> {
                                     value: displayLifeScore / 100,
                                     strokeWidth: 8,
                                     backgroundColor: Colors.white24,
-                                    valueColor: const AlwaysStoppedAnimation<Color>(Colors.lightBlueAccent),
+                                    valueColor: const AlwaysStoppedAnimation<Color>(AppColors.lightBlueAccent),
                                   ),
                                 ),
                                 Text(
@@ -297,15 +297,15 @@ class _AnalysisPageState extends State<AnalysisPage> {
                       // 1. Wallets & Financials Card (Green/Teal)
                       _buildAnalysisCard(
                         title: '💰 Financial & Transaction Flow',
-                        accentColor: Colors.lightBlueAccent,
+                        accentColor: AppColors.lightBlueAccent,
                         child: Column(
                           children: [
-                            _buildRowMetric('Total Wallet Balances', '₹${totalWalletBalance.toStringAsFixed(2)}', Colors.lightBlueAccent),
+                            _buildRowMetric('Total Wallet Balances', '₹${totalWalletBalance.toStringAsFixed(2)}', AppColors.lightBlueAccent),
                             _buildRowMetric('Total Income Stream', '₹${totalIncome.toStringAsFixed(2)}', Colors.white70),
                             _buildRowMetric('Total Expenses Stream', '₹${totalExpense.toStringAsFixed(2)}', Colors.redAccent),
                             const Divider(color: Colors.white12, height: 16),
-                            _buildRowMetric('Net Savings Flow', '₹${netSavings.toStringAsFixed(2)}', netSavings >= 0 ? Colors.lightBlueAccent : Colors.redAccent),
-                            _buildRowMetric('Income Savings Rate', '${savingsRate.toStringAsFixed(1)}%', Colors.blueAccent),
+                            _buildRowMetric('Net Savings Flow', '₹${netSavings.toStringAsFixed(2)}', netSavings >= 0 ? AppColors.lightBlueAccent : Colors.redAccent),
+                            _buildRowMetric('Income Savings Rate', '${savingsRate.toStringAsFixed(1)}%', AppColors.blueAccent),
                           ],
                         ),
                       ),
@@ -313,14 +313,14 @@ class _AnalysisPageState extends State<AnalysisPage> {
                       // 2. Goal Tracking (Gold/Amber)
                       _buildAnalysisCard(
                         title: '🎯 Target Goals & Contributions',
-                        accentColor: Colors.lightBlueAccent,
+                        accentColor: AppColors.lightBlueAccent,
                         child: Column(
                           children: [
                             Row(
                               children: [
-                                Expanded(child: _buildMetricMiniTile('Total Goals', '$totalGoals', Colors.lightBlueAccent)),
-                                Expanded(child: _buildMetricMiniTile('Money Goals', '$moneyGoalsCount', Colors.lightBlueAccent)),
-                                Expanded(child: _buildMetricMiniTile('General', '$generalGoalsCount', Colors.lightBlueAccent)),
+                                Expanded(child: _buildMetricMiniTile('Total Goals', '$totalGoals', AppColors.lightBlueAccent)),
+                                Expanded(child: _buildMetricMiniTile('Money Goals', '$moneyGoalsCount', AppColors.lightBlueAccent)),
+                                Expanded(child: _buildMetricMiniTile('General', '$generalGoalsCount', AppColors.lightBlueAccent)),
                               ],
                             ),
                             if (moneyGoalsCount > 0) ...[
@@ -333,15 +333,15 @@ class _AnalysisPageState extends State<AnalysisPage> {
                               LinearProgressIndicator(
                                 value: totalTargetMoneyGoals > 0 ? (totalContributedMoneyGoals / totalTargetMoneyGoals) : 0.0,
                                 backgroundColor: Colors.white12,
-                                valueColor: const AlwaysStoppedAnimation<Color>(Colors.lightBlueAccent),
+                                valueColor: const AlwaysStoppedAnimation<Color>(AppColors.lightBlueAccent),
                                 minHeight: 6,
                               ),
                               const SizedBox(height: 8),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text('Saved: ₹${totalContributedMoneyGoals.toStringAsFixed(0)}', style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 12)),
-                                  Text('Target: ₹${totalTargetMoneyGoals.toStringAsFixed(0)}', style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 12)),
+                                  Text('Saved: ₹${totalContributedMoneyGoals.toStringAsFixed(0)}', style: const TextStyle(color: AppColors.lightBlueAccent, fontSize: 12)),
+                                  Text('Target: ₹${totalTargetMoneyGoals.toStringAsFixed(0)}', style: const TextStyle(color: AppColors.lightBlueAccent, fontSize: 12)),
                                 ],
                               ),
                             ]
@@ -352,18 +352,18 @@ class _AnalysisPageState extends State<AnalysisPage> {
                       // 3. Habits Performance (Cyan/TealAccent)
                       _buildAnalysisCard(
                         title: '⚡ Daily Habits Sync',
-                        accentColor: Colors.blueAccent,
+                        accentColor: AppColors.blueAccent,
                         child: Column(
                           children: [
                             Row(
                               children: [
-                                Expanded(child: _buildMetricMiniTile('Total Habits', '$totalHabits', Colors.blueAccent)),
-                                Expanded(child: _buildMetricMiniTile('Single Type', '$singleHabits', Colors.lightBlueAccent)),
+                                Expanded(child: _buildMetricMiniTile('Total Habits', '$totalHabits', AppColors.blueAccent)),
+                                Expanded(child: _buildMetricMiniTile('Single Type', '$singleHabits', AppColors.lightBlueAccent)),
                                 Expanded(child: _buildMetricMiniTile('Multiple Type', '$multipleHabits', Colors.deepOrangeAccent)),
                               ],
                             ),
                             const Divider(color: Colors.white12, height: 24),
-                            _buildRowMetric('Average Habits Streak', '${avgHabitStreak.toStringAsFixed(1)} Days', Colors.blueAccent),
+                            _buildRowMetric('Average Habits Streak', '${avgHabitStreak.toStringAsFixed(1)} Days', AppColors.blueAccent),
                           ],
                         ),
                       ),
@@ -377,8 +377,8 @@ class _AnalysisPageState extends State<AnalysisPage> {
                             Row(
                               children: [
                                 Expanded(child: _buildMetricMiniTile('Fitness Workouts', '$totalWorkouts', Colors.redAccent)),
-                                Expanded(child: _buildMetricMiniTile('Time Workouts', '$timeWorkouts', Colors.lightBlueAccent)),
-                                Expanded(child: _buildMetricMiniTile('Count Workouts', '$countWorkouts', Colors.lightBlueAccent)),
+                                Expanded(child: _buildMetricMiniTile('Time Workouts', '$timeWorkouts', AppColors.lightBlueAccent)),
+                                Expanded(child: _buildMetricMiniTile('Count Workouts', '$countWorkouts', AppColors.lightBlueAccent)),
                               ],
                             ),
                             const Divider(color: Colors.white12, height: 24),
@@ -390,12 +390,12 @@ class _AnalysisPageState extends State<AnalysisPage> {
                       // 5. Diary Analytics (Pink/Rose)
                       _buildAnalysisCard(
                         title: '📖 Diary & Writing Journal',
-                        accentColor: Colors.lightBlueAccent,
+                        accentColor: AppColors.lightBlueAccent,
                         child: Column(
                           children: [
                             Row(
                               children: [
-                                Expanded(child: _buildMetricMiniTile('Journal Entries', '$totalDiaries', Colors.lightBlueAccent)),
+                                Expanded(child: _buildMetricMiniTile('Journal Entries', '$totalDiaries', AppColors.lightBlueAccent)),
                                 Expanded(
                                   child: _buildMetricMiniTile(
                                     'Consistency Status',
@@ -416,13 +416,13 @@ class _AnalysisPageState extends State<AnalysisPage> {
                       // 6. Learning progress (Orange)
                       _buildAnalysisCard(
                         title: '📚 Learning & Resources Path',
-                        accentColor: Colors.lightBlueAccent,
+                        accentColor: AppColors.lightBlueAccent,
                         child: Column(
                           children: [
                             Row(
                               children: [
-                                Expanded(child: _buildMetricMiniTile('Learning Topics', '$totalLearnings', Colors.lightBlueAccent)),
-                                Expanded(child: _buildMetricMiniTile('Reference Links', '$totalLearningLinks', Colors.blueAccent)),
+                                Expanded(child: _buildMetricMiniTile('Learning Topics', '$totalLearnings', AppColors.lightBlueAccent)),
+                                Expanded(child: _buildMetricMiniTile('Reference Links', '$totalLearningLinks', AppColors.blueAccent)),
                               ],
                             ),
                           ],

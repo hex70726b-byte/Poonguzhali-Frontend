@@ -108,7 +108,7 @@ class _HabitsPageState extends State<HabitsPage> {
       if (res.statusCode == 201) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('⚡¡ Habit created successfully!'), backgroundColor: Colors.lightBlue),
+          const SnackBar(content: Text('⚡¡ Habit created successfully!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchHabits();
       } else {
@@ -149,7 +149,7 @@ class _HabitsPageState extends State<HabitsPage> {
       if (res.statusCode == 200) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('⚡¡ Habit updated successfully!'), backgroundColor: Colors.lightBlue),
+          const SnackBar(content: Text('⚡¡ Habit updated successfully!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchHabits();
       } else {
@@ -195,7 +195,7 @@ class _HabitsPageState extends State<HabitsPage> {
       if (res.statusCode == 200) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('🔥 Check-in registered! Keep up the great work!'), backgroundColor: Colors.lightBlueAccent),
+          const SnackBar(content: Text('🔥 Check-in registered! Keep up the great work!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchHabits();
       } else {
@@ -323,13 +323,13 @@ class _HabitsPageState extends State<HabitsPage> {
                         decoration: InputDecoration(
                           labelText: 'Habit Name',
                           labelStyle: const TextStyle(color: Colors.white60),
-                          prefixIcon: const Icon(Icons.fitness_center_rounded, color: Colors.lightBlueAccent),
+                          prefixIcon: const Icon(Icons.fitness_center_rounded, color: AppColors.lightBlueAccent),
                           enabledBorder: OutlineInputBorder(
                             borderSide: const BorderSide(color: Colors.white24),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.5),
+                            borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 1.5),
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
@@ -350,7 +350,7 @@ class _HabitsPageState extends State<HabitsPage> {
                       Row(
                         children: ['single', 'multiple'].map((t) {
                           final isSelected = selectedType == t;
-                          final themeColor = t == 'multiple' ? Colors.lightBlueAccent : Colors.lightBlueAccent;
+                          final themeColor = t == 'multiple' ? AppColors.lightBlueAccent : AppColors.lightBlueAccent;
                           return Expanded(
                             child: GestureDetector(
                               onTap: () {
@@ -441,7 +441,7 @@ class _HabitsPageState extends State<HabitsPage> {
                                             _formatTimeOfDay(startingTime),
                                             style: const TextStyle(color: Colors.white, fontSize: 14),
                                           ),
-                                          const Icon(Icons.access_time_rounded, color: Colors.lightBlueAccent, size: 18),
+                                          const Icon(Icons.access_time_rounded, color: AppColors.lightBlueAccent, size: 18),
                                         ],
                                       ),
                                     ),
@@ -486,7 +486,7 @@ class _HabitsPageState extends State<HabitsPage> {
                                             _formatTimeOfDay(endingTime),
                                             style: const TextStyle(color: Colors.white, fontSize: 14),
                                           ),
-                                          const Icon(Icons.access_time_rounded, color: Colors.lightBlueAccent, size: 18),
+                                          const Icon(Icons.access_time_rounded, color: AppColors.lightBlueAccent, size: 18),
                                         ],
                                       ),
                                     ),
@@ -506,13 +506,13 @@ class _HabitsPageState extends State<HabitsPage> {
                           decoration: InputDecoration(
                             labelText: 'Gap (Minutes)',
                             labelStyle: const TextStyle(color: Colors.white60),
-                            prefixIcon: const Icon(Icons.hourglass_empty_rounded, color: Colors.lightBlueAccent),
+                            prefixIcon: const Icon(Icons.hourglass_empty_rounded, color: AppColors.lightBlueAccent),
                             enabledBorder: OutlineInputBorder(
                               borderSide: const BorderSide(color: Colors.white24),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.5),
+                              borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 1.5),
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
@@ -528,13 +528,13 @@ class _HabitsPageState extends State<HabitsPage> {
                             labelStyle: const TextStyle(color: Colors.white60),
                             hintText: 'e.g. face wash panniya',
                             hintStyle: const TextStyle(color: Colors.white24),
-                            prefixIcon: const Icon(Icons.chat_bubble_outline_rounded, color: Colors.lightBlueAccent),
+                            prefixIcon: const Icon(Icons.chat_bubble_outline_rounded, color: AppColors.lightBlueAccent),
                             enabledBorder: OutlineInputBorder(
                               borderSide: const BorderSide(color: Colors.white24),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.5),
+                              borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 1.5),
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
@@ -575,7 +575,7 @@ class _HabitsPageState extends State<HabitsPage> {
                                       _formatTimeOfDay(startingTime),
                                       style: const TextStyle(color: Colors.white, fontSize: 14),
                                     ),
-                                    const Icon(Icons.access_time_rounded, color: Colors.lightBlueAccent, size: 18),
+                                    const Icon(Icons.access_time_rounded, color: AppColors.lightBlueAccent, size: 18),
                                   ],
                                 ),
                               ),
@@ -590,13 +590,13 @@ class _HabitsPageState extends State<HabitsPage> {
                                 labelStyle: const TextStyle(color: Colors.white60),
                                 hintText: 'e.g. take tablet',
                                 hintStyle: const TextStyle(color: Colors.white24),
-                                prefixIcon: const Icon(Icons.chat_bubble_outline_rounded, color: Colors.lightBlueAccent),
+                                prefixIcon: const Icon(Icons.chat_bubble_outline_rounded, color: AppColors.lightBlueAccent),
                                 enabledBorder: OutlineInputBorder(
                                   borderSide: const BorderSide(color: Colors.white24),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 focusedBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.5),
+                                  borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 1.5),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                               ),
@@ -635,7 +635,7 @@ class _HabitsPageState extends State<HabitsPage> {
                             flex: 2,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: selectedType == 'multiple' ? Colors.lightBlueAccent : Colors.lightBlueAccent,
+                                backgroundColor: selectedType == 'multiple' ? AppColors.lightBlueAccent : AppColors.lightBlueAccent,
                                 foregroundColor: Colors.black,
                                 padding: const EdgeInsets.symmetric(vertical: 14),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -744,14 +744,14 @@ class _HabitsPageState extends State<HabitsPage> {
                     decoration: BoxDecoration(
                       color: const Color(0xFF1E1E1E),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.lightBlueAccent.withValues(alpha: 0.15)),
+                      border: Border.all(color: AppColors.lightBlueAccent.withValues(alpha: 0.15)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Row(
                           children: [
-                            Icon(Icons.done_all_rounded, color: Colors.lightBlueAccent, size: 18),
+                            Icon(Icons.done_all_rounded, color: AppColors.lightBlueAccent, size: 18),
                             SizedBox(width: 6),
                             Text('Single habits', style: TextStyle(color: Colors.white60, fontSize: 11)),
                           ],
@@ -772,14 +772,14 @@ class _HabitsPageState extends State<HabitsPage> {
                     decoration: BoxDecoration(
                       color: const Color(0xFF1E1E1E),
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.lightBlueAccent.withValues(alpha: 0.15)),
+                      border: Border.all(color: AppColors.lightBlueAccent.withValues(alpha: 0.15)),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Row(
                           children: [
-                            Icon(Icons.alarm_on_rounded, color: Colors.lightBlueAccent, size: 18),
+                            Icon(Icons.alarm_on_rounded, color: AppColors.lightBlueAccent, size: 18),
                             SizedBox(width: 6),
                             Text('Multiple habits', style: TextStyle(color: Colors.white60, fontSize: 11)),
                           ],
@@ -810,7 +810,7 @@ class _HabitsPageState extends State<HabitsPage> {
               decoration: InputDecoration(
                 hintText: 'Search habits...',
                 hintStyle: const TextStyle(color: Colors.white30),
-                prefixIcon: const Icon(Icons.search_rounded, color: Colors.lightBlueAccent),
+                prefixIcon: const Icon(Icons.search_rounded, color: AppColors.lightBlueAccent),
                 contentPadding: const EdgeInsets.symmetric(vertical: 0),
                 fillColor: const Color(0xFF1E1E1E),
                 filled: true,
@@ -819,7 +819,7 @@ class _HabitsPageState extends State<HabitsPage> {
                   borderRadius: BorderRadius.circular(14),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.5),
+                  borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 1.5),
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
@@ -832,9 +832,9 @@ class _HabitsPageState extends State<HabitsPage> {
           Expanded(
             child: RefreshIndicator(
               onRefresh: _fetchHabits,
-              color: Colors.lightBlueAccent,
+              color: AppColors.lightBlueAccent,
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator(color: Colors.lightBlueAccent))
+                  ? const Center(child: CircularProgressIndicator(color: AppColors.lightBlueAccent))
                   : _errorMessage != null
                       ? SingleChildScrollView(
                           physics: const AlwaysScrollableScrollPhysics(),
@@ -887,7 +887,7 @@ class _HabitsPageState extends State<HabitsPage> {
                                 final ending = h['endingTime'] ?? '';
                                 final gapStr = h['gap'] ?? '';
                                 final isMultiple = type == 'multiple';
-                                final themeColor = isMultiple ? Colors.lightBlueAccent : Colors.lightBlueAccent;
+                                final themeColor = isMultiple ? AppColors.lightBlueAccent : AppColors.lightBlueAccent;
 
                                 // Streak and completion tracking
                                 final streak = h['streak'] ?? 0;
@@ -929,7 +929,7 @@ class _HabitsPageState extends State<HabitsPage> {
                                       borderRadius: BorderRadius.circular(16),
                                       border: Border.all(
                                         color: isSingleCompletedToday
-                                            ? Colors.lightBlueAccent.withValues(alpha: 0.1)
+                                            ? AppColors.lightBlueAccent.withValues(alpha: 0.1)
                                             : Colors.white.withValues(alpha: 0.05),
                                       ),
                                     ),
@@ -945,7 +945,7 @@ class _HabitsPageState extends State<HabitsPage> {
                                                 _checkinHabit(id);
                                               } else {
                                                 ScaffoldMessenger.of(context).showSnackBar(
-                                                  const SnackBar(content: Text('🎉 Completed today! Keep it up tomorrow!'), backgroundColor: Colors.lightBlue),
+                                                  const SnackBar(content: Text('🎉 Completed today! Keep it up tomorrow!'), backgroundColor: AppColors.lightBlueAccent),
                                                 );
                                               }
                                             }
@@ -957,12 +957,12 @@ class _HabitsPageState extends State<HabitsPage> {
                                             height: 44,
                                             decoration: BoxDecoration(
                                               color: isSingleCompletedToday
-                                                  ? Colors.lightBlueAccent.withValues(alpha: 0.2)
+                                                  ? AppColors.lightBlueAccent.withValues(alpha: 0.2)
                                                   : themeColor.withValues(alpha: 0.12),
                                               borderRadius: BorderRadius.circular(12),
                                               border: Border.all(
                                                 color: isSingleCompletedToday
-                                                    ? Colors.lightBlueAccent
+                                                    ? AppColors.lightBlueAccent
                                                     : Colors.transparent,
                                                 width: 1.5,
                                               ),
@@ -971,7 +971,7 @@ class _HabitsPageState extends State<HabitsPage> {
                                               isSingleCompletedToday
                                                   ? Icons.check_circle_rounded
                                                   : (isMultiple ? Icons.add_circle_outline_rounded : Icons.done_all_rounded),
-                                              color: isSingleCompletedToday ? Colors.lightBlueAccent : themeColor,
+                                              color: isSingleCompletedToday ? AppColors.lightBlueAccent : themeColor,
                                               size: 24,
                                             ),
                                           ),
@@ -1010,29 +1010,29 @@ class _HabitsPageState extends State<HabitsPage> {
                                                     const SizedBox(width: 2),
                                                     Text(
                                                       'Every $gapStr min',
-                                                      style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 11, fontWeight: FontWeight.bold),
+                                                      style: const TextStyle(color: AppColors.lightBlueAccent, fontSize: 11, fontWeight: FontWeight.bold),
                                                     ),
                                                   ],
                                                 ),
                                                 const SizedBox(height: 4),
                                                 Row(
                                                   children: [
-                                                    const Icon(Icons.reply_all_rounded, size: 13, color: Colors.lightBlueAccent),
+                                                    const Icon(Icons.reply_all_rounded, size: 13, color: AppColors.lightBlueAccent),
                                                     const SizedBox(width: 4),
                                                     Text(
                                                       'Replies: $multipleCompletions / $targetIntervals intervals',
-                                                      style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 11, fontWeight: FontWeight.bold),
+                                                      style: const TextStyle(color: AppColors.lightBlueAccent, fontSize: 11, fontWeight: FontWeight.bold),
                                                     ),
                                                   ],
                                                 ),
                                                 const SizedBox(height: 4),
                                                 Row(
                                                   children: [
-                                                    const Icon(Icons.timer_outlined, size: 13, color: Colors.lightBlueAccent),
+                                                    const Icon(Icons.timer_outlined, size: 13, color: AppColors.lightBlueAccent),
                                                     const SizedBox(width: 4),
                                                     Text(
                                                       'Next in: $countdownText',
-                                                      style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 11, fontWeight: FontWeight.bold),
+                                                      style: const TextStyle(color: AppColors.lightBlueAccent, fontSize: 11, fontWeight: FontWeight.bold),
                                                     ),
                                                   ],
                                                 ),
@@ -1040,12 +1040,12 @@ class _HabitsPageState extends State<HabitsPage> {
                                                   const SizedBox(height: 4),
                                                   Row(
                                                     children: [
-                                                      const Icon(Icons.chat_bubble_outline_rounded, size: 12, color: Colors.lightBlueAccent),
+                                                      const Icon(Icons.chat_bubble_outline_rounded, size: 12, color: AppColors.lightBlueAccent),
                                                       const SizedBox(width: 4),
                                                       Expanded(
                                                         child: Text(
                                                           'Msg: ${h['customChat']}',
-                                                          style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 11),
+                                                          style: const TextStyle(color: AppColors.lightBlueAccent, fontSize: 11),
                                                           overflow: TextOverflow.ellipsis,
                                                         ),
                                                       ),
@@ -1055,17 +1055,17 @@ class _HabitsPageState extends State<HabitsPage> {
                                               ] else ...[
                                                 Row(
                                                   children: [
-                                                    const Icon(Icons.local_fire_department_rounded, size: 14, color: Colors.lightBlue),
+                                                    const Icon(Icons.local_fire_department_rounded, size: 14, color: AppColors.lightBlueAccent),
                                                     const SizedBox(width: 4),
                                                     Text(
                                                       'Streak: $streak days',
-                                                      style: const TextStyle(color: Colors.lightBlue, fontSize: 12, fontWeight: FontWeight.bold),
+                                                      style: const TextStyle(color: AppColors.lightBlueAccent, fontSize: 12, fontWeight: FontWeight.bold),
                                                     ),
                                                     const SizedBox(width: 8),
                                                     Text(
                                                       isSingleCompletedToday ? 'Completed' : 'Pending today',
                                                       style: TextStyle(
-                                                        color: isSingleCompletedToday ? Colors.lightBlueAccent : Colors.white38,
+                                                        color: isSingleCompletedToday ? AppColors.lightBlueAccent : Colors.white38,
                                                         fontSize: 11,
                                                       ),
                                                     ),
@@ -1088,12 +1088,12 @@ class _HabitsPageState extends State<HabitsPage> {
                                                   const SizedBox(height: 4),
                                                   Row(
                                                     children: [
-                                                      const Icon(Icons.chat_bubble_outline_rounded, size: 12, color: Colors.lightBlueAccent),
+                                                      const Icon(Icons.chat_bubble_outline_rounded, size: 12, color: AppColors.lightBlueAccent),
                                                       const SizedBox(width: 4),
                                                       Expanded(
                                                         child: Text(
                                                           'Msg: ${h['customChat']}',
-                                                          style: const TextStyle(color: Colors.lightBlueAccent, fontSize: 11),
+                                                          style: const TextStyle(color: AppColors.lightBlueAccent, fontSize: 11),
                                                           overflow: TextOverflow.ellipsis,
                                                         ),
                                                       ),
@@ -1116,7 +1116,7 @@ class _HabitsPageState extends State<HabitsPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.lightBlueAccent,
+        backgroundColor: AppColors.lightBlueAccent,
         foregroundColor: Colors.black,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         onPressed: () => _openFormSheet(),

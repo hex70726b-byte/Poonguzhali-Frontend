@@ -23,6 +23,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'app_lock_screen.dart';
 import 'passwords_page.dart';
 import 'documents_page.dart';
+import 'todo_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -72,7 +73,7 @@ class _MyAppState extends State<MyApp> {
         ),
         home: const Scaffold(
           body: Center(
-            child: CircularProgressIndicator(color: Colors.lightBlueAccent),
+            child: CircularProgressIndicator(color: AppColors.lightBlueAccent),
           ),
         ),
       );
@@ -545,10 +546,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.lightBlueAccent.withValues(alpha: 0.1),
+                      color: AppColors.lightBlueAccent.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(Icons.sms_rounded, color: Colors.lightBlueAccent, size: 40),
+                    child: const Icon(Icons.sms_rounded, color: AppColors.lightBlueAccent, size: 40),
                   ),
                   const SizedBox(height: 20),
                   const Text(
@@ -585,7 +586,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.lightBlueAccent,
+                            backgroundColor: AppColors.lightBlueAccent,
                             foregroundColor: Colors.black,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             padding: const EdgeInsets.symmetric(vertical: 14),
@@ -654,10 +655,10 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                         Container(
                           padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
-                            color: Colors.lightBlueAccent.withValues(alpha: 0.1),
+                            color: AppColors.lightBlueAccent.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
-                          child: const Icon(Icons.account_balance_wallet_rounded, color: Colors.lightBlueAccent, size: 24),
+                          child: const Icon(Icons.account_balance_wallet_rounded, color: AppColors.lightBlueAccent, size: 24),
                         ),
                         const SizedBox(width: 14),
                         Expanded(
@@ -691,7 +692,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
                           return const Center(
-                            child: CircularProgressIndicator(color: Colors.lightBlueAccent),
+                            child: CircularProgressIndicator(color: AppColors.lightBlueAccent),
                           );
                         }
 
@@ -751,8 +752,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                             final amount = _extractAmount(body);
                             
                             final accentColor = isDebit
-                                ? Colors.blueAccent
-                                : (isCredit ? Colors.lightBlueAccent : Colors.lightBlueAccent);
+                                ? AppColors.blueAccent
+                                : (isCredit ? AppColors.lightBlueAccent : AppColors.lightBlueAccent);
 
                             return Container(
                               margin: const EdgeInsets.only(bottom: 12),
@@ -837,7 +838,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             const SnackBar(
                                               content: Text('📋 SMS copied to clipboard!'),
-                                              backgroundColor: Colors.lightBlue,
+                                              backgroundColor: AppColors.lightBlueAccent,
                                               duration: Duration(seconds: 1),
                                             ),
                                           );
@@ -1643,7 +1644,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Error clearing chat. Please try again! 🥺", style: TextStyle(color: Colors.white)),
-            backgroundColor: Colors.blueAccent,
+            backgroundColor: AppColors.blueAccent,
           ),
         );
       }
@@ -1653,7 +1654,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Net connection check pannu da chellam! 🥺💔", style: TextStyle(color: Colors.white)),
-          backgroundColor: Colors.blueAccent,
+          backgroundColor: AppColors.blueAccent,
         ),
       );
     }
@@ -1819,7 +1820,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
       builder: (context) {
         return Container(
           padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
-          height: 380,
+          height: 400,
           decoration: BoxDecoration(
             color: const Color(0xFF232323),
             borderRadius: BorderRadius.circular(25),
@@ -1835,7 +1836,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               attachmentItem(
                 Icons.fitness_center_rounded,
                 "Workout",
-                Colors.blueAccent,
+                AppColors.blueAccent,
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
@@ -1847,7 +1848,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               attachmentItem(
                 Icons.analytics_rounded,
                 "Analysis",
-                Colors.indigo,
+                AppColors.royalBlue,
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
@@ -1859,7 +1860,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               attachmentItem(
                 Icons.account_balance_wallet_rounded,
                 "Wallets",
-                Colors.lightBlue,
+                AppColors.lightBlueAccent,
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
@@ -1871,7 +1872,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               attachmentItem(
                 Icons.swap_horizontal_circle_rounded,
                 "Transactions",
-                Colors.lightBlue,
+                AppColors.lightBlueAccent,
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
@@ -1895,7 +1896,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               attachmentItem(
                 Icons.emoji_events_rounded,
                 "Goals",
-                Colors.lightBlue,
+                AppColors.lightBlueAccent,
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
@@ -1907,7 +1908,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               attachmentItem(
                 Icons.bolt_rounded,
                 "Habits",
-                Colors.lightBlueAccent,
+                AppColors.lightBlueAccent,
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
@@ -1919,7 +1920,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               attachmentItem(
                 Icons.contacts_rounded,
                 "Contact",
-                Colors.lightBlueAccent,
+                AppColors.lightBlueAccent,
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
@@ -1931,7 +1932,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               attachmentItem(
                 Icons.book_rounded,
                 "Diary",
-                Colors.lightBlue,
+                AppColors.lightBlueAccent,
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
@@ -1943,7 +1944,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               attachmentItem(
                 Icons.alarm_rounded,
                 "Reminders",
-                Colors.lightBlueAccent,
+                AppColors.lightBlueAccent,
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
@@ -1955,7 +1956,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               attachmentItem(
                 Icons.local_library_rounded,
                 "Learning",
-                Colors.lightBlueAccent,
+                AppColors.lightBlueAccent,
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
@@ -1967,7 +1968,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
               attachmentItem(
                 Icons.vpn_key_rounded,
                 "Passwords",
-                Colors.lightBlue,
+                AppColors.lightBlueAccent,
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(
@@ -1985,6 +1986,18 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const DocumentsPage()),
+                  );
+                },
+              ),
+              attachmentItem(
+                Icons.task_alt_rounded,
+                "Todo",
+                AppColors.lightBlueAccent,
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const TodoPage()),
                   );
                 },
               ),
@@ -2516,7 +2529,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                         Container(
                           width: 4,
                           height: 35,
-                          color: Colors.lightBlueAccent,
+                          color: AppColors.lightBlueAccent,
                         ),
                         const SizedBox(width: 8),
                         Expanded(
@@ -2526,7 +2539,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                             children: [
                               const Text(
                                 "Editing message",
-                                style: TextStyle(color: Colors.lightBlueAccent, fontWeight: FontWeight.bold, fontSize: 12),
+                                style: TextStyle(color: AppColors.lightBlueAccent, fontWeight: FontWeight.bold, fontSize: 12),
                               ),
                               const SizedBox(height: 2),
                               Text(

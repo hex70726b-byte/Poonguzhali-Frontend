@@ -93,7 +93,7 @@ class _RemindersPageState extends State<RemindersPage> with SingleTickerProvider
       if (res.statusCode == 201) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('🔔 Reminder added successfully da thambi!'), backgroundColor: Colors.lightBlueAccent),
+          const SnackBar(content: Text('🔔 Reminder added successfully da thambi!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchAllData();
       } else {
@@ -199,13 +199,13 @@ class _RemindersPageState extends State<RemindersPage> with SingleTickerProvider
                   decoration: InputDecoration(
                     labelText: 'Reminder Title',
                     labelStyle: const TextStyle(color: Colors.white60),
-                    prefixIcon: const Icon(Icons.alarm_rounded, color: Colors.lightBlueAccent),
+                    prefixIcon: const Icon(Icons.alarm_rounded, color: AppColors.lightBlueAccent),
                     enabledBorder: OutlineInputBorder(
                       borderSide: const BorderSide(color: Colors.white24),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.5),
+                      borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 1.5),
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
@@ -222,9 +222,9 @@ class _RemindersPageState extends State<RemindersPage> with SingleTickerProvider
                       decoration: InputDecoration(
                         labelText: 'Date & Time',
                         labelStyle: const TextStyle(color: Colors.white60),
-                        prefixIcon: const Icon(Icons.calendar_today_rounded, color: Colors.lightBlueAccent),
+                        prefixIcon: const Icon(Icons.calendar_today_rounded, color: AppColors.lightBlueAccent),
                         suffixIcon: IconButton(
-                          icon: const Icon(Icons.date_range_rounded, color: Colors.lightBlueAccent),
+                          icon: const Icon(Icons.date_range_rounded, color: AppColors.lightBlueAccent),
                           onPressed: () async {
                             final datePick = await showDatePicker(
                               context: context,
@@ -258,7 +258,7 @@ class _RemindersPageState extends State<RemindersPage> with SingleTickerProvider
                           borderRadius: BorderRadius.circular(12),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.5),
+                          borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 1.5),
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
@@ -270,7 +270,7 @@ class _RemindersPageState extends State<RemindersPage> with SingleTickerProvider
 
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.lightBlueAccent,
+                    backgroundColor: AppColors.lightBlueAccent,
                     foregroundColor: Colors.black,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -376,8 +376,8 @@ class _RemindersPageState extends State<RemindersPage> with SingleTickerProvider
         actions: const [],
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: Colors.lightBlueAccent,
-          labelColor: Colors.lightBlueAccent,
+          indicatorColor: AppColors.lightBlueAccent,
+          labelColor: AppColors.lightBlueAccent,
           unselectedLabelColor: Colors.white38,
           tabs: const [
             Tab(icon: Icon(Icons.alarm_rounded, size: 20), text: 'Custom Reminders'),
@@ -386,14 +386,14 @@ class _RemindersPageState extends State<RemindersPage> with SingleTickerProvider
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.lightBlueAccent,
+        backgroundColor: AppColors.lightBlueAccent,
         foregroundColor: Colors.black,
         elevation: 6,
         onPressed: _openAddReminderSheet,
         child: const Icon(Icons.add_alarm_rounded, size: 26),
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Colors.lightBlueAccent))
+          ? const Center(child: CircularProgressIndicator(color: AppColors.lightBlueAccent))
           : _errorMessage != null
               ? Center(
                   child: Column(
@@ -405,7 +405,7 @@ class _RemindersPageState extends State<RemindersPage> with SingleTickerProvider
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: _fetchAllData,
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.lightBlueAccent, foregroundColor: Colors.black),
+                        style: ElevatedButton.styleFrom(backgroundColor: AppColors.lightBlueAccent, foregroundColor: Colors.black),
                         child: const Text('Retry'),
                       ),
                     ],
@@ -417,7 +417,7 @@ class _RemindersPageState extends State<RemindersPage> with SingleTickerProvider
                                  // Custom Reminders Tab View
                     RefreshIndicator(
                       onRefresh: _fetchAllData,
-                      color: Colors.lightBlueAccent,
+                      color: AppColors.lightBlueAccent,
                       child: sortedReminders.isEmpty
                           ? SingleChildScrollView(
                               physics: const AlwaysScrollableScrollPhysics(),
@@ -474,10 +474,10 @@ class _RemindersPageState extends State<RemindersPage> with SingleTickerProvider
                                       Container(
                                         padding: const EdgeInsets.all(10),
                                         decoration: BoxDecoration(
-                                          color: Colors.lightBlueAccent.withValues(alpha: 0.1),
+                                          color: AppColors.lightBlueAccent.withValues(alpha: 0.1),
                                           shape: BoxShape.circle,
                                         ),
-                                        child: const Icon(Icons.alarm_on_rounded, color: Colors.lightBlueAccent, size: 22),
+                                        child: const Icon(Icons.alarm_on_rounded, color: AppColors.lightBlueAccent, size: 22),
                                       ),
                                       const SizedBox(width: 14),
                                       Expanded(
@@ -509,7 +509,7 @@ class _RemindersPageState extends State<RemindersPage> with SingleTickerProvider
                     // Birthdays Tab View
                     RefreshIndicator(
                       onRefresh: _fetchAllData,
-                      color: Colors.lightBlueAccent,
+                      color: AppColors.lightBlueAccent,
                       child: birthdayContacts.isEmpty
                           ? SingleChildScrollView(
                               physics: const AlwaysScrollableScrollPhysics(),
@@ -574,12 +574,12 @@ class _RemindersPageState extends State<RemindersPage> with SingleTickerProvider
                                     children: [
                                       CircleAvatar(
                                         radius: 24,
-                                        backgroundColor: Colors.lightBlueAccent.withValues(alpha: 0.2),
+                                        backgroundColor: AppColors.lightBlueAccent.withValues(alpha: 0.2),
                                         backgroundImage: imageProvider,
                                         child: imageProvider == null
                                             ? Text(
                                                 name.toString().substring(0, 1).toUpperCase(),
-                                                style: const TextStyle(color: Colors.lightBlueAccent, fontWeight: FontWeight.bold, fontSize: 18),
+                                                style: const TextStyle(color: AppColors.lightBlueAccent, fontWeight: FontWeight.bold, fontSize: 18),
                                               )
                                             : null,
                                       ),
@@ -606,14 +606,14 @@ class _RemindersPageState extends State<RemindersPage> with SingleTickerProvider
                                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                               decoration: BoxDecoration(
                                                 color: daysLeft == 0
-                                                    ? Colors.lightBlueAccent.withValues(alpha: 0.2)
-                                                    : Colors.lightBlueAccent.withValues(alpha: 0.12),
+                                                    ? AppColors.lightBlueAccent.withValues(alpha: 0.2)
+                                                    : AppColors.lightBlueAccent.withValues(alpha: 0.12),
                                                 borderRadius: BorderRadius.circular(6),
                                               ),
                                               child: Text(
                                                 daysText,
                                                 style: TextStyle(
-                                                  color: daysLeft == 0 ? Colors.lightBlueAccent : Colors.lightBlueAccent,
+                                                  color: daysLeft == 0 ? AppColors.lightBlueAccent : AppColors.lightBlueAccent,
                                                   fontSize: 10,
                                                   fontWeight: FontWeight.bold,
                                                 ),
@@ -626,12 +626,12 @@ class _RemindersPageState extends State<RemindersPage> with SingleTickerProvider
                                       // Contact Shortcuts (WA and Call)
                                       if (waNum.toString().isNotEmpty)
                                         IconButton(
-                                          icon: const Icon(Icons.chat_rounded, color: Colors.lightBlueAccent, size: 20),
+                                          icon: const Icon(Icons.chat_rounded, color: AppColors.lightBlueAccent, size: 20),
                                           onPressed: () => _launchWhatsApp(waNum.toString()),
                                         ),
                                       if (phone.toString().isNotEmpty)
                                         IconButton(
-                                          icon: const Icon(Icons.phone_rounded, color: Colors.lightBlueAccent, size: 20),
+                                          icon: const Icon(Icons.phone_rounded, color: AppColors.lightBlueAccent, size: 20),
                                           onPressed: () => _launchCall(phone.toString()),
                                         ),
                                     ],

@@ -64,7 +64,7 @@ class _DebtsPageState extends State<DebtsPage> {
       if (res.statusCode == 201) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('🎉 Debt record created successfully!'), backgroundColor: Colors.lightBlue),
+          const SnackBar(content: Text('🎉 Debt record created successfully!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchDebts();
       } else {
@@ -94,7 +94,7 @@ class _DebtsPageState extends State<DebtsPage> {
       if (res.statusCode == 200) {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('🎉 Debt record updated successfully!'), backgroundColor: Colors.lightBlue),
+          const SnackBar(content: Text('🎉 Debt record updated successfully!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchDebts();
       } else {
@@ -199,13 +199,13 @@ class _DebtsPageState extends State<DebtsPage> {
                       decoration: InputDecoration(
                         labelText: 'Debt Person Name',
                         labelStyle: const TextStyle(color: Colors.white60),
-                        prefixIcon: const Icon(Icons.person_outline_rounded, color: Colors.lightBlueAccent),
+                        prefixIcon: const Icon(Icons.person_outline_rounded, color: AppColors.lightBlueAccent),
                         enabledBorder: OutlineInputBorder(
                           borderSide: const BorderSide(color: Colors.white24),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.5),
+                          borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 1.5),
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
@@ -218,13 +218,13 @@ class _DebtsPageState extends State<DebtsPage> {
                       decoration: InputDecoration(
                         labelText: 'Amount (₹)',
                         labelStyle: const TextStyle(color: Colors.white60),
-                        prefixIcon: const Icon(Icons.currency_rupee_rounded, color: Colors.lightBlueAccent),
+                        prefixIcon: const Icon(Icons.currency_rupee_rounded, color: AppColors.lightBlueAccent),
                         enabledBorder: OutlineInputBorder(
                           borderSide: const BorderSide(color: Colors.white24),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         focusedBorder: OutlineInputBorder(
-                          borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.5),
+                          borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 1.5),
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),
@@ -241,7 +241,7 @@ class _DebtsPageState extends State<DebtsPage> {
                             return Theme(
                               data: Theme.of(context).copyWith(
                                 colorScheme: const ColorScheme.dark(
-                                  primary: Colors.lightBlueAccent,
+                                  primary: AppColors.lightBlueAccent,
                                   onPrimary: Colors.black,
                                   surface: Color(0xFF121212),
                                   onSurface: Colors.white,
@@ -265,7 +265,7 @@ class _DebtsPageState extends State<DebtsPage> {
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.calendar_month_rounded, color: Colors.lightBlueAccent),
+                            const Icon(Icons.calendar_month_rounded, color: AppColors.lightBlueAccent),
                             const SizedBox(width: 12),
                             Text(
                               dateText,
@@ -305,7 +305,7 @@ class _DebtsPageState extends State<DebtsPage> {
                           flex: 2,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.lightBlueAccent,
+                              backgroundColor: AppColors.lightBlueAccent,
                               foregroundColor: Colors.black,
                               padding: const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -369,9 +369,9 @@ class _DebtsPageState extends State<DebtsPage> {
       if (diff < 0) {
         return Colors.redAccent;
       } else if (diff <= 3) {
-        return Colors.lightBlueAccent;
+        return AppColors.lightBlueAccent;
       } else {
-        return Colors.lightBlueAccent;
+        return AppColors.lightBlueAccent;
       }
     } catch (_) {
       return Colors.white38;
@@ -430,21 +430,21 @@ class _DebtsPageState extends State<DebtsPage> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Colors.lightBlueAccent.withOpacity(0.15),
-                  Colors.blueAccent.withOpacity(0.05),
+                  AppColors.lightBlueAccent.withOpacity(0.15),
+                  AppColors.blueAccent.withOpacity(0.05),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: Colors.lightBlueAccent.withOpacity(0.2)),
+              border: Border.all(color: AppColors.lightBlueAccent.withOpacity(0.2)),
             ),
             child: Row(
               children: [
                 CircleAvatar(
                   radius: 26,
-                  backgroundColor: Colors.lightBlueAccent.withOpacity(0.2),
-                  child: const Icon(Icons.trending_down_rounded, color: Colors.lightBlueAccent, size: 28),
+                  backgroundColor: AppColors.lightBlueAccent.withOpacity(0.2),
+                  child: const Icon(Icons.trending_down_rounded, color: AppColors.lightBlueAccent, size: 28),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -496,7 +496,7 @@ class _DebtsPageState extends State<DebtsPage> {
               decoration: InputDecoration(
                 hintText: 'Search debt person...',
                 hintStyle: const TextStyle(color: Colors.white30),
-                prefixIcon: const Icon(Icons.search_rounded, color: Colors.lightBlueAccent),
+                prefixIcon: const Icon(Icons.search_rounded, color: AppColors.lightBlueAccent),
                 contentPadding: const EdgeInsets.symmetric(vertical: 0),
                 fillColor: const Color(0xFF1E1E1E),
                 filled: true,
@@ -505,7 +505,7 @@ class _DebtsPageState extends State<DebtsPage> {
                   borderRadius: BorderRadius.circular(14),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Colors.lightBlueAccent, width: 1.5),
+                  borderSide: const BorderSide(color: AppColors.lightBlueAccent, width: 1.5),
                   borderRadius: BorderRadius.circular(14),
                 ),
               ),
@@ -518,9 +518,9 @@ class _DebtsPageState extends State<DebtsPage> {
           Expanded(
             child: RefreshIndicator(
               onRefresh: _fetchDebts,
-              color: Colors.lightBlueAccent,
+              color: AppColors.lightBlueAccent,
               child: _isLoading
-                  ? const Center(child: CircularProgressIndicator(color: Colors.lightBlueAccent))
+                  ? const Center(child: CircularProgressIndicator(color: AppColors.lightBlueAccent))
                   : _errorMessage != null
                       ? SingleChildScrollView(
                           physics: const AlwaysScrollableScrollPhysics(),
@@ -653,7 +653,7 @@ class _DebtsPageState extends State<DebtsPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.lightBlueAccent,
+        backgroundColor: AppColors.lightBlueAccent,
         foregroundColor: Colors.black,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         onPressed: () => _openFormSheet(),
