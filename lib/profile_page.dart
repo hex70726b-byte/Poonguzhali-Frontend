@@ -146,7 +146,7 @@ class _ProfilePageState extends State<ProfilePage> {
               IconButton(
                 icon: const Icon(Icons.more_vert, color: Colors.white),
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  showTopSnackBar(context, 
                     const SnackBar(
                       content: Text("Profile options"),
                       duration: Duration(seconds: 1),
@@ -461,7 +461,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> _triggerManualBackup() async {
     if (kIsWeb) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      showTopSnackBar(context, 
         const SnackBar(
           content: Text("⚠️ Backup is only supported on Android devices."),
           backgroundColor: Colors.orangeAccent,
@@ -474,7 +474,7 @@ class _ProfilePageState extends State<ProfilePage> {
       if (!isGranted) {
         final String res = await _channel.invokeMethod<String>('requestStoragePermission') ?? 'denied';
         if (res != 'granted') {
-          ScaffoldMessenger.of(context).showSnackBar(
+          showTopSnackBar(context, 
             const SnackBar(
               content: Text("⚠️ Storage permission is required to back up files."),
               backgroundColor: Colors.redAccent,
@@ -486,7 +486,7 @@ class _ProfilePageState extends State<ProfilePage> {
       _runBackupProcedure(true);
     } catch (e) {
       print("Error initiating backup: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
+      showTopSnackBar(context, 
         SnackBar(
           content: Text("⚠️ Error initiating backup: $e"),
           backgroundColor: Colors.redAccent,
@@ -618,7 +618,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     if (!isGranted) {
                       final String res = await _channel.invokeMethod<String>('requestStoragePermission') ?? 'denied';
                       if (res != 'granted') {
-                        ScaffoldMessenger.of(context).showSnackBar(
+                        showTopSnackBar(context, 
                            const SnackBar(
                             content: Text("⚠️ Storage permission is required to enable daily backup."),
                             backgroundColor: Colors.redAccent,
@@ -691,7 +691,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: ElevatedButton.icon(
                   onPressed: () async {
                     await _saveBackupSettings();
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    showTopSnackBar(context, 
                       const SnackBar(
                         content: Text("📁 Backup settings saved successfully!"),
                         backgroundColor: AppColors.skyBlue,
@@ -914,7 +914,7 @@ class _ProfilePageState extends State<ProfilePage> {
           _disappearingMessagesStatus = option;
         });
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           SnackBar(
             content: Text("Disappearing messages set to: $option"),
             backgroundColor: AppColors.skyBlue,
@@ -1070,7 +1070,7 @@ class _AppLockConfigSheetState extends State<_AppLockConfigSheet> with SingleTic
     widget.onChanged();
     if (mounted) {
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
+      showTopSnackBar(context, 
         SnackBar(
           content: Text('🔒 App Lock enabled with ${lockType.toUpperCase()} successfully!'),
           backgroundColor: AppColors.skyBlue,
@@ -1109,7 +1109,7 @@ class _AppLockConfigSheetState extends State<_AppLockConfigSheet> with SingleTic
     widget.onChanged();
     if (mounted) {
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
+      showTopSnackBar(context, 
         const SnackBar(
           content: Text('🔓 App Lock disabled successfully.'),
           backgroundColor: Colors.blueGrey,
@@ -1166,7 +1166,7 @@ class _AppLockConfigSheetState extends State<_AppLockConfigSheet> with SingleTic
     widget.onChanged();
     if (mounted) {
       Navigator.pop(context);
-      ScaffoldMessenger.of(context).showSnackBar(
+      showTopSnackBar(context, 
         SnackBar(
           content: Text('🎉 ${isPin ? 'PIN' : 'Password'} changed successfully!'),
           backgroundColor: AppColors.skyBlue,
@@ -1710,7 +1710,7 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
       );
       setState(() => _isSaving = false);
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(
             content: Text("🎉 Chatbot persona updated successfully!"),
             backgroundColor: AppColors.skyBlue,
@@ -1763,7 +1763,7 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
               }
             });
           }
-          ScaffoldMessenger.of(context).showSnackBar(
+          showTopSnackBar(context, 
             const SnackBar(
               content: Text("Persona deleted successfully"),
               backgroundColor: AppColors.skyBlue,
@@ -1871,7 +1871,7 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
                               final name = nameController.text.trim();
                               final prompt = promptController.text.trim();
                               if (name.isEmpty || prompt.isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
+                                showTopSnackBar(context, 
                                   const SnackBar(
                                     content: Text("Please fill all fields"),
                                     backgroundColor: Colors.redAccent,
@@ -1895,7 +1895,7 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
                                   setState(() {
                                     _selectedPersona = newPersona['_id']; // Auto select new persona
                                   });
-                                  ScaffoldMessenger.of(context).showSnackBar(
+                                  showTopSnackBar(context, 
                                     SnackBar(
                                       content: Text("🎉 Persona '$name' created and selected!"),
                                       backgroundColor: AppColors.skyBlue,
@@ -1903,7 +1903,7 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
                                   );
                                 } else {
                                   setSheetState(() => isCreating = false);
-                                  ScaffoldMessenger.of(context).showSnackBar(
+                                  showTopSnackBar(context, 
                                     const SnackBar(
                                       content: Text("Failed to create persona"),
                                       backgroundColor: Colors.redAccent,
@@ -1912,7 +1912,7 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
                                 }
                               } catch (e) {
                                 setSheetState(() => isCreating = false);
-                                ScaffoldMessenger.of(context).showSnackBar(
+                                showTopSnackBar(context, 
                                   SnackBar(
                                     content: Text("Connection error: $e"),
                                     backgroundColor: Colors.redAccent,
@@ -1948,7 +1948,7 @@ class _ChatSettingsPageState extends State<ChatSettingsPage> {
   }
 
   void _showErrorSnackBar(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(
+    showTopSnackBar(context, 
       SnackBar(
         content: Text("⚠️ $msg"),
         backgroundColor: Colors.redAccent,
@@ -2253,7 +2253,7 @@ class _TransactionCategoriesPageState extends State<TransactionCategoriesPage> {
       if (res.statusCode == 201) {
         _categoryController.clear();
         _fetchCategories();
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           SnackBar(
             content: Text("🎉 Category '$name' added!"),
             backgroundColor: AppColors.skyBlue,
@@ -2299,7 +2299,7 @@ class _TransactionCategoriesPageState extends State<TransactionCategoriesPage> {
       final res = await http.delete(Uri.parse('${AppConfig.baseUrl}/api/categories/$id'));
       if (res.statusCode == 200) {
         _fetchCategories();
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           SnackBar(
             content: Text("🗑️ Category '$name' deleted!"),
             backgroundColor: Colors.blueGrey,
@@ -2316,7 +2316,7 @@ class _TransactionCategoriesPageState extends State<TransactionCategoriesPage> {
 
   void _showErrorSnackBar(String msg) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+    showTopSnackBar(context, 
       SnackBar(
         content: Text("⚠️ $msg"),
         backgroundColor: Colors.redAccent,

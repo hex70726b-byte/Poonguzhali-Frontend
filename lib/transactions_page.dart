@@ -114,7 +114,7 @@ class _TransactionsPageState extends State<TransactionsPage>
       if (res.statusCode == 200) {
         if (mounted) {
           Navigator.of(context).pop();
-          ScaffoldMessenger.of(context).showSnackBar(
+          showTopSnackBar(context, 
             const SnackBar(content: Text('🗑️ Transaction deleted'), backgroundColor: Colors.blueGrey),
           );
         }
@@ -141,7 +141,7 @@ class _TransactionsPageState extends State<TransactionsPage>
         final result = await _smsChannel.invokeMethod<String>('requestSmsPermission');
         if (result != 'granted') {
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
+            showTopSnackBar(context, 
               const SnackBar(
                 content: Text('⚠️ SMS permission access denied!'),
                 backgroundColor: AppColors.blueAccent,
@@ -377,7 +377,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                                       setSheetState(() {
                                                         smsList.removeAt(index);
                                                       });
-                                                      ScaffoldMessenger.of(context).showSnackBar(
+                                                      showTopSnackBar(context, 
                                                         const SnackBar(
                                                           content: Text('🗑️ SMS removed from scan list'),
                                                           backgroundColor: Colors.white24,
@@ -767,7 +767,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                               onPressed: () async {
                                 final amountStr = amtCtrl.text.trim();
                                 if (amountStr.isEmpty || double.tryParse(amountStr) == null) {
-                                  ScaffoldMessenger.of(ctx2).showSnackBar(
+                                  showTopSnackBar(ctx2, 
                                     const SnackBar(
                                       content: Text('⚠️ Please enter a valid amount'),
                                       backgroundColor: AppColors.blueAccent,
@@ -777,7 +777,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                 }
 
                                 if (memberId == null || memberId == '') {
-                                  ScaffoldMessenger.of(ctx2).showSnackBar(
+                                  showTopSnackBar(ctx2, 
                                     SnackBar(
                                       content: Text(selType == 'exchange'
                                           ? '⚠️ Please select the source member'
@@ -789,7 +789,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                 }
 
                                 if (selType == 'exchange' && (toMemberId == null || toMemberId == '')) {
-                                  ScaffoldMessenger.of(ctx2).showSnackBar(
+                                  showTopSnackBar(ctx2, 
                                     const SnackBar(
                                       content: Text('⚠️ Please select the destination member'),
                                       backgroundColor: AppColors.blueAccent,
@@ -799,7 +799,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                 }
 
                                 if (selType == 'exchange' && memberId == toMemberId) {
-                                  ScaffoldMessenger.of(ctx2).showSnackBar(
+                                  showTopSnackBar(ctx2, 
                                     const SnackBar(
                                       content: Text('⚠️ Source and destination members cannot be the same'),
                                       backgroundColor: AppColors.blueAccent,
@@ -809,7 +809,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                 }
 
                                 if (selType != 'exchange' && others == 'category' && (selectedCategoryName == null || selectedCategoryName!.isEmpty)) {
-                                  ScaffoldMessenger.of(ctx2).showSnackBar(
+                                  showTopSnackBar(ctx2, 
                                     const SnackBar(
                                       content: Text('⚠️ Please select a category'),
                                       backgroundColor: AppColors.blueAccent,
@@ -823,6 +823,43 @@ class _TransactionsPageState extends State<TransactionsPage>
                                   orElse: () => null,
                                 );
                                 final accId = selectedMember?['AccountId']?.toString() ?? '';
+
+                                if (selectedMember != null && (selType == 'expense' || selType == 'exchange')) {
+                                  final enteredAmount = double.parse(amountStr);
+                                  double memberBalance = double.tryParse(selectedMember['Amount']?.toString() ?? '0') ?? 0.0;
+                                  
+                                  if (existing != null) {
+                                    final oldType = existing['type']?.toString();
+                                    final oldAmount = double.tryParse(existing['amount']?.toString() ?? '0') ?? 0.0;
+                                    final oldMemberId = existing['memberId']?.toString();
+                                    final oldToMemberId = existing['toMemberId']?.toString();
+
+                                    if (oldMemberId == memberId) {
+                                      if (oldType == 'expense' || oldType == 'exchange') {
+                                        memberBalance += oldAmount;
+                                      } else if (oldType == 'income') {
+                                        memberBalance -= oldAmount;
+                                      }
+                                    } else if (oldToMemberId == memberId) {
+                                      if (oldType == 'exchange') {
+                                        memberBalance -= oldAmount;
+                                      }
+                                    }
+                                  }
+
+                                  if (enteredAmount > memberBalance) {
+                                    final availableStr = memberBalance % 1 == 0 
+                                        ? memberBalance.toInt().toString() 
+                                        : memberBalance.toStringAsFixed(2);
+                                    showTopSnackBar(ctx2, 
+                                      SnackBar(
+                                        content: Text('⚠️ Selected member has insufficient balance! (Available: ₹$availableStr)'),
+                                        backgroundColor: AppColors.blueAccent,
+                                      ),
+                                    );
+                                    return;
+                                  }
+                                }
 
                                 final selectedToMember = _members.firstWhere(
                                   (m) => m['_id'].toString() == toMemberId,
@@ -863,7 +900,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                   if (res.statusCode == 200 || res.statusCode == 201) {
                                     if (mounted) {
                                       Navigator.of(context).pop();
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      showTopSnackBar(context, 
                                         SnackBar(
                                           content: Text(existing == null
                                               ? '🎉 Transaction saved!'
@@ -883,7 +920,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                       try {
                                         errMsg = jsonDecode(res.body)['message'] ?? errMsg;
                                       } catch (_) {}
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      showTopSnackBar(context, 
                                         SnackBar(
                                           content: Text('⚠️ $errMsg'),
                                           backgroundColor: AppColors.blueAccent,
@@ -894,7 +931,7 @@ class _TransactionsPageState extends State<TransactionsPage>
                                 } catch (e) {
                                   setState(() => _isLoading = false);
                                   if (mounted) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
+                                    showTopSnackBar(context, 
                                       SnackBar(
                                         content: Text('⚠️ Error: ${e.toString()}'),
                                         backgroundColor: AppColors.blueAccent,

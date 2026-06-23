@@ -836,7 +836,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                                       InkWell(
                                         onTap: () {
                                           Clipboard.setData(ClipboardData(text: body));
-                                          ScaffoldMessenger.of(context).showSnackBar(
+                                          showTopSnackBar(context, 
                                             const SnackBar(
                                               content: Text('📋 SMS copied to clipboard!'),
                                               backgroundColor: AppColors.lightBlueAccent,
@@ -1106,7 +1106,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         ));
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      showTopSnackBar(context, 
         SnackBar(
           content: Text("📁 Daily Auto Backup Completed! Moved $movedCount files."),
           backgroundColor: const Color(0xFF00B0FF),
@@ -1416,7 +1416,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         );
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
+      showTopSnackBar(context, 
         SnackBar(
           content: Text(newStatus ? "Message pinned to top! 📌" : "Message unpinned!"),
           backgroundColor: const Color(0xFF00B0FF),
@@ -1634,7 +1634,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         setState(() {
           messages.clear();
         });
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(
             content: Text("Chat cleared successfully! ✨", style: TextStyle(color: Colors.white)),
             backgroundColor: Color(0xFF00B0FF),
@@ -1642,7 +1642,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         );
       } else {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(
             content: Text("Error clearing chat. Please try again! 🥺", style: TextStyle(color: Colors.white)),
             backgroundColor: AppColors.blueAccent,
@@ -1652,7 +1652,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     } catch (e) {
       print("Error clearing chat: $e");
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
+      showTopSnackBar(context, 
         const SnackBar(
           content: Text("Net connection check pannu da chellam! 🥺💔", style: TextStyle(color: Colors.white)),
           backgroundColor: AppColors.blueAccent,
@@ -2092,7 +2092,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     setState(() {
                       selectedMessage = null;
                     });
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    showTopSnackBar(context, 
                       const SnackBar(
                         content: Text("Message copied to clipboard! 📋"),
                         backgroundColor: Color(0xFF00B0FF),
@@ -2167,7 +2167,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                     if (value == 'clear_chat') {
                       _showClearChatConfirmDialog(context);
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      showTopSnackBar(context, 
                         SnackBar(
                           content: Text(
                             "Selected: $value",

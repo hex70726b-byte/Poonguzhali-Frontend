@@ -64,7 +64,7 @@ class _DebtsPageState extends State<DebtsPage> {
 
       if (res.statusCode == 201) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('🎉 Debt record created successfully!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchDebts();
@@ -94,7 +94,7 @@ class _DebtsPageState extends State<DebtsPage> {
 
       if (res.statusCode == 200) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('🎉 Debt record updated successfully!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchDebts();
@@ -115,7 +115,7 @@ class _DebtsPageState extends State<DebtsPage> {
       final res = await http.delete(Uri.parse('$_baseUrl/api/debt/$id')).timeout(const Duration(seconds: 6));
       if (res.statusCode == 200) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('🗑️ Debt record deleted!'), backgroundColor: Colors.blueGrey),
         );
         _fetchDebts();
@@ -316,19 +316,19 @@ class _DebtsPageState extends State<DebtsPage> {
                               final amt = amtCtrl.text.trim();
                               
                               if (name.isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
+                                showTopSnackBar(context, 
                                   const SnackBar(content: Text('⚠️ Name is required'), backgroundColor: Colors.redAccent),
                                 );
                                 return;
                               }
                               if (amt.isEmpty || double.tryParse(amt) == null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
+                                showTopSnackBar(context, 
                                   const SnackBar(content: Text('⚠️ Enter a valid amount'), backgroundColor: Colors.redAccent),
                                 );
                                 return;
                               }
                               if (selectedDate == null) {
-                                ScaffoldMessenger.of(context).showSnackBar(
+                                showTopSnackBar(context, 
                                   const SnackBar(content: Text('⚠️ Please select a due date'), backgroundColor: Colors.redAccent),
                                 );
                                 return;

@@ -73,7 +73,7 @@ class _ContactsPageState extends State<ContactsPage> {
 
       if (res.statusCode == 201) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('👤 Contact created successfully!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchContacts();
@@ -99,7 +99,7 @@ class _ContactsPageState extends State<ContactsPage> {
 
       if (res.statusCode == 200) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('👤 Contact updated successfully!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchContacts();
@@ -120,7 +120,7 @@ class _ContactsPageState extends State<ContactsPage> {
       final res = await http.delete(Uri.parse('$_baseUrl/api/contacts/$id')).timeout(const Duration(seconds: 15));
       if (res.statusCode == 200) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('🗑️ Contact deleted!'), backgroundColor: Colors.blueGrey),
         );
         _fetchContacts();
@@ -421,7 +421,7 @@ class _ContactsPageState extends State<ContactsPage> {
                               onPressed: () {
                                 final name = nameCtrl.text.trim();
                                 if (name.isEmpty) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
+                                  showTopSnackBar(context, 
                                     const SnackBar(content: Text('⚠️ Full Name is required'), backgroundColor: Colors.redAccent),
                                   );
                                   return;

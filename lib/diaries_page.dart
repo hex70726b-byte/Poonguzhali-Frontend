@@ -68,7 +68,7 @@ class _DiariesPageState extends State<DiariesPage> {
 
       if (res.statusCode == 201) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('📖 Diary entry saved!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchDiaries();
@@ -103,7 +103,7 @@ class _DiariesPageState extends State<DiariesPage> {
 
       if (res.statusCode == 200) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('📖 Diary entry updated successfully!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchDiaries();
@@ -124,7 +124,7 @@ class _DiariesPageState extends State<DiariesPage> {
       final res = await http.delete(Uri.parse('$_baseUrl/api/diaries/$id')).timeout(const Duration(seconds: 6));
       if (res.statusCode == 200) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('🗑️ Diary entry deleted!'), backgroundColor: Colors.blueGrey),
         );
         _fetchDiaries();
@@ -331,7 +331,7 @@ class _DiariesPageState extends State<DiariesPage> {
                                 final dateStr = DateFormat('yyyy-MM-dd').format(selectedDate);
 
                                 if (text.isEmpty) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
+                                  showTopSnackBar(context, 
                                     const SnackBar(content: Text('⚠️ Diary content cannot be empty'), backgroundColor: Colors.redAccent),
                                   );
                                   return;

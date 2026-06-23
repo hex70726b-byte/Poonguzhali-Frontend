@@ -73,7 +73,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
 
       if (res.statusCode == 201) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(
             content: Text('💪 Workout created! Let\'s crush it!'),
             backgroundColor: AppColors.lightBlueAccent,
@@ -115,7 +115,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
 
       if (res.statusCode == 200) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(
             content: Text('💪 Workout updated successfully!'),
             backgroundColor: AppColors.lightBlueAccent,
@@ -141,7 +141,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
           .timeout(const Duration(seconds: 6));
       if (res.statusCode == 200) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(
             content: Text('🗑️ Workout deleted!'),
             backgroundColor: Colors.blueGrey,
@@ -175,7 +175,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
         final resData = jsonDecode(res.body);
         final completedMsg =
             resData['message'] ?? '🔥 Workout completed! Streak increased!';
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           SnackBar(
             content: Text(completedMsg),
             backgroundColor: AppColors.lightBlueAccent,
@@ -524,7 +524,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                                 final target = targetCtrl.text.trim();
 
                                 if (name.isEmpty) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
+                                  showTopSnackBar(context, 
                                     const SnackBar(
                                       content: Text(
                                         '⚠️ Workout Name is required',
@@ -536,7 +536,7 @@ class _WorkoutsPageState extends State<WorkoutsPage> {
                                 }
 
                                 if (target.isEmpty) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
+                                  showTopSnackBar(context, 
                                     const SnackBar(
                                       content: Text(
                                         '⚠️ Target value is required',

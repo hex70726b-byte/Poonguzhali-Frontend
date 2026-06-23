@@ -93,7 +93,7 @@ class _RemindersPageState extends State<RemindersPage> with SingleTickerProvider
 
       if (res.statusCode == 201) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('🔔 Reminder added successfully da thambi!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchAllData();
@@ -114,7 +114,7 @@ class _RemindersPageState extends State<RemindersPage> with SingleTickerProvider
       final res = await http.delete(Uri.parse('$_baseUrl/api/reminders/$id')).timeout(const Duration(seconds: 15));
       if (res.statusCode == 200) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('🗑️ Reminder deleted!'), backgroundColor: Colors.blueGrey),
         );
         _fetchAllData();
@@ -280,7 +280,7 @@ class _RemindersPageState extends State<RemindersPage> with SingleTickerProvider
                     final title = titleCtrl.text.trim();
                     final dateTime = dateCtrl.text.trim();
                     if (title.isEmpty || dateTime.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      showTopSnackBar(context, 
                         const SnackBar(content: Text('⚠️ Type some title and choose date/time first da!'), backgroundColor: Colors.redAccent),
                       );
                       return;
@@ -309,7 +309,7 @@ class _RemindersPageState extends State<RemindersPage> with SingleTickerProvider
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('WhatsApp launch panna mudiyala da! Number check pannu.'), backgroundColor: Colors.redAccent),
         );
       }
@@ -326,7 +326,7 @@ class _RemindersPageState extends State<RemindersPage> with SingleTickerProvider
       }
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('Call panna mudiyala da! Check phone configurations.'), backgroundColor: Colors.redAccent),
         );
       }

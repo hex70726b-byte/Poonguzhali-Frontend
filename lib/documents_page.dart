@@ -205,7 +205,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
 
   void _showSnackBar(String text, Color bgColor) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
+    showTopSnackBar(context, 
       SnackBar(
         content: Text(text, style: const TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: bgColor,
@@ -244,7 +244,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
     }
 
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      showTopSnackBar(context, 
         SnackBar(
           content: Text("⚠️ Could not open link: $cleanUrl"),
           backgroundColor: Colors.redAccent,
@@ -369,7 +369,7 @@ class _DocumentsPageState extends State<DocumentsPage> {
                       onPressed: () {
                         final name = nameCtrl.text.trim();
                         if (name.isEmpty) {
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          showTopSnackBar(context, 
                             const SnackBar(
                               content: Text('⚠️ Folder name cannot be empty!'),
                               backgroundColor: Colors.redAccent,
@@ -850,7 +850,7 @@ class _FolderDetailsPageState extends State<FolderDetailsPage> {
                     var url = urlCtrl.text.trim();
 
                     if (name.isEmpty || url.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
+                      showTopSnackBar(context, 
                         const SnackBar(
                           content: Text('⚠️ Name and URL cannot be empty!'),
                           backgroundColor: Colors.redAccent,

@@ -88,7 +88,7 @@ class _TodoPageState extends State<TodoPage> {
 
       if (res.statusCode == 201) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('✅ Task added successfully!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchTodos();
@@ -133,7 +133,7 @@ class _TodoPageState extends State<TodoPage> {
       if (res.statusCode == 200) {
         if (!mounted) return;
         if (showFeedback) {
-          ScaffoldMessenger.of(context).showSnackBar(
+          showTopSnackBar(context, 
             const SnackBar(content: Text('✨ Task updated successfully!'), backgroundColor: AppColors.lightBlueAccent),
           );
         }
@@ -155,7 +155,7 @@ class _TodoPageState extends State<TodoPage> {
       final res = await http.delete(Uri.parse('$_baseUrl/api/todos/$id')).timeout(const Duration(seconds: 10));
       if (res.statusCode == 200) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('🗑️ Task deleted successfully!'), backgroundColor: Colors.blueGrey),
         );
         _fetchTodos();
@@ -398,7 +398,7 @@ class _TodoPageState extends State<TodoPage> {
                                 final dateStr = dateCtrl.text.trim();
 
                                 if (title.isEmpty) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
+                                  showTopSnackBar(context, 
                                     const SnackBar(content: Text('⚠️ Title is required'), backgroundColor: Colors.redAccent),
                                   );
                                   return;

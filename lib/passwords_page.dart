@@ -280,7 +280,7 @@ class _PasswordsPageState extends State<PasswordsPage> with SingleTickerProvider
   }
 
   void _showSnackBar(String message, Color color) {
-    ScaffoldMessenger.of(context).showSnackBar(
+    showTopSnackBar(context, 
       SnackBar(
         content: Text(
           message,
@@ -530,7 +530,7 @@ class _PasswordsPageState extends State<PasswordsPage> with SingleTickerProvider
                           final password = passwordCtrl.text;
 
                           if (website.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
+                            showTopSnackBar(context, 
                               const SnackBar(
                                 content: Text('⚠️ Website name cannot be empty!'),
                                 backgroundColor: Colors.redAccent,

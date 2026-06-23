@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 
@@ -62,4 +63,141 @@ class AppColors {
   static const Color chatBg = Color(0xFF0B141A);
   static const Color chatSurface = Color(0xFF1F2C34);
   static const Color chatAccent = Color(0xFF1EAC61);
+}
+
+void showTopSnackBar(BuildContext context, SnackBar snackBar) {
+  final overlayState = Overlay.of(context);
+  
+  final contentWidget = snackBar.content;
+  final bgColor = snackBar.backgroundColor ?? AppColors.blueAccent;
+  final duration = snackBar.duration;
+  
+  late OverlayEntry overlayEntry;
+  
+  overlayEntry = OverlayEntry(
+    builder: (context) {
+      return _TopSnackBarOverlay(
+        content: contentWidget,
+        backgroundColor: bgColor,
+        duration: duration,
+        onDismiss: () {
+          overlayEntry.remove();
+        },
+      );
+    },
+  );
+  
+  overlayState.insert(overlayEntry);
+}
+
+class _TopSnackBarOverlay extends StatefulWidget {
+  final Widget content;
+  final Color backgroundColor;
+  final Duration duration;
+  final VoidCallback onDismiss;
+
+  const _TopSnackBarOverlay({
+    required this.content,
+    required this.backgroundColor,
+    required this.duration,
+    required this.onDismiss,
+  });
+
+  @override
+  State<_TopSnackBarOverlay> createState() => _TopSnackBarOverlayState();
+}
+
+class _TopSnackBarOverlayState extends State<_TopSnackBarOverlay> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Offset> _offsetAnimation;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    
+    _offsetAnimation = Tween<Offset>(
+      begin: const Offset(0, -1.5),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutBack,
+    ));
+
+    _controller.forward();
+
+    _timer = Timer(widget.duration, () {
+      _dismiss();
+    });
+  }
+
+  void _dismiss() {
+    if (_controller.isAnimating) return;
+    _controller.reverse().then((_) {
+      widget.onDismiss();
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final topPadding = mediaQuery.padding.top;
+    
+    return Positioned(
+      top: topPadding + 16,
+      left: 16,
+      right: 16,
+      child: SlideTransition(
+        position: _offsetAnimation,
+        child: GestureDetector(
+          onTap: _dismiss,
+          onVerticalDragEnd: (details) {
+            if (details.primaryVelocity != null && details.primaryVelocity! < 0) {
+              _dismiss();
+            }
+          },
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                color: widget.backgroundColor,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black45,
+                    blurRadius: 12,
+                    offset: Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: DefaultTextStyle(
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(child: widget.content),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

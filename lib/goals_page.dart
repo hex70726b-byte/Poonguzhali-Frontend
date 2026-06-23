@@ -64,7 +64,7 @@ class _GoalsPageState extends State<GoalsPage> {
 
       if (res.statusCode == 201) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('🎯 Goal created successfully!'), backgroundColor: AppColors.primary),
         );
         _fetchGoals();
@@ -95,7 +95,7 @@ class _GoalsPageState extends State<GoalsPage> {
 
       if (res.statusCode == 200) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('🎯 Goal updated successfully!'), backgroundColor: AppColors.primary),
         );
         _fetchGoals();
@@ -116,7 +116,7 @@ class _GoalsPageState extends State<GoalsPage> {
       final res = await http.delete(Uri.parse('$_baseUrl/api/goals/$id')).timeout(const Duration(seconds: 6));
       if (res.statusCode == 200) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('🗑️ Goal deleted successfully!'), backgroundColor: Colors.blueGrey),
         );
         _fetchGoals();
@@ -349,7 +349,7 @@ class _GoalsPageState extends State<GoalsPage> {
                                 final desc = descCtrl.text.trim();
 
                                 if (name.isEmpty) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
+                                  showTopSnackBar(context, 
                                     const SnackBar(content: Text('⚠️ Goal Name is required'), backgroundColor: Colors.redAccent),
                                   );
                                   return;
@@ -357,7 +357,7 @@ class _GoalsPageState extends State<GoalsPage> {
 
                                 if (selectedType == 'money') {
                                   if (amt.isEmpty || double.tryParse(amt) == null) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
+                                    showTopSnackBar(context, 
                                       const SnackBar(content: Text('⚠️ Enter a valid target amount'), backgroundColor: Colors.redAccent),
                                     );
                                     return;

@@ -111,7 +111,7 @@ class _WalletsPageState extends State<WalletsPage> {
         _accountNameController.clear();
         if (mounted) {
           Navigator.of(context).pop(); // Close the input dialog
-          ScaffoldMessenger.of(context).showSnackBar(
+          showTopSnackBar(context, 
             const SnackBar(
               content: Text('🎉 Wallet account created successfully!'),
               backgroundColor: AppColors.lightBlueAccent,
@@ -127,7 +127,7 @@ class _WalletsPageState extends State<WalletsPage> {
         _isLoading = false;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           SnackBar(
             content: Text('❌ Error creating wallet: $e'),
             backgroundColor: Colors.redAccent,
@@ -160,7 +160,7 @@ class _WalletsPageState extends State<WalletsPage> {
         _accountNameController.clear();
         if (mounted) {
           Navigator.of(context).pop(); // Close dialog
-          ScaffoldMessenger.of(context).showSnackBar(
+          showTopSnackBar(context, 
             const SnackBar(
               content: Text('🎉 Wallet updated successfully!'),
               backgroundColor: AppColors.lightBlueAccent,
@@ -176,7 +176,7 @@ class _WalletsPageState extends State<WalletsPage> {
         _isLoading = false;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           SnackBar(
             content: Text('❌ Error updating wallet: $e'),
             backgroundColor: Colors.redAccent,
@@ -201,7 +201,7 @@ class _WalletsPageState extends State<WalletsPage> {
       if (response.statusCode == 200) {
         if (mounted) {
           Navigator.of(context).pop(); // Close delete confirmation dialog
-          ScaffoldMessenger.of(context).showSnackBar(
+          showTopSnackBar(context, 
             const SnackBar(
               content: Text('🗑️ Wallet deleted successfully!'),
               backgroundColor: Colors.blueGrey,
@@ -217,7 +217,7 @@ class _WalletsPageState extends State<WalletsPage> {
         _isLoading = false;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           SnackBar(
             content: Text('❌ Error deleting wallet: $e'),
             backgroundColor: Colors.redAccent,
@@ -233,7 +233,7 @@ class _WalletsPageState extends State<WalletsPage> {
     final amount = _memberAmountController.text.trim();
 
     if (name.isEmpty || amount.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      showTopSnackBar(context, 
         const SnackBar(
           content: Text('⚠️ Please fill out all fields'),
           backgroundColor: AppColors.primary,
@@ -265,7 +265,7 @@ class _WalletsPageState extends State<WalletsPage> {
         _memberAmountController.clear();
         if (mounted) {
           Navigator.of(context).pop(); // Close the detail/input modal
-          ScaffoldMessenger.of(context).showSnackBar(
+          showTopSnackBar(context, 
             const SnackBar(
               content: Text('👥 Member added to wallet successfully!'),
               backgroundColor: AppColors.lightBlueAccent,
@@ -281,7 +281,7 @@ class _WalletsPageState extends State<WalletsPage> {
         _isLoading = false;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           SnackBar(
             content: Text('❌ Error adding member: $e'),
             backgroundColor: Colors.redAccent,
@@ -320,7 +320,7 @@ class _WalletsPageState extends State<WalletsPage> {
         _memberAmountController.clear();
         if (mounted) {
           Navigator.of(context).pop(); // Close edit member dialog
-          ScaffoldMessenger.of(context).showSnackBar(
+          showTopSnackBar(context, 
             const SnackBar(
               content: Text('🎉 Member updated successfully!'),
               backgroundColor: AppColors.lightBlueAccent,
@@ -336,7 +336,7 @@ class _WalletsPageState extends State<WalletsPage> {
         _isLoading = false;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           SnackBar(
             content: Text('❌ Error updating member: $e'),
             backgroundColor: Colors.redAccent,
@@ -361,7 +361,7 @@ class _WalletsPageState extends State<WalletsPage> {
       if (response.statusCode == 200) {
         if (mounted) {
           Navigator.of(context).pop(); // Close delete confirmation dialog
-          ScaffoldMessenger.of(context).showSnackBar(
+          showTopSnackBar(context, 
             const SnackBar(
               content: Text('🗑️ Member deleted successfully!'),
               backgroundColor: Colors.blueGrey,
@@ -377,7 +377,7 @@ class _WalletsPageState extends State<WalletsPage> {
         _isLoading = false;
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           SnackBar(
             content: Text('❌ Error deleting member: $e'),
             backgroundColor: Colors.redAccent,

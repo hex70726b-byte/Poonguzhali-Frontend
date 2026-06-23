@@ -108,7 +108,7 @@ class _HabitsPageState extends State<HabitsPage> {
 
       if (res.statusCode == 201) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('⚡¡ Habit created successfully!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchHabits();
@@ -149,7 +149,7 @@ class _HabitsPageState extends State<HabitsPage> {
 
       if (res.statusCode == 200) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('⚡¡ Habit updated successfully!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchHabits();
@@ -170,7 +170,7 @@ class _HabitsPageState extends State<HabitsPage> {
       final res = await http.delete(Uri.parse('$_baseUrl/api/habits/$id')).timeout(const Duration(seconds: 6));
       if (res.statusCode == 200) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('🗑️ Habit deleted successfully!'), backgroundColor: Colors.blueGrey),
         );
         _fetchHabits();
@@ -195,7 +195,7 @@ class _HabitsPageState extends State<HabitsPage> {
 
       if (res.statusCode == 200) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('🔥 Check-in registered! Keep up the great work!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchHabits();
@@ -646,7 +646,7 @@ class _HabitsPageState extends State<HabitsPage> {
                                 final gap = gapCtrl.text.trim();
 
                                 if (name.isEmpty) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
+                                  showTopSnackBar(context, 
                                     const SnackBar(content: Text('⚠️ Habit Name is required'), backgroundColor: Colors.redAccent),
                                   );
                                   return;
@@ -654,7 +654,7 @@ class _HabitsPageState extends State<HabitsPage> {
 
                                 if (selectedType == 'multiple') {
                                   if (gap.isEmpty || int.tryParse(gap) == null || int.parse(gap) <= 0) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
+                                    showTopSnackBar(context, 
                                       const SnackBar(content: Text('⚠️ Enter a valid positive integer gap in minutes'), backgroundColor: Colors.redAccent),
                                     );
                                     return;
@@ -948,7 +948,7 @@ class _HabitsPageState extends State<HabitsPage> {
                                               if (!isSingleCompletedToday) {
                                                 _checkinHabit(id);
                                               } else {
-                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                showTopSnackBar(context, 
                                                   const SnackBar(content: Text('🎉 Completed today! Keep it up tomorrow!'), backgroundColor: AppColors.lightBlueAccent),
                                                 );
                                               }

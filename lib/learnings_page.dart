@@ -60,7 +60,7 @@ class _LearningsPageState extends State<LearningsPage> {
 
       if (res.statusCode == 201) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('📚 Topic added to learning path!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchLearnings();
@@ -86,7 +86,7 @@ class _LearningsPageState extends State<LearningsPage> {
 
       if (res.statusCode == 200) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('📚 Topic updated successfully!'), backgroundColor: AppColors.lightBlueAccent),
         );
         _fetchLearnings();
@@ -107,7 +107,7 @@ class _LearningsPageState extends State<LearningsPage> {
       final res = await http.delete(Uri.parse('$_baseUrl/api/learnings/$id')).timeout(const Duration(seconds: 6));
       if (res.statusCode == 200) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
+        showTopSnackBar(context, 
           const SnackBar(content: Text('🗑️ Topic deleted from path'), backgroundColor: Colors.blueGrey),
         );
         _fetchLearnings();
@@ -333,7 +333,7 @@ class _LearningsPageState extends State<LearningsPage> {
                                 final topic = topicCtrl.text.trim();
                                 final content = contentCtrl.text.trim();
                                 if (topic.isEmpty) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
+                                  showTopSnackBar(context, 
                                     const SnackBar(content: Text('⚠️ Learning Topic is required'), backgroundColor: Colors.redAccent),
                                   );
                                   return;
@@ -561,7 +561,7 @@ class _LearningsPageState extends State<LearningsPage> {
                                               ),
                                               onPressed: () {
                                                 Clipboard.setData(ClipboardData(text: link));
-                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                showTopSnackBar(context, 
                                                   const SnackBar(
                                                     content: Text('📋 Link copied to clipboard!'),
                                                     backgroundColor: AppColors.lightBlueAccent,
